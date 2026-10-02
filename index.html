@@ -8,7 +8,14 @@
     <meta name="description" content="Infrastructure engineer learning C# and working toward building a game." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..700&family=Noto+Serif+Display:wdth,wght@62.5..100,100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script>
+      // Set the theme before the page draws, so dark mode doesn't flash white
+      let theme = null
+      try { theme = localStorage.getItem('theme') } catch {}
+      theme ??= matchMedia('(prefers-color-scheme: dark)').matches ? 'sverige-dark' : 'sverige'
+      document.documentElement.dataset.theme = theme
+    </script>
   </head>
   <body>
     <div id="app"></div>

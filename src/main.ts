@@ -19,15 +19,16 @@ const section = (num: string, title: string, body: string) => `
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 app.innerHTML = `
-  <nav class="navbar border-b border-base-300 px-4">
+  <nav class="navbar border-b border-base-300 px-6 md:px-12">
     <a href="/" class="flex flex-1 items-center gap-3">
       <span class="w-10">${logo()}</span>
       <span class="font-mono text-sm tracking-widest">MOONTOURIST</span>
     </a>
     ${links.map(l => `<a class="btn btn-ghost btn-sm font-mono" href="${l.url}">${l.name}</a>`).join('')}
+    <button id="theme-toggle" class="btn btn-ghost btn-sm font-mono"></button>
   </nav>
 
-  <main class="mx-auto max-w-4xl px-4">
+  <main class="max-w-4xl px-6 md:px-12">
     <header class="relative grid items-center gap-10 py-20 md:grid-cols-[1fr_auto]">
       <pre aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 overflow-hidden font-mono text-xs leading-5 opacity-30">${starfield}</pre>
       <div>
@@ -73,7 +74,18 @@ app.innerHTML = `
       </div>`)}
   </main>
 
-  <footer class="footer footer-center border-t border-base-300 p-8 font-mono text-xs opacity-60">
+  <footer class="footer border-t border-base-300 px-6 py-8 font-mono text-xs opacity-60 md:px-12">
     <p>-- matt-erickson.io // made in washington --</p>
   </footer>
 `
+
+// Dark mode toggle. The starting theme is set in index.html before the page draws.
+const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle')!
+const html = document.documentElement
+const label = () => (toggle.textContent = html.dataset.theme === 'sverige-dark' ? '[ LIGHT ]' : '[ DARK ]')
+label()
+toggle.addEventListener('click', () => {
+  html.dataset.theme = html.dataset.theme === 'sverige-dark' ? 'sverige' : 'sverige-dark'
+  try { localStorage.setItem('theme', html.dataset.theme) } catch {}
+  label()
+})
