@@ -1,46 +1,54 @@
-/* Gruvbox dark */
-:root {
-  --bg: #282828;
-  --fg: #ebdbb2;
-  --yellow: #fabd2f;
-  --aqua: #8ec07c;
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: false;
 }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: 'Press Start 2P', monospace;
-  font-size: 12px;
-  line-height: 1.8;
+/* Swedish blue and yellow on bone white. Sharp corners, thin lines. */
+@plugin "daisyui/theme" {
+  name: "sverige";
+  default: true;
+  color-scheme: light;
+  --color-base-100: #f5f3ee;
+  --color-base-200: #ebe8e0;
+  --color-base-300: #d6d2c7;
+  --color-base-content: #12161c;
+  --color-primary: #006aa7;
+  --color-primary-content: #ffffff;
+  --color-secondary: #fecc02;
+  --color-secondary-content: #12161c;
+  --color-accent: #0a2f4f;
+  --color-accent-content: #ffffff;
+  --color-neutral: #12161c;
+  --color-neutral-content: #f5f3ee;
+  --color-success: #2e7d4f;
+  --color-success-content: #ffffff;
+  --radius-selector: 0;
+  --radius-field: 0;
+  --radius-box: 0;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
 }
 
-#app {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 32px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+@theme {
+  --font-sans: "Archivo", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-.nes-container.is-dark { background: var(--bg); }
-
-h1 { color: var(--yellow); font-size: 20px; }
-h2 { font-size: 14px; }
-a { color: var(--aqua); }
-
-.sheet {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: 8px 24px;
+/* Wide and heavy, like the NASA worm and the TRD lettering */
+.display {
+  font-stretch: 125%;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  text-transform: uppercase;
 }
-.sheet dt { color: var(--yellow); }
-.sheet dd { margin: 0; }
 
-.stat { display: grid; grid-template-columns: 140px 1fr; align-items: center; gap: 16px; }
-.stat progress { height: 24px; margin: 0; }
-
-.quest + .quest { margin-top: 24px; }
-
-footer { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+/* Small mono readout labels, Marathon / Starfield style */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
