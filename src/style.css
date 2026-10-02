@@ -57,7 +57,7 @@
 }
 
 @theme {
-  --font-sans: "Archivo", system-ui, sans-serif;
+  --font-sans: "JetBrains Mono", ui-monospace, monospace;
   --font-serif: "Times New Roman", Times, "Liberation Serif", serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
