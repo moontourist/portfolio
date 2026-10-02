@@ -37,12 +37,6 @@ export const tools: string[] = ['Neovim', 'Ghostty', 'Pro Tools', 'Ableton', 'a 
 
 export const projects: Project[] = [
   {
-    name: 'sharpmas',
-    status: 'active',
-    description: 'Advent of Code tooling in C#: downloads puzzle inputs, runs solutions, checks answers and submits them for stars.',
-    url: 'https://github.com/moontourist/sharpmas',
-  },
-  {
     name: 'tascii',
     status: 'active',
     description: 'A reminder script that speaks in ASCII art.',
