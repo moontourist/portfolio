@@ -1,19 +1,18 @@
 // All site content lives here. Edit this file to change what the page says.
 
-export type Stat = { name: string; level: number } // level: 0-100
-export type QuestStatus = 'complete' | 'active'
-export type Quest = {
+export type Skill = { name: string; level: number } // level: 0-100
+export type ProjectStatus = 'complete' | 'active'
+export type Project = {
   name: string
-  status: QuestStatus
+  status: ProjectStatus
   description: string
   url?: string
 }
 
-export const character = {
+export const profile = {
   name: 'Matt Erickson',
-  nameJp: 'マット・エリクソン',
-  class: 'Infrastructure Engineer',
-  guild: 'Halo',
+  role: 'Infrastructure Engineer',
+  company: 'Halo',
   location: 'Washington state',
   bio: "By day I keep the infrastructure running at Halo, living in AWS, Kubernetes and Datadog. On the side I'm learning C#, one small program at a time, working toward building a game of my own. Before all that I trained as an audio engineer, and when I'm away from the keyboard I'm usually behind a camera.",
 }
@@ -26,16 +25,16 @@ export const status = [
   { label: 'Next deploy', value: 'First game' },
 ]
 
-export const stats: Stat[] = [
+export const skills: Skill[] = [
   { name: 'AWS', level: 80 },
   { name: 'Kubernetes', level: 70 },
   { name: 'Datadog', level: 75 },
   { name: 'C#', level: 35 },
 ]
 
-export const equipment: string[] = ['Neovim', 'Ghostty', 'Pro Tools', 'Ableton', 'Camera']
+export const tools: string[] = ['Neovim', 'Ghostty', 'Pro Tools', 'Ableton', 'Camera']
 
-export const quests: Quest[] = [
+export const projects: Project[] = [
   {
     name: 'sharpmas',
     status: 'active',
