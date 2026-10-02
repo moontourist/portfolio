@@ -83,3 +83,16 @@
   text-transform: uppercase;
   opacity: 0.6;
 }
+
+/* Japanese subtitles in a heavy mincho, like the Evangelion cards */
+.jp {
+  font-family: "Noto Serif JP", serif;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+}
+
+/* Warning-tape band, Swedish yellow on navy */
+.hazard {
+  height: 12px;
+  background: repeating-linear-gradient(-45deg, #fecc02 0 10px, #0a2f4f 10px 20px);
+}
