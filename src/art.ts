@@ -16,23 +16,6 @@ const MOON = [
   '...#####....',
 ]
 
-// Mount Baker: broad glaciated cone, Sherman Peak shoulder on the right.
-// '*' is snow, '#' is rock.
-const BAKER = [
-  '.......................******',
-  '.....................**********',
-  '...................**************',
-  '.................*******************',
-  '...............*******#***************',
-  '.............******##****#*******#*****',
-  '...........*****###******##*****##******',
-  '.........****#####**#*****###***####*****',
-  '.......**#######****##***#####**######****',
-  '.....######################**###########***',
-  '...############################################',
-  '.#################################################',
-]
-
 const STRIPES = ['#fecc02', '#006aa7', '#0a2f4f']
 
 // One <rect> per pixel character in the grid
@@ -56,12 +39,12 @@ export function logo(): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 160">${stripes}<g fill="#fff" shape-rendering="crispEdges">${pixels(MOON, '#', 8, 70, 32)}</g></svg>`
 }
 
-// Mount Baker: rock in the text colour, snow in white
-export function landscape(): string {
-  const width = Math.max(...BAKER.map(r => r.length))
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${BAKER.length}" shape-rendering="crispEdges">
-    <g fill="currentColor">${pixels(BAKER, '#', 1)}</g>
-    <g fill="#fff">${pixels(BAKER, '*', 1)}</g>
+// A mountain grid: rock in the text colour, snow in white
+export function landscape(grid: string[]): string {
+  const width = Math.max(...grid.map(r => r.length))
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${grid.length}" shape-rendering="crispEdges">
+    <g fill="currentColor">${pixels(grid, '#', 1)}</g>
+    <g fill="#fff">${pixels(grid, '*', 1)}</g>
   </svg>`
 }
 
