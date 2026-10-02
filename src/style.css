@@ -30,16 +30,43 @@
   --noise: 0;
 }
 
+/* Same flags, night side */
+@plugin "daisyui/theme" {
+  name: "sverige-dark";
+  color-scheme: dark;
+  --color-base-100: #0b1420;
+  --color-base-200: #111c2b;
+  --color-base-300: #24324a;
+  --color-base-content: #e8e4da;
+  --color-primary: #4aa3df;
+  --color-primary-content: #0b1420;
+  --color-secondary: #fecc02;
+  --color-secondary-content: #12161c;
+  --color-accent: #0a2f4f;
+  --color-accent-content: #ffffff;
+  --color-neutral: #e8e4da;
+  --color-neutral-content: #0b1420;
+  --color-success: #4caf7a;
+  --color-success-content: #0b1420;
+  --radius-selector: 0;
+  --radius-field: 0;
+  --radius-box: 0;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
 @theme {
   --font-sans: "Archivo", system-ui, sans-serif;
+  --font-serif: "Noto Serif Display", "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* Wide and heavy, like the NASA worm and the TRD lettering */
+/* Black, condensed serif, after the Evangelion title cards */
 .display {
-  font-stretch: 125%;
+  font-family: var(--font-serif);
+  font-stretch: 70%;
   font-weight: 900;
-  letter-spacing: -0.02em;
   line-height: 0.9;
   text-transform: uppercase;
 }
