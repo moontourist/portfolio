@@ -58,15 +58,16 @@
 
 @theme {
   --font-sans: "Archivo", system-ui, sans-serif;
-  --font-serif: "Noto Serif Display", "Times New Roman", serif;
+  --font-serif: "Times New Roman", Times, "Liberation Serif", serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* Black, condensed serif, after the Evangelion title cards */
+/* Bold italic Times, after the Evangelion title cards */
 .display {
   font-family: var(--font-serif);
-  font-stretch: 70%;
-  font-weight: 900;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   line-height: 0.9;
   text-transform: uppercase;
 }
