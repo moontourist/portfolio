@@ -11,11 +11,20 @@ export type Quest = {
 
 export const character = {
   name: 'Matt Erickson',
+  nameJp: 'マット・エリクソン',
   class: 'Infrastructure Engineer',
   guild: 'Halo',
   location: 'Washington state',
   bio: "By day I keep the infrastructure running at Halo, living in AWS, Kubernetes and Datadog. On the side I'm learning C#, one small program at a time, working toward building a game of my own. Before all that I trained as an audio engineer, and when I'm away from the keyboard I'm usually behind a camera.",
 }
+
+// Readouts for the status panel. Local time and the status light are added in main.ts.
+export const status = [
+  { label: 'Operator', value: 'M. Erickson' },
+  { label: 'Region', value: 'us-west // Washington' },
+  { label: 'Current build', value: 'C# via Advent of Code' },
+  { label: 'Next deploy', value: 'First game' },
+]
 
 export const stats: Stat[] = [
   { name: 'AWS', level: 80 },

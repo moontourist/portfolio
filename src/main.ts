@@ -1,6 +1,6 @@
 import './style.css'
-import { character, stats, equipment, quests, links } from './data'
-import { logo } from './logo'
+import { character, status, stats, equipment, quests, links } from './data'
+import { logo, rainier } from './art'
 
 document.querySelector<HTMLLinkElement>('link[rel=icon]')!.href =
   'data:image/svg+xml,' + encodeURIComponent(logo())
@@ -10,9 +10,14 @@ const starfield = Array.from({ length: 14 }, () =>
   Array.from({ length: 90 }, () => (Math.random() < 0.03 ? '.+*'[Math.floor(Math.random() * 3)] : ' ')).join(''),
 ).join('\n')
 
-const section = (num: string, title: string, body: string) => `
+// Each section opens with an Evangelion-style title card
+const section = (num: string, title: string, jp: string, body: string) => `
   <section class="border-t border-base-300 py-12">
-    <p class="label mb-6">${num} // ${title}</p>
+    <div class="mb-8 border-l-4 border-secondary pl-4">
+      <p class="label">${num} //</p>
+      <h2 class="display text-5xl sm:text-6xl">${title}</h2>
+      <p class="jp mt-2 text-sm opacity-60">${jp}</p>
+    </div>
     ${body}
   </section>`
 
@@ -29,11 +34,13 @@ app.innerHTML = `
   </nav>
 
   <main class="max-w-4xl px-6 md:px-12">
-    <header class="relative grid items-center gap-10 py-20 md:grid-cols-[1fr_auto]">
+    <header class="relative grid items-center gap-10 pt-20 pb-32 md:grid-cols-[1fr_auto]">
       <pre aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 overflow-hidden font-mono text-xs leading-5 opacity-30">${starfield}</pre>
+      <div aria-hidden="true" class="pointer-events-none absolute right-0 bottom-0 -z-10 w-full max-w-xl">${rainier()}</div>
       <div>
         <p class="label mb-4">01 // Character</p>
         <h1 class="display text-7xl sm:text-9xl">${character.name.replace(' ', '<br>')}</h1>
+        <p class="jp mt-3 opacity-60">${character.nameJp}</p>
         <dl class="mt-8 grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2">
           <dt class="label self-center">Class</dt><dd class="font-semibold">${character.class}</dd>
           <dt class="label self-center">Guild</dt><dd class="font-semibold">${character.guild}</dd>
@@ -43,9 +50,22 @@ app.innerHTML = `
       <div class="hidden w-56 md:block">${logo()}</div>
     </header>
 
-    ${section('02', 'About', `<p class="max-w-2xl text-lg leading-relaxed">${character.bio}</p>`)}
+    ${section('02', 'Status', '稼働状況', `
+      <div class="border border-base-300 bg-base-200">
+        <div class="hazard"></div>
+        <dl class="grid gap-x-8 gap-y-3 p-6 font-mono text-sm sm:grid-cols-[max-content_1fr]">
+          <dt class="label self-center">System</dt>
+          <dd class="flex items-center gap-2"><span class="status status-success animate-pulse"></span> NOMINAL</dd>
+          ${status.map(s => `<dt class="label self-center">${s.label}</dt><dd>${s.value}</dd>`).join('')}
+          <dt class="label self-center">Local time</dt>
+          <dd id="clock"></dd>
+        </dl>
+        <div class="hazard"></div>
+      </div>`)}
 
-    ${section('03', 'Stats', `
+    ${section('03', 'About', '自己紹介', `<p class="max-w-2xl text-lg leading-relaxed">${character.bio}</p>`)}
+
+    ${section('04', 'Stats', '能力値', `
       <div class="grid gap-x-12 gap-y-5 sm:grid-cols-2">
         ${stats.map(s => `
           <div>
@@ -53,18 +73,18 @@ app.innerHTML = `
             <progress class="progress progress-primary h-2" value="${s.level}" max="100"></progress>
           </div>`).join('')}
       </div>
-      <p class="label mt-10 mb-3">Equipment</p>
+      <p class="label mt-10 mb-3">Equipment // 装備</p>
       <div class="flex flex-wrap gap-2">
         ${equipment.map(e => `<span class="badge badge-outline font-mono">${e}</span>`).join('')}
       </div>`)}
 
-    ${section('04', 'Quest log', `
+    ${section('05', 'Quest log', '任務記録', `
       <div class="grid gap-4 sm:grid-cols-2">
         ${quests.map(q => `
           <article class="card border border-base-300 bg-base-100">
             <div class="card-body">
               <div class="flex items-center justify-between gap-2">
-                <h2 class="card-title font-mono">${q.name}</h2>
+                <h3 class="card-title font-mono">${q.name}</h3>
                 <span class="badge ${q.status === 'complete' ? 'badge-success' : 'badge-secondary'} font-mono text-xs uppercase">${q.status}</span>
               </div>
               <p class="opacity-80">${q.description}</p>
@@ -78,6 +98,19 @@ app.innerHTML = `
     <p>-- matt-erickson.io // made in washington --</p>
   </footer>
 `
+
+// Live Pacific time for the status panel
+const clock = document.querySelector<HTMLElement>('#clock')!
+const time = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Los_Angeles',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false,
+})
+const tick = () => (clock.textContent = `${time.format(new Date())} PT`)
+tick()
+setInterval(tick, 1000)
 
 // Dark mode toggle. The starting theme is set in index.html before the page draws.
 const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle')!
