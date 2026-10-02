@@ -1,6 +1,6 @@
 // All site content lives here. Edit this file to change what the page says.
 
-export type Skill = { name: string; level: number } // level: 0-100
+export type Skill = { name: string; detail: string }
 export type ProjectStatus = 'complete' | 'active'
 export type Project = {
   name: string
@@ -20,19 +20,20 @@ export const profile = {
 // Readouts for the status panel. Local time and the status light are added in main.ts.
 export const status = [
   { label: 'Operator', value: 'M. Erickson' },
-  { label: 'Region', value: 'us-west // Washington' },
+  { label: 'Region', value: 'Washington, US' },
   { label: 'Current build', value: 'C# via Advent of Code' },
   { label: 'Next deploy', value: 'First game' },
 ]
 
 export const skills: Skill[] = [
-  { name: 'AWS', level: 80 },
-  { name: 'Kubernetes', level: 70 },
-  { name: 'Datadog', level: 75 },
-  { name: 'C#', level: 35 },
+  // Draft wording: rewrite these in your own words
+  { name: 'AWS', detail: 'Where most of my day job lives.' },
+  { name: 'Kubernetes', detail: 'Deploying, debugging and keeping clusters healthy.' },
+  { name: 'Datadog', detail: 'Monitoring and alerting, so I know something broke before anyone else does.' },
+  { name: 'C#', detail: 'The language I\'m learning to build software in, through Advent of Code and small tools.' },
 ]
 
-export const tools: string[] = ['Neovim', 'Ghostty', 'Pro Tools', 'Ableton', 'Camera']
+export const tools: string[] = ['Neovim', 'Ghostty', 'Pro Tools', 'Ableton', 'a camera']
 
 export const projects: Project[] = [
   {
