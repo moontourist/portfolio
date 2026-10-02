@@ -1,0 +1,46 @@
+/* Gruvbox dark */
+:root {
+  --bg: #282828;
+  --fg: #ebdbb2;
+  --yellow: #fabd2f;
+  --aqua: #8ec07c;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+#app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.nes-container.is-dark { background: var(--bg); }
+
+h1 { color: var(--yellow); font-size: 20px; }
+h2 { font-size: 14px; }
+a { color: var(--aqua); }
+
+.sheet {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 24px;
+}
+.sheet dt { color: var(--yellow); }
+.sheet dd { margin: 0; }
+
+.stat { display: grid; grid-template-columns: 140px 1fr; align-items: center; gap: 16px; }
+.stat progress { height: 24px; margin: 0; }
+
+.quest + .quest { margin-top: 24px; }
+
+footer { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
