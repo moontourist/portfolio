@@ -1,6 +1,6 @@
 import './style.css'
 import { character, status, stats, equipment, quests, links } from './data'
-import { logo, rainier } from './art'
+import { logo, landscape } from './art'
 
 document.querySelector<HTMLLinkElement>('link[rel=icon]')!.href =
   'data:image/svg+xml,' + encodeURIComponent(logo())
@@ -34,9 +34,8 @@ app.innerHTML = `
   </nav>
 
   <main class="max-w-4xl px-6 md:px-12">
-    <header class="relative grid items-center gap-10 pt-20 pb-32 md:grid-cols-[1fr_auto]">
+    <header class="relative grid items-center gap-10 pt-20 md:grid-cols-[1fr_auto]">
       <pre aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 overflow-hidden font-mono text-xs leading-5 opacity-30">${starfield}</pre>
-      <div aria-hidden="true" class="pointer-events-none absolute right-0 bottom-0 -z-10 w-full max-w-xl">${rainier()}</div>
       <div>
         <p class="label mb-4">01 // Character</p>
         <h1 class="display text-7xl sm:text-9xl">${character.name.replace(' ', '<br>')}</h1>
@@ -48,19 +47,20 @@ app.innerHTML = `
         </dl>
       </div>
       <div class="hidden w-56 md:block">${logo()}</div>
+      <div aria-hidden="true" class="ml-auto w-full max-w-xl md:col-span-2">${landscape()}</div>
     </header>
 
     ${section('02', 'Status', '稼働状況', `
-      <div class="border border-base-300 bg-base-200">
-        <div class="hazard"></div>
-        <dl class="grid gap-x-8 gap-y-3 p-6 font-mono text-sm sm:grid-cols-[max-content_1fr]">
-          <dt class="label self-center">System</dt>
-          <dd class="flex items-center gap-2"><span class="status status-success animate-pulse"></span> NOMINAL</dd>
-          ${status.map(s => `<dt class="label self-center">${s.label}</dt><dd>${s.value}</dd>`).join('')}
-          <dt class="label self-center">Local time</dt>
-          <dd id="clock"></dd>
-        </dl>
-        <div class="hazard"></div>
+      <div class="grid grid-cols-2 border-t border-l border-base-300 sm:grid-cols-3">
+        ${[
+          { label: 'System', value: '<span class="status status-success animate-pulse"></span> Nominal' },
+          ...status,
+          { label: 'Local time', value: '<span id="clock"></span>' },
+        ].map(s => `
+          <div class="flex flex-col items-center gap-2 border-r border-b border-base-300 p-6 text-center">
+            <p class="label">${s.label}</p>
+            <p class="flex items-center gap-2 font-mono">${s.value}</p>
+          </div>`).join('')}
       </div>`)}
 
     ${section('03', 'About', '自己紹介', `<p class="max-w-2xl text-lg leading-relaxed">${character.bio}</p>`)}

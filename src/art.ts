@@ -16,20 +16,32 @@ const MOON = [
   '...#####....',
 ]
 
-// Mount Rainier. '*' is snow, '#' is rock.
-const RAINIER = [
-  '......................****',
-  '...................**********',
-  '.................*****##*******',
-  '...............****####***##****',
-  '.............***#####***######***',
-  '...........**####################**',
-  '.........###########################',
-  '.......###############################',
-  '.....###################################',
-  '...#######################################',
-  '.###########################################',
-  '###############################################',
+// A smaller moon for the night sky over the mountain
+const SKY_MOON = [
+  '..###',
+  '.##..',
+  '##...',
+  '##...',
+  '##...',
+  '.##..',
+  '..###',
+]
+
+// Mount Baker: broad glaciated cone, Sherman Peak shoulder on the right.
+// '*' is snow, '#' is rock.
+const BAKER = [
+  '.......................******',
+  '.....................**********',
+  '...................**************',
+  '.................*******************',
+  '...............*******#***************',
+  '.............******##****#*******#*****',
+  '...........*****###******##*****##******',
+  '.........****#####**#*****###***####*****',
+  '.......**#######****##***#####**######****',
+  '.....######################**###########***',
+  '...###############################################',
+  '.#################################################',
 ]
 
 const STRIPES = ['#fecc02', '#006aa7', '#0a2f4f']
@@ -55,11 +67,14 @@ export function logo(): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 160">${stripes}<g fill="#fff" shape-rendering="crispEdges">${pixels(MOON, '#', 8, 70, 32)}</g></svg>`
 }
 
-// Drawn in the text colour, so it works in light and dark mode
-export function rainier(): string {
-  const width = Math.max(...RAINIER.map(r => r.length))
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${RAINIER.length}" shape-rendering="crispEdges" fill="currentColor">
-    <g opacity="0.07">${pixels(RAINIER, '#', 1)}</g>
-    <g opacity="0.2">${pixels(RAINIER, '*', 1)}</g>
+// Mount Baker with the pixel moon above it.
+// Drawn in the text colour so it works in light and dark mode; the moon is Swedish yellow.
+export function landscape(): string {
+  const width = Math.max(...BAKER.map(r => r.length))
+  const top = 10 // rows of sky above the mountain
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${top + BAKER.length}" shape-rendering="crispEdges">
+    <g fill="#fecc02" opacity="0.5">${pixels(SKY_MOON, '#', 1, 14, 1)}</g>
+    <g fill="currentColor" opacity="0.07">${pixels(BAKER, '#', 1, 0, top)}</g>
+    <g fill="currentColor" opacity="0.2">${pixels(BAKER, '*', 1, 0, top)}</g>
   </svg>`
 }
