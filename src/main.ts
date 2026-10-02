@@ -1,5 +1,5 @@
 import './style.css'
-import { character, status, stats, equipment, quests, links } from './data'
+import { profile, status, skills, tools, projects, links } from './data'
 import { logo, landscape } from './art'
 
 document.querySelector<HTMLLinkElement>('link[rel=icon]')!.href =
@@ -11,12 +11,11 @@ const starfield = Array.from({ length: 14 }, () =>
 ).join('\n')
 
 // Each section opens with an Evangelion-style title card
-const section = (num: string, title: string, jp: string, body: string) => `
+const section = (num: string, title: string, body: string) => `
   <section class="border-t border-base-300 py-12">
     <div class="mb-8 border-l-4 border-secondary pl-4">
       <p class="label">${num} //</p>
       <h2 class="display text-5xl sm:text-6xl">${title}</h2>
-      <p class="jp mt-2 text-sm opacity-60">${jp}</p>
     </div>
     ${body}
   </section>`
@@ -37,20 +36,19 @@ app.innerHTML = `
     <header class="relative grid items-center gap-10 pt-20 md:grid-cols-[1fr_auto]">
       <pre aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 overflow-hidden font-mono text-xs leading-5 opacity-30">${starfield}</pre>
       <div>
-        <p class="label mb-4">01 // Character</p>
-        <h1 class="display text-7xl sm:text-9xl">${character.name.replace(' ', '<br>')}</h1>
-        <p class="jp mt-3 opacity-60">${character.nameJp}</p>
+        <p class="label mb-4">01 // Profile</p>
+        <h1 class="display text-7xl sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
         <dl class="mt-8 grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2">
-          <dt class="label self-center">Class</dt><dd class="font-semibold">${character.class}</dd>
-          <dt class="label self-center">Guild</dt><dd class="font-semibold">${character.guild}</dd>
-          <dt class="label self-center">Location</dt><dd class="font-semibold">${character.location}</dd>
+          <dt class="label self-center">Role</dt><dd class="font-semibold">${profile.role}</dd>
+          <dt class="label self-center">Company</dt><dd class="font-semibold">${profile.company}</dd>
+          <dt class="label self-center">Location</dt><dd class="font-semibold">${profile.location}</dd>
         </dl>
       </div>
       <div class="hidden w-56 md:block">${logo()}</div>
       <div aria-hidden="true" class="ml-auto w-full max-w-xl md:col-span-2">${landscape()}</div>
     </header>
 
-    ${section('02', 'Status', '稼働状況', `
+    ${section('02', 'Status', `
       <div class="grid grid-cols-2 border-t border-l border-base-300 sm:grid-cols-3">
         ${[
           { label: 'System', value: '<span class="status status-success animate-pulse"></span> Nominal' },
@@ -63,24 +61,24 @@ app.innerHTML = `
           </div>`).join('')}
       </div>`)}
 
-    ${section('03', 'About', '自己紹介', `<p class="max-w-2xl text-lg leading-relaxed">${character.bio}</p>`)}
+    ${section('03', 'About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`)}
 
-    ${section('04', 'Stats', '能力値', `
+    ${section('04', 'Skills', `
       <div class="grid gap-x-12 gap-y-5 sm:grid-cols-2">
-        ${stats.map(s => `
+        ${skills.map(s => `
           <div>
             <div class="mb-1 flex justify-between font-mono text-sm"><span>${s.name}</span><span class="opacity-60">${s.level}</span></div>
             <progress class="progress progress-primary h-2" value="${s.level}" max="100"></progress>
           </div>`).join('')}
       </div>
-      <p class="label mt-10 mb-3">Equipment // 装備</p>
+      <p class="label mt-10 mb-3">Tools</p>
       <div class="flex flex-wrap gap-2">
-        ${equipment.map(e => `<span class="badge badge-outline font-mono">${e}</span>`).join('')}
+        ${tools.map(e => `<span class="badge badge-outline font-mono">${e}</span>`).join('')}
       </div>`)}
 
-    ${section('05', 'Quest log', '任務記録', `
+    ${section('05', 'Projects', `
       <div class="grid gap-4 sm:grid-cols-2">
-        ${quests.map(q => `
+        ${projects.map(q => `
           <article class="card border border-base-300 bg-base-100">
             <div class="card-body">
               <div class="flex items-center justify-between gap-2">
