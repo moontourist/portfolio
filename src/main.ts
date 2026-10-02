@@ -33,7 +33,7 @@ app.innerHTML = `
       <pre aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 overflow-hidden font-mono text-xs leading-5 opacity-30">${starfield}</pre>
       <div>
         <p class="label mb-4">01 // Character</p>
-        <h1 class="display text-5xl sm:text-7xl">${character.name.replace(' ', '<br>')}</h1>
+        <h1 class="display text-7xl sm:text-9xl">${character.name.replace(' ', '<br>')}</h1>
         <dl class="mt-8 grid grid-cols-[max-content_1fr] gap-x-8 gap-y-2">
           <dt class="label self-center">Class</dt><dd class="font-semibold">${character.class}</dd>
           <dt class="label self-center">Guild</dt><dd class="font-semibold">${character.guild}</dd>
