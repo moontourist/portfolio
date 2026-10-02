@@ -28,15 +28,18 @@ const prompt = (command: string) => `
     <span class="text-primary">matt@baker</span><span class="opacity-60">:~$</span> ${command}
   </p>`
 
+// Only tag projects "In progress" when some are finished, otherwise the tag says nothing
+const mixedStatus = new Set(projects.map(p => p.status)).size > 1
+
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 app.innerHTML = `
   <nav class="navbar gap-1 border-b border-base-300 px-6 md:px-12">
     <a href="/" class="flex flex-1 items-center gap-3">
       <span class="w-10">${logo()}</span>
-      <span class="font-semibold">moontourist</span>
+      <span class="hidden font-semibold sm:inline">moontourist</span>
     </a>
-    ${links.map(l => `<a class="btn btn-ghost btn-sm" href="${l.url}">${l.name}</a>`).join('')}
+    ${links.filter(l => l.nav).map(l => `<a class="btn btn-ghost btn-sm" href="${l.url}">${l.name}</a>`).join('')}
     <button id="theme-toggle" class="btn btn-ghost btn-sm"></button>
   </nav>
 
@@ -57,6 +60,27 @@ app.innerHTML = `
 
   <main class="max-w-4xl px-6 md:px-12">
 
+    ${section('About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`)}
+
+    ${section('Projects', `
+      <ul class="max-w-2xl">
+        ${projects.map(p => `
+          <li class="border-b border-base-300 py-5 first:pt-0">
+            <div class="flex items-baseline justify-between gap-4">
+              <h3 class="font-mono text-lg font-medium">${p.name}</h3>
+              ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
+            </div>
+            <p class="mt-1 opacity-80">${p.description}</p>
+            ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
+          </li>`).join('')}
+      </ul>`)}
+
+    ${section('Skills', `
+      <dl class="grid max-w-2xl gap-x-10 gap-y-1 sm:grid-cols-[max-content_1fr] sm:gap-y-5">
+        ${skills.map(s => `<dt class="font-semibold">${s.name}</dt><dd class="mb-4 opacity-80 sm:mb-0">${s.detail}</dd>`).join('')}
+      </dl>
+      <p class="mt-10 max-w-2xl opacity-80">Outside of work I spend my time in ${tools.slice(0, -1).join(', ')} and ${tools.at(-1)}.</p>`)}
+
     ${section('Status', `
       <div class="notch border border-base-300 bg-base-200">
         <div class="border-b border-base-300 px-5 py-3">${prompt('status --all')}</div>
@@ -73,31 +97,13 @@ app.innerHTML = `
         </div>
         <div class="px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
       </div>`)}
-
-    ${section('About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`)}
-
-    ${section('Skills', `
-      <dl class="grid max-w-2xl gap-x-10 gap-y-1 sm:grid-cols-[max-content_1fr] sm:gap-y-5">
-        ${skills.map(s => `<dt class="font-semibold">${s.name}</dt><dd class="mb-4 opacity-80 sm:mb-0">${s.detail}</dd>`).join('')}
-      </dl>
-      <p class="mt-10 max-w-2xl opacity-80">Outside of work I spend my time in ${tools.slice(0, -1).join(', ')} and ${tools.at(-1)}.</p>`)}
-
-    ${section('Projects', `
-      <ul class="max-w-2xl">
-        ${projects.map(p => `
-          <li class="border-b border-base-300 py-5 first:pt-0">
-            <div class="flex items-baseline justify-between gap-4">
-              <h3 class="font-mono text-lg font-medium">${p.name}</h3>
-              ${p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
-            </div>
-            <p class="mt-1 opacity-80">${p.description}</p>
-            ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
-          </li>`).join('')}
-      </ul>`)}
   </main>
 
-  <footer class="border-t border-base-300 px-6 py-8 text-sm opacity-70 md:px-12">
-    <p>Made in Washington.</p>
+  <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-base-300 px-6 py-8 text-sm md:px-12">
+    <p class="opacity-70">Made in Washington.</p>
+    <div class="flex flex-wrap gap-x-6 gap-y-2">
+      ${links.map(l => `<a class="link link-hover" href="${l.url}">${l.name}</a>`).join('')}
+    </div>
   </footer>
 `
 
