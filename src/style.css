@@ -99,3 +99,8 @@
 @media (prefers-reduced-motion: reduce) {
   .cursor { animation: none; }
 }
+
+/* Clipped corners on panels, after Marathon's UI frames */
+.notch {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}

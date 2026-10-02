@@ -1,9 +1,19 @@
 import './style.css'
 import { profile, status, skills, tools, projects, links } from './data'
-import { logo, landscape } from './art'
+import { logo, landscape, barcode, crosshair } from './art'
 
 document.querySelector<HTMLLinkElement>('link[rel=icon]')!.href =
   'data:image/svg+xml,' + encodeURIComponent(logo())
+
+// A faint ASCII starfield across the poster
+const starfield = Array.from({ length: 24 }, () =>
+  Array.from({ length: 180 }, () => (Math.random() < 0.025 ? '.+*'[Math.floor(Math.random() * 3)] : ' ')).join(''),
+).join('\n')
+
+// Crosshairs pinned to each corner of a block
+const corners = ['top-3 left-3', 'top-3 right-3', 'bottom-3 left-3', 'bottom-3 right-3']
+  .map(pos => `<span aria-hidden="true" class="absolute ${pos}">${crosshair}</span>`)
+  .join('')
 
 // Section heading: squashed serif with a yellow bar. Kept smaller than the hero name.
 const section = (title: string, body: string) => `
@@ -30,18 +40,25 @@ app.innerHTML = `
     <button id="theme-toggle" class="btn btn-ghost btn-sm"></button>
   </nav>
 
+  <header class="relative overflow-hidden bg-secondary text-secondary-content">
+    <pre aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 opacity-40">${starfield}</pre>
+    ${corners}
+    <div class="relative max-w-4xl px-6 pt-16 md:px-12">
+      <p class="label">48.7768° N  121.8145° W</p>
+      <h1 class="display mt-6 text-7xl sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
+      <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
+      <div aria-hidden="true" class="mt-6 ml-auto w-full max-w-xl text-accent">${landscape()}</div>
+    </div>
+    <div class="relative flex items-center justify-between gap-6 bg-accent px-6 py-3 text-accent-content md:px-12">
+      <p class="label opacity-100">Mt. Baker 3286 m</p>
+      <span aria-hidden="true" class="h-5 w-40">${barcode('moontourist')}</span>
+    </div>
+  </header>
+
   <main class="max-w-4xl px-6 md:px-12">
-    <header class="grid items-center gap-10 pt-20 md:grid-cols-[1fr_auto]">
-      <div>
-        <h1 class="display text-7xl sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
-        <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
-      </div>
-      <div class="hidden w-56 md:block">${logo()}</div>
-      <div aria-hidden="true" class="ml-auto w-full max-w-xl md:col-span-2">${landscape()}</div>
-    </header>
 
     ${section('Status', `
-      <div class="border border-base-300 bg-base-200">
+      <div class="notch border border-base-300 bg-base-200">
         <div class="border-b border-base-300 px-5 py-3">${prompt('status --all')}</div>
         <div class="grid grid-cols-2 sm:grid-cols-3">
           ${[
