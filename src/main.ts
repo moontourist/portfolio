@@ -2,6 +2,7 @@ import './style.css'
 import { profile, status, crafts, projects, links } from './data'
 import { logo, landscape, barcode, crosshair, icon } from './art'
 import { peaks } from './peaks'
+import { skyAbove } from './sky'
 
 // Filled in at build time by vite.config.ts
 declare const __COMMIT__: string
@@ -12,23 +13,35 @@ let peakIndex = Math.floor(Math.random() * peaks.length)
 const peak = peaks[peakIndex]
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// A faint ASCII starfield across the poster, wide enough for any screen (and a landscape phone).
+// First-load timeline (ms). The rain builds the sky, the mountain draws in, then the rest of the page fades in.
+// The matching mountain/barcode delays live in style.css (--intro). Slow everything down by raising these together.
+const FADE_IN_AT = 3300
+const INTRO_DONE_AT = 4600
+
+// The starfield is the real sky above the current peak, right now, facing south (see sky.ts).
 // On first load each star falls in as a raindrop and lands in place (after the `rain` effect in
 // terminaltexteffects, which Omarchy's screensaver uses). It's Washington: rain first, then a clear night.
 // About 40% of the stars then twinkle, each on its own slow rhythm so the sky never pulses in sync.
-const star = (row: number) => {
-  const c = '.+*'[Math.floor(Math.random() * 3)]
-  const fall = `--row:${row};--fd:${Math.round(Math.random() * 500)}ms`
-  if (Math.random() > 0.4) return `<span class="star" style="${fall}">${c}</span>`
-  const length = (2 + Math.random() * 3).toFixed(2) // 2-5s per twinkle
-  const offset = (-Math.random() * 5).toFixed(2) // negative delay: start mid-twinkle
-  return `<span class="star twinkle" style="${fall};--t:${length}s;--d:${offset}s">${c}</span>`
+const CELL = { width: 7.2, height: 20 } // one JetBrains Mono character at 12px with 20px line height
+const star = (char: string, row: number, rain: boolean) => {
+  const cls = ['star']
+  let style = rain ? `--row:${row};--fd:${Math.round(Math.random() * 800)}ms;` : ''
+  if (!rain) cls.push('landed')
+  if (Math.random() < 0.4) {
+    cls.push('twinkle')
+    style += `--t:${(2 + Math.random() * 3).toFixed(2)}s;--d:${(-Math.random() * 5).toFixed(2)}s` // 2-5s, start mid-twinkle
+  }
+  return `<span class="${cls.join(' ')}" style="${style}">${char}</span>`
 }
-const starfield = Array.from({ length: 40 }, (_, row) =>
-  Array.from({ length: Math.ceil(Math.max(screen.width, screen.height) / 7) + 20 }, () =>
-    Math.random() < 0.025 ? star(row) : ' ',
-  ).join(''),
-).join('\n')
+
+function drawSky(p: (typeof peaks)[number], rain: boolean) {
+  const sky = document.querySelector<HTMLElement>('#sky')!
+  const box = sky.getBoundingClientRect()
+  const grid = { rows: Math.ceil(box.height / CELL.height), cols: Math.ceil(box.width / CELL.width), cellWidth: CELL.width, cellHeight: CELL.height }
+  const lines: string[][] = Array.from({ length: grid.rows }, () => Array(grid.cols).fill(' '))
+  for (const s of skyAbove(p.lat, p.lon, new Date(), grid)) lines[s.row][s.col] = star(s.char, s.row, rain)
+  sky.innerHTML = lines.map(l => l.join('')).join('\n')
+}
 
 // Jump finished-length animations under `root` to their end. Used as a safety net when animation
 // frames are paused (background tab, screenshot tools); looping ones like the twinkle are left alone.
@@ -64,7 +77,7 @@ const app = document.querySelector<HTMLDivElement>('#app')!
 app.innerHTML = `
   <a href="#main" class="btn btn-secondary btn-sm sr-only fixed top-3 left-3 z-10 focus:not-sr-only">Skip to content</a>
 
-  <nav class="navbar gap-1 border-b border-base-300 px-6 md:px-12">
+  <nav class="intro-fade navbar gap-1 border-b border-base-300 px-6 md:px-12">
     <a href="/" class="flex flex-1 items-center gap-3">
       <span class="w-10">${logo()}</span>
       <span class="sr-only font-semibold sm:not-sr-only">moontourist</span>
@@ -78,10 +91,11 @@ app.innerHTML = `
   <header>
     <!-- Poster colours come from the --poster-* variables in style.css -->
     <div class="draw relative overflow-hidden bg-(--poster-sky) text-(--poster-ink) md:pb-44">
-      <pre aria-hidden="true" class="rain pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star) opacity-40">${starfield}</pre>
-      ${corners}
-      <div class="relative max-w-4xl px-6 pt-16 md:px-12">
+      <pre id="sky" aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star) opacity-60"></pre>
+      <div class="intro-fade">${corners}</div>
+      <div class="intro-fade relative max-w-4xl px-6 pt-16 md:px-12">
         <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
+        <p class="readout mt-1">The real sky above it right now, facing south</p>
         <h1 class="display mt-6 text-7xl text-(--poster-name) sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
         <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
       </div>
@@ -89,15 +103,15 @@ app.innerHTML = `
       <div id="peak-art" aria-hidden="true" class="relative mt-8 w-full cursor-pointer text-(--poster-ground) md:absolute md:right-0 md:bottom-0 md:mt-0 md:w-[min(44rem,55%)]"></div>
     </div>
     <div class="draw flex items-center justify-between gap-6 bg-(--poster-ground) px-6 py-3 text-white md:px-12">
-      <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
+      <div class="intro-fade flex flex-wrap items-center gap-x-5 gap-y-1">
         <p id="peak-name" aria-live="polite" class="readout opacity-100"></p>
         <button id="next-peak" type="button" class="readout inline-flex items-center underline underline-offset-4 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current pointer-coarse:min-h-11">Next peak</button>
       </div>
-      <span id="barcode" aria-hidden="true" class="barcode hidden h-5 w-40 shrink-0 sm:block"></span>
+      <span id="barcode" aria-hidden="true" class="intro-fade barcode hidden h-5 w-40 shrink-0 sm:block"></span>
     </div>
   </header>
 
-  <main id="main" tabindex="-1" class="max-w-4xl px-6 outline-none md:px-12">
+  <main id="main" tabindex="-1" class="intro-fade max-w-4xl px-6 outline-none md:px-12">
 
     ${section('About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`)}
 
@@ -153,7 +167,7 @@ app.innerHTML = `
       </div>`)}
   </main>
 
-  <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-base-300 px-6 py-8 text-sm md:px-12">
+  <footer class="intro-fade flex flex-wrap items-center justify-between gap-4 border-t border-base-300 px-6 py-8 text-sm md:px-12">
     <p class="opacity-70">Made in Washington.</p>
     <div class="flex flex-wrap gap-x-6 gap-y-2">
       ${links.map(l => `<a class="link link-hover inline-flex items-center pointer-coarse:min-h-11" href="${l.url}">${l.footer ?? l.name}</a>`).join('')}
@@ -170,7 +184,7 @@ function scramble(el: HTMLElement, text: string) {
   const start = performance.now()
   const frame = () => {
     if (run !== scrambleRun || run === settledRun) return // a newer peak took over, or the safety net already landed it
-    const progress = Math.min(1, (performance.now() - start) / 700)
+    const progress = Math.min(1, (performance.now() - start) / 1000)
     const settled = Math.floor(progress * text.length)
     el.textContent = [...text]
       .map((c, i) => (i < settled || !/\d/.test(c) ? c : String(Math.floor(Math.random() * 10))))
@@ -183,19 +197,22 @@ function scramble(el: HTMLElement, text: string) {
     if (run !== scrambleRun) return
     settledRun = run
     el.textContent = text
-  }, 900)
+  }, 1200)
 }
 
-// Put a peak into the poster. New elements replay the draw-in animation from style.css.
-function showPeak(p: (typeof peaks)[number]) {
+// Put a peak into the poster: its sky, mountain, name and coordinates.
+// New elements replay the draw-in animation from style.css. `first` is the page-load intro.
+function showPeak(p: (typeof peaks)[number], first = false) {
   const coords = `${p.lat.toFixed(4)}° N  ${p.lon.toFixed(4)}° W`
-  scramble(document.querySelector<HTMLElement>('#coords')!, coords)
   document.querySelector('#coords-sr')!.textContent = coords
+  // On first load the coordinates decode as they fade in; after that, straight away
+  setTimeout(() => scramble(document.querySelector<HTMLElement>('#coords')!, coords), first && !reduceMotion ? FADE_IN_AT : 0)
+  drawSky(p, first && !reduceMotion)
   document.querySelector('#peak-art')!.innerHTML = landscape(p.grid)
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
   document.querySelector('#barcode')!.innerHTML = barcode(p.name)
   // Same safety net for the draw-in: once it should be over, jump the poster's animations to their end
-  setTimeout(() => document.querySelectorAll('header .draw').forEach(finishAll), 2600)
+  setTimeout(() => document.querySelectorAll('header .draw').forEach(finishAll), first ? INTRO_DONE_AT : 2200)
 }
 
 function nextPeak() {
@@ -203,9 +220,18 @@ function nextPeak() {
   showPeak(peaks[peakIndex])
 }
 
-showPeak(peak)
+showPeak(peak, true)
+// After the sky and mountain are built, fade the rest of the page in (index.html hid it before the first paint)
+setTimeout(() => document.documentElement.classList.remove('intro'), reduceMotion ? 0 : FADE_IN_AT)
 // The rain only plays once; after it, swapping peaks draws the mountain straight away
-setTimeout(() => document.documentElement.style.setProperty('--intro', '0ms'), 2600)
+setTimeout(() => document.documentElement.style.setProperty('--intro', '0ms'), INTRO_DONE_AT)
+
+// Redraw the sky when the poster changes size (rotating a phone, resizing a window)
+let resizeTimer = 0
+addEventListener('resize', () => {
+  clearTimeout(resizeTimer)
+  resizeTimer = setTimeout(() => drawSky(peaks[peakIndex], false), 200)
+})
 
 // Stop the twinkling while the poster is scrolled out of view
 const poster = document.querySelector('header .draw')!

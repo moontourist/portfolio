@@ -157,14 +157,25 @@
 @keyframes print {
   from { clip-path: inset(0 100% 0 0); }
 }
-/* On first load the mountain waits for the rain (--intro); after that it draws straight away */
-:root { --intro: 900ms; }
+/* On first load the mountain waits for the rain (--intro); after that it draws straight away.
+   Timeline on first load: rain 0-2.5s, mountain 1.9-3.4s, page fades in from 3.3s (FADE_IN_AT in main.ts). */
+:root { --intro: 1700ms; }
 .draw .row {
-  animation: pixel-in 90ms ease-out backwards;
-  animation-delay: calc(var(--intro) + 200ms + var(--r) * 55ms);
+  animation: pixel-in 150ms ease-out backwards;
+  animation-delay: calc(var(--intro) + 200ms + var(--r) * 110ms);
 }
 .draw .barcode svg {
-  animation: print 450ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--intro) + 750ms) backwards;
+  animation: print 600ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--intro) + 1700ms) backwards;
+}
+
+/* Everything except the sky and mountain is hidden until they're built, then fades in.
+   index.html adds .intro before the first paint (only when motion is allowed) and removes it after 6s
+   no matter what, so a script failure can never leave the page invisible. */
+.intro-fade {
+  transition: opacity 1000ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.intro .intro-fade {
+  opacity: 0;
 }
 @media (prefers-reduced-motion: reduce) {
   .draw .row,
@@ -182,13 +193,16 @@
 }
 .star {
   display: inline-block;
-  animation: fall calc(250ms + var(--row) * 22ms) cubic-bezier(0.5, 0, 1, 1) var(--fd) backwards;
+  animation: fall calc(500ms + var(--row) * 40ms) cubic-bezier(0.5, 0, 1, 1) var(--fd) backwards;
 }
 .twinkle {
   animation:
-    fall calc(250ms + var(--row) * 22ms) cubic-bezier(0.5, 0, 1, 1) var(--fd) backwards,
+    fall calc(500ms + var(--row) * 40ms) cubic-bezier(0.5, 0, 1, 1) var(--fd) backwards,
     twinkle var(--t) ease-in-out var(--d) infinite;
 }
+/* Stars redrawn after the intro (Next peak, resizing) appear in place, no rain */
+.star.landed { animation: none; }
+.twinkle.landed { animation: twinkle var(--t) ease-in-out var(--d) infinite; }
 .paused .twinkle {
   animation-play-state: paused;
 }
