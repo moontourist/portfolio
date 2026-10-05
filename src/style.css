@@ -157,12 +157,14 @@
 @keyframes print {
   from { clip-path: inset(0 100% 0 0); }
 }
+/* On first load the mountain waits for the rain (--intro); after that it draws straight away */
+:root { --intro: 900ms; }
 .draw .row {
   animation: pixel-in 90ms ease-out backwards;
-  animation-delay: calc(200ms + var(--r) * 55ms);
+  animation-delay: calc(var(--intro) + 200ms + var(--r) * 55ms);
 }
 .draw .barcode svg {
-  animation: print 450ms cubic-bezier(0.16, 1, 0.3, 1) 750ms backwards;
+  animation: print 450ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--intro) + 750ms) backwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .draw .row,
@@ -173,12 +175,23 @@
 @keyframes twinkle {
   50% { opacity: 0.15; }
 }
+/* Rain: each star falls from above the poster to its own row at a steady speed, then lands */
+@keyframes fall {
+  from { transform: translateY(calc((var(--row) + 3) * -1.25rem)) scaleY(2.2); }
+  90% { transform: translateY(0) scaleY(1.6); }
+}
+.star {
+  display: inline-block;
+  animation: fall calc(250ms + var(--row) * 22ms) cubic-bezier(0.5, 0, 1, 1) var(--fd) backwards;
+}
 .twinkle {
-  animation: twinkle var(--t) ease-in-out var(--d) infinite;
+  animation:
+    fall calc(250ms + var(--row) * 22ms) cubic-bezier(0.5, 0, 1, 1) var(--fd) backwards,
+    twinkle var(--t) ease-in-out var(--d) infinite;
 }
 .paused .twinkle {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
-  .twinkle { animation: none; }
+  .star, .twinkle { animation: none; }
 }

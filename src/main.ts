@@ -13,19 +13,29 @@ const peak = peaks[peakIndex]
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // A faint ASCII starfield across the poster, wide enough for any screen (and a landscape phone).
-// About 40% of the stars twinkle, each on its own slow rhythm so the sky never pulses in sync.
-const star = () => {
+// On first load each star falls in as a raindrop and lands in place (after the `rain` effect in
+// terminaltexteffects, which Omarchy's screensaver uses). It's Washington: rain first, then a clear night.
+// About 40% of the stars then twinkle, each on its own slow rhythm so the sky never pulses in sync.
+const star = (row: number) => {
   const c = '.+*'[Math.floor(Math.random() * 3)]
-  if (Math.random() > 0.4) return c
+  const fall = `--row:${row};--fd:${Math.round(Math.random() * 500)}ms`
+  if (Math.random() > 0.4) return `<span class="star" style="${fall}">${c}</span>`
   const length = (2 + Math.random() * 3).toFixed(2) // 2-5s per twinkle
   const offset = (-Math.random() * 5).toFixed(2) // negative delay: start mid-twinkle
-  return `<span class="twinkle" style="--t:${length}s;--d:${offset}s">${c}</span>`
+  return `<span class="star twinkle" style="${fall};--t:${length}s;--d:${offset}s">${c}</span>`
 }
-const starfield = Array.from({ length: 40 }, () =>
+const starfield = Array.from({ length: 40 }, (_, row) =>
   Array.from({ length: Math.ceil(Math.max(screen.width, screen.height) / 7) + 20 }, () =>
-    Math.random() < 0.025 ? star() : ' ',
+    Math.random() < 0.025 ? star(row) : ' ',
   ).join(''),
 ).join('\n')
+
+// Jump finished-length animations under `root` to their end. Used as a safety net when animation
+// frames are paused (background tab, screenshot tools); looping ones like the twinkle are left alone.
+const finishAll = (root: Element) =>
+  root.getAnimations({ subtree: true })
+    .filter(a => a.effect?.getComputedTiming().endTime !== Infinity)
+    .forEach(a => a.finish())
 
 // Crosshairs pinned to each corner of a block. On phones the bottom pair would sit on the mountain, so they wait for 768px.
 const corners = ['top-3 left-3', 'top-3 right-3', 'hidden md:block bottom-3 left-3', 'hidden md:block bottom-3 right-3']
@@ -68,7 +78,7 @@ app.innerHTML = `
   <header>
     <!-- Poster colours come from the --poster-* variables in style.css -->
     <div class="draw relative overflow-hidden bg-(--poster-sky) text-(--poster-ink) md:pb-44">
-      <pre aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star) opacity-40">${starfield}</pre>
+      <pre aria-hidden="true" class="rain pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star) opacity-40">${starfield}</pre>
       ${corners}
       <div class="relative max-w-4xl px-6 pt-16 md:px-12">
         <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
@@ -184,9 +194,8 @@ function showPeak(p: (typeof peaks)[number]) {
   document.querySelector('#peak-art')!.innerHTML = landscape(p.grid)
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
   document.querySelector('#barcode')!.innerHTML = barcode(p.name)
-  // Same safety net for the draw-in: once it should be over, jump any unfinished animation to its end
-  // (Only the mountain and barcode: the twinkling stars loop forever and have no end to jump to.)
-  setTimeout(() => document.querySelectorAll('#peak-art, #barcode').forEach(el => el.getAnimations({ subtree: true }).forEach(a => a.finish())), 1500)
+  // Same safety net for the draw-in: once it should be over, jump the poster's animations to their end
+  setTimeout(() => document.querySelectorAll('header .draw').forEach(finishAll), 2600)
 }
 
 function nextPeak() {
@@ -195,6 +204,8 @@ function nextPeak() {
 }
 
 showPeak(peak)
+// The rain only plays once; after it, swapping peaks draws the mountain straight away
+setTimeout(() => document.documentElement.style.setProperty('--intro', '0ms'), 2600)
 
 // Stop the twinkling while the poster is scrolled out of view
 const poster = document.querySelector('header .draw')!
