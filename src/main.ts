@@ -3,6 +3,7 @@ import { profile, status, crafts, projects, links } from './data'
 import { logo, landscape, barcode, crosshair, icon } from './art'
 import { peaks } from './peaks'
 import { skyAbove } from './sky'
+import { cloudsAt, cloudField } from './weather'
 
 // Filled in at build time by vite.config.ts
 declare const __COMMIT__: string
@@ -90,17 +91,22 @@ app.innerHTML = `
 
   <header>
     <!-- Poster colours come from the --poster-* variables in style.css -->
-    <div class="draw relative overflow-hidden bg-(--poster-sky) text-(--poster-ink) md:pb-56">
+    <div class="draw relative overflow-hidden bg-(--poster-sky) text-(--poster-ink) md:pb-64">
       <pre id="sky" aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star) opacity-60"></pre>
+      <div aria-hidden="true" class="intro-fade pointer-events-none absolute inset-0 overflow-hidden">
+        <pre id="clouds" class="drift w-max font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
+      </div>
       <div class="intro-fade">${corners}</div>
       <div class="intro-fade relative max-w-4xl px-6 pt-16 md:px-12">
         <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
         <p id="sky-note" class="readout mt-1"></p>
+        <p id="weather" class="readout mt-1"></p>
         <h1 class="display mt-6 text-7xl text-(--poster-name) sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
         <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
       </div>
-      <!-- Phones: the peak follows the text, edge to edge. From 768px it stands at the poster's bottom right, on the strip. -->
-      <div id="peak-art" aria-hidden="true" class="relative mt-8 w-full cursor-pointer text-(--poster-ground) md:absolute md:right-0 md:bottom-0 md:mt-0 md:w-[min(44rem,55%)]"></div>
+      <!-- The scene spans the poster's full width. Phones: below the text. From 768px: along the bottom, on the strip.
+           Its height follows the screen width; narrow screens crop the sides, keeping the peak in view. -->
+      <div id="peak-art" aria-hidden="true" class="relative mt-8 h-[clamp(9rem,20vw,17rem)] w-full cursor-pointer text-(--poster-ground) md:absolute md:inset-x-0 md:bottom-0 md:mt-0"></div>
     </div>
     <div class="draw flex items-center justify-between gap-6 bg-(--poster-ground) px-6 py-3 text-white md:px-12">
       <div class="intro-fade flex flex-wrap items-center gap-x-5 gap-y-1">
@@ -212,8 +218,23 @@ function showPeak(p: (typeof peaks)[number], first = false) {
   document.querySelector('#peak-art')!.innerHTML = landscape(p.grid)
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
   document.querySelector('#barcode')!.innerHTML = barcode(p.name)
+  showClouds(p)
   // Same safety net for the draw-in: once it should be over, jump the poster's animations to their end
   setTimeout(() => document.querySelectorAll('header .draw').forEach(finishAll), first ? INTRO_DONE_AT : 2200)
+}
+
+// Live clouds over the peak. Ignores answers that arrive after the visitor has moved to another peak.
+function showClouds(p: (typeof peaks)[number]) {
+  const layer = document.querySelector<HTMLElement>('#clouds')!
+  const note = document.querySelector<HTMLElement>('#weather')!
+  layer.textContent = ''
+  note.textContent = ''
+  cloudsAt(p.lat, p.lon).then(clouds => {
+    if (!clouds || peaks[peakIndex] !== p) return
+    const box = document.querySelector('#sky')!.getBoundingClientRect()
+    layer.textContent = cloudField(clouds, Math.ceil(box.height / CELL.height), Math.ceil(box.width / CELL.width))
+    note.innerHTML = `Cloud cover ${clouds.total}% right now, live from <a class="underline underline-offset-2" href="https://open-meteo.com/">Open-Meteo</a>`
+  })
 }
 
 function nextPeak() {
@@ -231,7 +252,10 @@ setTimeout(() => document.documentElement.style.setProperty('--intro', '0ms'), I
 let resizeTimer = 0
 addEventListener('resize', () => {
   clearTimeout(resizeTimer)
-  resizeTimer = setTimeout(() => drawSky(peaks[peakIndex], false), 200)
+  resizeTimer = setTimeout(() => {
+    drawSky(peaks[peakIndex], false)
+    showClouds(peaks[peakIndex])
+  }, 200)
 })
 
 // Stop the twinkling while the poster is scrolled out of view

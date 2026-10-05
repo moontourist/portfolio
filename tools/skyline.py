@@ -1,5 +1,5 @@
 """Usage: python3 tools/skyline.py [peak name] -> prints the grids and writes tools/grids.json;
-copy a grid into src/peaks.ts. Peaks, view direction and snowlines are set in tools/peaks.json.
+copy a grid into src/peaks.ts. Characters: '#' near rock, '%' mid rock, '=' far rock, '*' snow, '+' far snow. Peaks, view direction and snowlines are set in tools/peaks.json.
 
 Build ASCII mountain skylines from real elevation data (AWS Terrain Tiles, terrarium encoding).
 
@@ -10,7 +10,7 @@ text grid: '*' snow above the peak's snowline, '#' rock below.
 import math, os, struct, sys, urllib.request, zlib, json
 
 HERE = os.path.dirname(__file__)
-Z = 12
+Z = 11  # ~50 m per pixel: plenty for a 48 km panorama, and a quarter of the tiles
 TILE = 256
 
 
@@ -171,6 +171,87 @@ def render(lat, lon_west, look, width_km, depth_km, cols, rows, snowline, steep=
     return grid
 
 
+def view(lat, lon_west, look, snowline, distance_km=28, eye_fraction=0.45, fov=40, cols=220, rows=40,
+         peak_at=0.62, far_km=4, steep=40, reach_km=90, max_exaggeration=2.5):
+    """The scene as seen by someone standing `distance_km` from the peak, looking `look` at it through a
+    `fov`-degree lens, with the peak `peak_at` of the way across. Ray-marches the terrain per column, so
+    ranges behind the peak rise above nearer ones. Ground more than `far_km` beyond the peak is 'far'.
+    Characters: '#' near rock/forest, '%' rock in the peak's own range, '=' far rock, '*' snow, '+' far snow."""
+    lon = -lon_west
+    km_lat, km_lon = 1 / 111.32, 1 / (111.32 * math.cos(math.radians(lat)))
+    sign = 1 if look == 'north' else -1  # viewer is south of the peak when looking north
+    v_lat = lat - sign * distance_km * km_lat
+    # A fire-lookout height: high enough that ranges behind the peak rise above the nearer ridges
+    eye = max(elevation(v_lat, lon) + 300, eye_fraction * elevation(lat, lon))
+    step = 0.15
+    columns = []
+    for c in range(cols):
+        bearing = math.radians((c / (cols - 1) - peak_at) * fov)  # radians to the right of the peak
+        hits, highest = [], -1e9
+        d = 8.0  # skip the immediate foreground, which would block the view like a hill in front of a camera
+        while d < reach_km:
+            forward, right = d * math.cos(bearing), d * math.sin(bearing)
+            north = sign * forward
+            east = sign * right
+            la, lo = v_lat + north * km_lat, lon + east * km_lon
+            e = elevation(la, lo)
+            angle = math.degrees(math.atan2(e - eye, d * 1000))
+            if angle > highest:
+                dx = (elevation(la, lo + step * km_lon) - elevation(la, lo - step * km_lon)) / (2 * step * 1000)
+                dy = (elevation(la + step * km_lat, lo) - elevation(la - step * km_lat, lo)) / (2 * step * 1000)
+                slope = math.degrees(math.atan(math.hypot(dx, dy)))
+                ragged = snowline + 110 * math.sin(c * 0.29) + 60 * math.sin(c * 0.83 + 1) + 40 * math.sin(d * 3)
+                snow = e >= ragged and slope < steep
+                # Three depth bands, like haze in a photo: near foothills, the peak's own range, ranges beyond
+                if forward > distance_km + far_km:
+                    kind = '+' if snow else '='
+                elif forward > distance_km * 0.7:
+                    kind = '*' if snow else '%'
+                else:
+                    kind = '*' if snow else '#'
+                hits.append((highest, angle, kind))
+                highest = angle
+            d += 0.1 + d * 0.01  # finer steps up close, coarser far away
+        columns.append((highest, hits))
+    skyline = [h for h, _ in columns]
+    top = max(skyline)
+    base = sorted(skyline)[len(skyline) // 12]
+    deg_per_col = fov / cols
+    deg_per_row = max((top - base) / (rows - 2), deg_per_col / max_exaggeration)
+    grid = []
+    for r in range(rows):
+        level = top - (r + 0.5) * deg_per_row
+        line = []
+        for highest, hits in columns:
+            ch = '.'
+            if level <= highest:
+                ch = '#'
+                for lo_a, hi_a, kind in hits:
+                    if lo_a < level <= hi_a:
+                        ch = kind
+                        break
+            line.append(ch)
+        grid.append(''.join(line).rstrip('.'))
+    for _ in range(2):  # clean-up: lone cells take the majority of their filled neighbours
+        padded = [g.ljust(cols, '.') for g in grid]
+        nxt = []
+        for r in range(rows):
+            line = []
+            for c in range(cols):
+                ch = padded[r][c]
+                if ch != '.':
+                    near = [padded[rr][cc] for rr in range(max(0, r - 1), min(rows, r + 2))
+                            for cc in range(max(0, c - 1), min(cols, c + 2)) if padded[rr][cc] != '.']
+                    ch = max(set(near), key=near.count) if near.count(ch) * 2 < len(near) else ch
+                line.append(ch)
+            nxt.append(''.join(line).rstrip('.'))
+        grid = nxt
+    grid[-1] = '#' * cols  # solid ground row so the scene always sits on the strip
+    while grid and not grid[0]:
+        grid.pop(0)
+    return grid
+
+
 if __name__ == '__main__':
     if sys.argv[1:] == ['check']:
         print('Rainier summit', round(elevation(46.8529, -121.7604)), 'm (expect ~4392)')
@@ -181,7 +262,8 @@ if __name__ == '__main__':
     for p in peaks:
         if only and only not in p['name']:
             continue
-        out[p['name']] = render(p['lat'], p['lon'], p['look'], p['width'], p['depth'], p['cols'], p['rows'], p['snowline'])
-        print(p['name'], file=sys.stderr)
+        out[p['name']] = view(p['lat'], p['lon'], p['look'], p['snowline'],
+                              p.get('distance', 28), p.get('eye', 0.45))
+        print(p['name'], len(out[p['name']]), 'rows', file=sys.stderr)
         print('\n'.join(out[p['name']]), file=sys.stderr)
     json.dump(out, open(os.path.join(HERE, 'grids.json'), 'w'))

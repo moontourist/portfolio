@@ -39,17 +39,31 @@ export function logo(): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 160">${stripes}<g fill="#fff" shape-rendering="crispEdges">${pixels(MOON, '#', 8, 70, 32)}</g></svg>`
 }
 
-// A mountain grid: rock in the text colour, snow in white.
-// Each row is its own group with --r = rows from the bottom, so CSS can draw it in from the ground up.
+// A mountain scene. Each row is its own group with --r = rows from the bottom, so CSS can draw it in
+// from the ground up. Runs of the same character become one wide rect, which keeps big scenes light.
+const SCENE_FILLS: Record<string, string> = {
+  '#': 'currentColor', // near foothills, in the poster's ground colour
+  '%': 'var(--poster-mid)', // the peak's own range, a step lighter
+  '=': 'var(--poster-far)', // ranges beyond, lighter again
+  '*': '#fff', // snow
+  '+': 'var(--poster-far-snow)', // distant snow
+}
 export function landscape(grid: string[]): string {
   const width = Math.max(...grid.map(r => r.length))
   const rows = grid
-    .map((row, y) => `<g class="row" style="--r:${grid.length - 1 - y}">
-      <g fill="currentColor">${pixels([row], '#', 1, 0, y)}</g>
-      <g fill="#fff">${pixels([row], '*', 1, 0, y)}</g>
-    </g>`)
+    .map((row, y) => {
+      let rects = ''
+      for (let x = 0; x < row.length; ) {
+        let n = 1
+        while (row[x + n] === row[x]) n++
+        const fill = SCENE_FILLS[row[x]]
+        if (fill) rects += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${fill}"/>`
+        x += n
+      }
+      return `<g class="row" style="--r:${grid.length - 1 - y}">${rects}</g>`
+    })
     .join('')
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${grid.length}" shape-rendering="crispEdges" style="--steps:${grid.length}">${rows}</svg>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${grid.length}" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" class="h-full w-full" style="--steps:${grid.length}">${rows}</svg>`
 }
 
 // A barcode made from the bits of a string: a 1 is a wide bar, a 0 a thin one

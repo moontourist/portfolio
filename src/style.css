@@ -140,6 +140,10 @@
   --poster-ink: #e8e4da;    /* Månljus: coordinates, intro, crosshairs */
   --poster-name: #fecc02;   /* Flaggul: the name is the flag's yellow on night blue */
   --poster-star: #ffffff;
+  --poster-mid: #0a2440;    /* the peak's own range, a step lighter than the foothills */
+  --poster-far: #10304f;    /* ranges beyond, fading toward the sky */
+  --poster-far-snow: #a9bccd;
+  --poster-cloud: #c7d3df;
 }
 :root[data-poster="yellow"] {
   --poster-sky: #f2c94c;    /* a warmer, slightly muted print yellow */
@@ -147,6 +151,10 @@
   --poster-ink: #12161c;
   --poster-name: #12161c;
   --poster-star: #12161c;
+  --poster-mid: #2b4f70;
+  --poster-far: #4a6a85;
+  --poster-far-snow: #fdf3d0;
+  --poster-cloud: #ffffff;
 }
 
 /* The poster's one authored moment: the mountain draws in from the ground up, row by row,
@@ -208,4 +216,19 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .star, .twinkle { animation: none; }
+}
+
+/* Live clouds drift slowly sideways. The layer is two copies wide, so sliding it half its width loops
+   without a seam. Paused off-screen, still for reduced motion. */
+@keyframes drift {
+  to { transform: translateX(-50%); }
+}
+.drift {
+  animation: drift 420s linear infinite;
+}
+.paused .drift {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .drift { animation: none; }
 }

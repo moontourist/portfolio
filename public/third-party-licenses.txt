@@ -18,3 +18,8 @@ The mountain drawings are generated from elevation data in AWS Terrain Tiles
 (https://registry.opendata.aws/terrain-tiles/), originally produced by Mapzen. The data comes from public
 sources including the USGS 3D Elevation Program, SRTM and others; full attribution:
 https://github.com/tilezen/joerd/blob/master/docs/attribution.md
+
+----
+
+Live cloud cover: weather data by Open-Meteo.com (https://open-meteo.com/), licensed under CC BY 4.0
+(https://creativecommons.org/licenses/by/4.0/).
