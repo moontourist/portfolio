@@ -68,7 +68,7 @@ const corners = ['top-3 left-3', 'top-3 right-3', 'hidden md:block bottom-3 left
 // The first section skips its top rule, since the navy strip already closes the poster.
 const section = (title: string, body: string) => `
   <section class="border-t border-base-300 py-14 first:border-t-0">
-    <h2 class="display mb-8 border-l-4 border-secondary pl-4 text-4xl sm:text-5xl">${title}</h2>
+    <h2 class="mb-8 border-l-4 border-secondary pl-4 text-4xl sm:text-5xl"><span class="display inline-block">${title}</span></h2>
     ${body}
   </section>`
 
@@ -106,12 +106,15 @@ app.innerHTML = `
         <pre id="clouds" class="drift w-max font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
       </div>
       <div class="intro-fade">${corners}</div>
-      <div class="intro-fade halo relative max-w-4xl px-6 pt-16 md:px-12">
-        <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
-        <p id="sky-note" class="readout mt-1"></p>
-        <p id="weather" class="readout mt-1"></p>
-        <h1 class="display mt-6 text-7xl text-(--poster-name) sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
+      <!-- Name first in the code so screen readers hear it before the readouts; the readouts still show above it -->
+      <div class="intro-fade halo relative flex max-w-4xl flex-col px-6 pt-16 md:px-12">
+        <h1 class="display mt-6 text-7xl text-(--poster-name) sm:text-9xl">${profile.name.replace(' ', ' <br>')}</h1>
         <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
+        <div class="order-first">
+          <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
+          <p id="sky-note" class="readout mt-1"></p>
+          <p id="weather" class="readout mt-1"></p>
+        </div>
       </div>
       <!-- The scene spans the poster's full width. Phones: below the text. From 768px: along the bottom, on the strip.
            Its height follows the screen width; narrow screens crop the sides, keeping the peak in view. -->
@@ -126,19 +129,19 @@ app.innerHTML = `
     </div>
   </header>
 
-  <main id="main" tabindex="-1" class="intro-fade max-w-4xl px-6 outline-none md:px-12">
+  <main id="main" tabindex="-1" class="intro-fade max-w-4xl px-6 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-secondary md:px-12">
 
     ${section('About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`)}
 
     ${section('Projects', `
-      <ul class="max-w-2xl">
+      <ul>
         ${projects.map(p => `
           <li class="border-b border-base-300 py-5 first:pt-0 last:border-b-0 last:pb-0">
             <div class="flex items-baseline justify-between gap-4">
               <h3 class="font-mono text-lg font-medium">${p.name}</h3>
               ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
             </div>
-            <p class="mt-1 opacity-80">${p.description}</p>
+            <p class="mt-1 max-w-2xl opacity-80">${p.description}</p>
             ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
             ${p.note ? `<p class="readout mt-2">${p.note}</p>` : ''}
           </li>`).join('')}
@@ -165,7 +168,7 @@ app.innerHTML = `
     ${section('Status', `
       <div class="notch border border-base-300 bg-base-200">
         <div class="border-b border-base-300 px-5 py-3">${prompt('status --all')}</div>
-        <div class="grid grid-cols-2 gap-px bg-base-300 sm:grid-cols-3">
+        <dl class="grid grid-cols-1 gap-px bg-base-300 sm:grid-cols-3">
           ${[
             { label: 'System', value: '<span class="status status-success"></span> Nominal' },
             ...status,
@@ -173,11 +176,11 @@ app.innerHTML = `
             { label: 'Commit', value: __COMMIT__ },
             { label: 'Local time', value: '<span id="clock"></span>' },
           ].map(s => `
-            <div class="flex flex-col items-center gap-2 bg-base-200 p-6 text-center">
-              <p class="readout">${s.label}</p>
-              <p class="flex items-center gap-2 font-mono">${s.value}</p>
+            <div class="flex items-center justify-between gap-4 bg-base-200 px-5 py-3 sm:flex-col sm:justify-start sm:gap-2 sm:p-6 sm:text-center">
+              <dt class="readout">${s.label}</dt>
+              <dd class="flex items-center gap-2 text-right font-mono sm:text-center">${s.value}</dd>
             </div>`).join('')}
-        </div>
+        </dl>
         <div class="border-t border-base-300 px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
       </div>`)}
   </main>
@@ -239,7 +242,7 @@ function showLight(p: (typeof peaks)[number]) {
   const moment = now()
   const { alt, az } = sunPosition(p.lat, p.lon, moment)
   document.querySelector('#sky-note')!.textContent =
-    `${lightName(alt, az)}, ${peakTime.format(moment)} local time. The real sky, looking ${p.look}`
+    `Real sky  ${lightName(alt, az)} ${peakTime.format(moment)} PT  looking ${p.look}`
   const { colors, stars } = palette(alt, cloudCover / 100)
   const root = document.documentElement.style
   for (const [key, value] of Object.entries(colors)) root.setProperty(`--poster-${key}`, value)
@@ -271,7 +274,7 @@ function showClouds(p: (typeof peaks)[number]) {
     cloudCover = clouds.total
     showLight(p)
     layer.textContent = cloudField(clouds, Math.ceil(box.height / CELL.height), Math.ceil(box.width / CELL.width))
-    note.innerHTML = `Cloud cover ${clouds.total}% right now, live from <a class="underline underline-offset-2" href="https://open-meteo.com/">Open-Meteo</a>`
+    note.innerHTML = `Cloud ${clouds.total}%  live via <a class="underline underline-offset-2" href="https://open-meteo.com/">Open-Meteo</a>`
   })
 }
 

@@ -211,7 +211,7 @@ The page's one loud moment: a live window onto a real Washington peak. Layers, b
 - the sun as a small pixel disc when it's in view;
 - live cloud cover from Open-Meteo as drifting ASCII cloud banks (`-` high, `~` mid, `=` low), tinted by the light; heavy cover also greys the sky;
 - the mountain scene, generated from real elevation data (`tools/skyline.py`, `src/peaks.ts`): a view from a lookout with hillshading and three depth tones, drawn as text grids;
-- thin crosshairs, the coordinates, the light readout ("Golden hour, 18:05 local time. The real sky, looking north"), the cloud readout, the display name and the introduction;
+- thin crosshairs, the coordinates, the light readout ("Real sky  Golden hour 18:05 PT  looking north"), the cloud readout ("Cloud 84%  live via Open-Meteo"), the display name and the introduction;
 - the strip with the peak's name, elevation, a "Next peak" button and a barcode generated from the name.
 
 Poster text carries a thin outline in the sky's own colour (`.halo`), invisible on open sky, so it stays legible when clouds pass behind. `?clouds=low,mid,high` previews any weather.
