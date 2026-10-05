@@ -4,6 +4,7 @@
 export type Clouds = {
   total: number; low: number; mid: number; high: number
   rain: number; snow: number; windKmh: number; windFrom: number
+  visibility: number // metres
 }
 
 const cache = new Map<string, Promise<Clouds | null>>()
@@ -13,7 +14,7 @@ export function cloudsAt(lat: number, lonWest: number): Promise<Clouds | null> {
   if (!cache.has(key)) {
     const url =
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${-lonWest}` +
-      '&current=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,rain,showers,snowfall,wind_speed_10m,wind_direction_10m'
+      '&current=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,rain,showers,snowfall,wind_speed_10m,wind_direction_10m,visibility'
     cache.set(
       key,
       fetch(url, { signal: AbortSignal.timeout(5000) })
@@ -27,6 +28,7 @@ export function cloudsAt(lat: number, lonWest: number): Promise<Clouds | null> {
           snow: c.snowfall ?? 0,
           windKmh: c.wind_speed_10m ?? 0,
           windFrom: c.wind_direction_10m ?? 270,
+          visibility: c.visibility ?? 50_000,
         }))
         .catch(() => null), // no weather is fine: the sky just stays clear
     )
@@ -53,7 +55,7 @@ function noise(x: number, y: number, period: number, seed: number): number {
 const BANDS = [
   { key: 'high', from: 0.04, to: 0.32, chars: '.-', stretch: 3, seed: 1 },
   { key: 'mid', from: 0.28, to: 0.6, chars: '.-~', stretch: 2.5, seed: 2 },
-  { key: 'low', from: 0.55, to: 0.88, chars: '.~=', stretch: 2, seed: 3 },
+  { key: 'low', from: 0.58, to: 0.95, chars: '.~=', stretch: 2, seed: 3 },
 ] as const
 
 /**

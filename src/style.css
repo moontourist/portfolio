@@ -270,3 +270,7 @@
 .aurora-g { color: #5dffa0; }
 .aurora-t { color: #6fe0d2; }
 .aurora-v { color: #b98cff; }
+
+/* Visibility haze (set from the live reading in main.ts): distant ranges fade into the sky on murky days */
+#peak-art [data-depth="far"] { opacity: var(--far-vis, 1); transition: opacity 1500ms ease; }
+#peak-art [data-depth="mid"] { opacity: var(--mid-vis, 1); transition: opacity 1500ms ease; }

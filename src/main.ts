@@ -123,6 +123,10 @@ app.innerHTML = `
       <!-- The scene spans the poster's full width. Phones: below the text. From 768px: along the bottom, on the strip.
            Its height follows the scene's own proportions (40 rows : 220 columns, about 18.2% of the width), so wide screens never crop the summit; phones crop the sides, keeping the peak in view. -->
       <div id="peak-art" aria-hidden="true" class="relative mt-8 h-[clamp(9rem,18.2vw,26rem)] w-full cursor-pointer text-(--poster-ground) md:absolute md:inset-x-0 md:bottom-0 md:mt-0"></div>
+      <!-- Low cloud drifting in front of the lower slopes; the summit always stays clear above it -->
+      <div aria-hidden="true" class="intro-fade pointer-events-none absolute inset-0 overflow-hidden">
+        <pre id="clouds-front" class="font-mono text-xs leading-5 text-(--poster-cloud) opacity-60"></pre>
+      </div>
     </div>
     <div class="draw flex items-center justify-between gap-6 bg-(--poster-strip) px-6 py-3 text-white md:px-12">
       <div class="intro-fade flex flex-wrap items-center gap-x-5 gap-y-1">
@@ -302,7 +306,6 @@ let drawEffects = (_t: number) => {} // set below with the animation loop; also 
 let sim: CloudSim | null = null
 {
   const poster = document.querySelector<HTMLElement>('header .draw')!
-  const layer = document.querySelector<HTMLElement>('#clouds')!
   let last = performance.now(), lastDraw = 0
   const frame = (now: number) => {
     requestAnimationFrame(frame)
@@ -313,7 +316,7 @@ let sim: CloudSim | null = null
     meteors?.step(dt)
     if (now - lastDraw > 33) {
       lastDraw = now
-      if (sim) layer.textContent = cloudText(sim.density, sim.rows, sim.cols)
+      if (sim) drawClouds(sim.density, sim.rows, sim.cols)
       drawEffects(now / 1000)
     }
   }
@@ -353,11 +356,33 @@ let sim: CloudSim | null = null
   })
 }
 
+// One cloud field, drawn in two layers: everything above the "deck line" sits behind the mountain, and low
+// cloud below it drifts in front of the lower slopes. The line is just under half-way down the mountain
+// scene, so the summit always stands clear and the poster stays the same size.
+function drawClouds(density: Float32Array, rows: number, cols: number) {
+  const sky = document.querySelector('#sky')!.getBoundingClientRect()
+  const scene = document.querySelector('#peak-art')!.getBoundingClientRect()
+  const deck = Math.round((scene.top + scene.height * 0.45 - sky.top) / CELL.height)
+  const lines = cloudText(density, rows, cols).split('\n')
+  document.querySelector('#clouds')!.textContent = lines.map((l, i) => (i < deck ? l : '')).join('\n')
+  document.querySelector('#clouds-front')!.textContent = lines.map((l, i) => (i >= deck ? l : '')).join('\n')
+}
+
+// Visibility haze: on murky days the distant ranges fade into the sky, and the peak's own range a little,
+// the way they do from a real lookout. Clear days (40 km or more) keep everything crisp.
+function applyVisibility(metres: number) {
+  const km = metres / 1000
+  const art = document.querySelector<HTMLElement>('#peak-art')!
+  art.style.setProperty('--far-vis', Math.min(1, Math.max(0.3, (km - 4) / 36)).toFixed(2))
+  art.style.setProperty('--mid-vis', Math.min(1, Math.max(0.55, 0.55 + ((km - 2) / 28) * 0.45)).toFixed(2))
+}
+
 // Live clouds over the peak. Ignores answers that arrive after the visitor has moved to another peak.
 function showClouds(p: (typeof peaks)[number]) {
   const layer = document.querySelector<HTMLElement>('#clouds')!
   const note = document.querySelector<HTMLElement>('#weather')!
   layer.textContent = ''
+  document.querySelector('#clouds-front')!.textContent = ''
   note.textContent = ''
   cloudCover = 0
   sim = null
@@ -366,7 +391,7 @@ function showClouds(p: (typeof peaks)[number]) {
   const cloudPreview = q.get('clouds')?.split(',').map(Number)
   const windPreview = q.get('wind')?.split(',').map(Number)
   const live = cloudsAt(p.lat, p.lon).then(real => {
-    const base = real ?? { total: 0, low: 0, mid: 0, high: 0, rain: 0, snow: 0, windKmh: 10, windFrom: 270 }
+    const base = real ?? { total: 0, low: 0, mid: 0, high: 0, rain: 0, snow: 0, windKmh: 10, windFrom: 270, visibility: 50_000 }
     if (!real && !q.size) return null
     return {
       ...base,
@@ -374,6 +399,7 @@ function showClouds(p: (typeof peaks)[number]) {
       ...(q.has('rain') && { rain: Number(q.get('rain')) }),
       ...(q.has('snow') && { snow: Number(q.get('snow')) }),
       ...(windPreview?.length === 2 && { windKmh: windPreview[0], windFrom: windPreview[1] }),
+      ...(q.has('vis') && { visibility: Number(q.get('vis')) * 1000 }),
     }
   })
   live.then(clouds => {
@@ -384,15 +410,17 @@ function showClouds(p: (typeof peaks)[number]) {
     const rows = Math.ceil(box.height / CELL.height), cols = Math.ceil(box.width / CELL.width)
     const density = cloudDensity(clouds, rows, cols)
     // Reduced motion: the live pattern, still. Otherwise the clouds go into the fluid sim below.
-    layer.textContent = cloudText(density, rows, cols) // drawn right away; the sim takes over from the next frame
+    drawClouds(density, rows, cols) // drawn right away; the sim takes over from the next frame
     const breeze = breezeAcross(clouds.windKmh, clouds.windFrom, p.look) // the real wind, across the view
     if (!reduceMotion) sim = new CloudSim(cols, rows, density, breeze)
     // Rain and snow are reported in the readout but not drawn: from a lookout miles away you'd never see the drops
     const kind = clouds.snow > 0.05 ? 'snow' : clouds.rain > 0.05 ? 'rain' : null
+    applyVisibility(clouds.visibility)
     const compass = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(clouds.windFrom / 45) % 8]
     note.innerHTML =
       `Cloud ${clouds.total}%  wind ${Math.round(clouds.windKmh)} km/h ${compass}` +
       (kind === 'snow' ? `  snow ${clouds.snow.toFixed(1)} cm` : kind === 'rain' ? `  rain ${clouds.rain.toFixed(1)} mm` : '') +
+      (clouds.visibility < 30_000 ? `  vis ${Math.round(clouds.visibility / 1000)} km` : '') +
       `  via <a class="underline underline-offset-2" href="https://open-meteo.com/">Open-Meteo</a>`
   })
 }
@@ -438,6 +466,7 @@ if (!reduceMotion) {
       document.querySelectorAll<HTMLElement>(sel).forEach(el => (el.style.translate = `0 ${(progress * px).toFixed(1)}px`))
     move('#sky, #aurora, #meteors', DRIFT.stars)
     move('#clouds', DRIFT.clouds)
+    move('#clouds-front', DRIFT.mid) // front cloud is near the peak, so it moves with the peak's range
     move('#peak-art [data-depth="far"]', DRIFT.far)
     move('#peak-art [data-depth="mid"]', DRIFT.mid)
   }
