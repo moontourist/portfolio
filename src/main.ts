@@ -265,7 +265,7 @@ function showLight(p: (typeof peaks)[number]) {
 // The light changes slowly; check it every minute
 setInterval(() => showLight(peaks[peakIndex]), 60_000)
 
-// The clouds as a fluid: a breeze carries them and the pointer stirs them into swirls (see fluid.ts).
+// The clouds as a fluid: a breeze carries them and they flow around the pointer (see fluid.ts).
 // The sim steps every frame while the poster is on screen and the tab is visible, and redraws at ~30fps.
 let sim: CloudSim | null = null
 {
@@ -285,18 +285,25 @@ let sim: CloudSim | null = null
   }
   if (!reduceMotion) requestAnimationFrame(frame)
 
-  // Pointer movement over the poster pushes the air. Touch drags work too, until the page starts scrolling.
-  let prev: { x: number; y: number } | null = null
+  // The pointer is a solid body in the air: clouds part around it and close up behind it, like a plane
+  // through cloud. Touch drags work too, until the page starts scrolling.
+  let prev: { x: number; y: number; t: number } | null = null
   poster.addEventListener('pointermove', e => {
     if (!sim) return
     const box = document.querySelector('#sky')!.getBoundingClientRect()
     const x = (e.clientX - box.left) / CELL.width
     const y = (e.clientY - box.top) / CELL.height
-    // Movement in cell widths, both directions, so vertical and horizontal pushes feel the same
-    if (prev) sim.stir(x, y, (e.clientX - prev.x) / CELL.width, (e.clientY - prev.y) / CELL.width)
-    prev = { x: e.clientX, y: e.clientY }
+    // Velocity in cell widths per second, both directions, so vertical and horizontal motion match
+    const dt = prev ? Math.max(0.008, (e.timeStamp - prev.t) / 1000) : 1
+    const vx = prev ? (e.clientX - prev.x) / CELL.width / dt : 0
+    const vy = prev ? (e.clientY - prev.y) / CELL.width / dt : 0
+    sim.setObstacle(x, y, vx, vy)
+    prev = { x: e.clientX, y: e.clientY, t: e.timeStamp }
   })
-  poster.addEventListener('pointerleave', () => (prev = null))
+  poster.addEventListener('pointerleave', () => {
+    prev = null
+    sim?.clearObstacle()
+  })
 }
 
 // Live clouds over the peak. Ignores answers that arrive after the visitor has moved to another peak.
