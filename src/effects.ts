@@ -18,28 +18,44 @@ export function breezeAcross(kmh: number, fromDeg: number, look: 'north' | 'sout
 
 type Drop = { x: number; y: number; speed: number; phase: number }
 
-/** Rain or snow falling across the whole poster, in front of the mountains. */
+/** Rain or snow, falling from the clouds and down in front of the mountains.
+ *  `cloudBase(col)` gives the lowest cloud row in a column right now (or null if it's clear), so every
+ *  drop is born under a real cloud, and moves with the clouds as they drift and swirl. */
 export class Precipitation {
   private drops: Drop[] = []
   private cols: number
   private rows: number
   private kind: 'rain' | 'snow'
   private breeze: number
-  constructor(cols: number, rows: number, kind: 'rain' | 'snow', intensity: number /* rain mm/h, snow cm/h */, breeze: number) {
+  private cloudBase: (col: number) => number | null
+  constructor(cols: number, rows: number, kind: 'rain' | 'snow', intensity: number /* rain mm/h, snow cm/h */,
+    breeze: number, cloudBase: (col: number) => number | null) {
     this.cols = cols
     this.rows = rows
     this.kind = kind
     this.breeze = breeze
+    this.cloudBase = cloudBase
     const share = kind === 'rain' ? Math.min(0.05, 0.006 + intensity * 0.008) : Math.min(0.04, 0.006 + intensity * 0.02)
     const count = Math.round(cols * rows * share)
-    for (let i = 0; i < count; i++) this.drops.push(this.spawn(Math.random() * rows))
+    // Start mid-fall: each drop somewhere between its cloud and the ground
+    for (let i = 0; i < count; i++) {
+      const d = this.spawn()
+      d.y += Math.random() * (rows - d.y)
+      this.drops.push(d)
+    }
   }
 
-  private spawn(y = -1): Drop {
+  // A new drop at the base of a cloud. Tries a few columns; if the sky is clear there, it falls from the top.
+  private spawn(): Drop {
     const rain = this.kind === 'rain'
+    let x = Math.random() * this.cols, base: number | null = null
+    for (let tries = 0; tries < 12 && base === null; tries++) {
+      x = Math.random() * this.cols
+      base = this.cloudBase(Math.floor(x))
+    }
     return {
-      x: Math.random() * this.cols,
-      y,
+      x,
+      y: base === null ? -1 : base + Math.random(),
       speed: rain ? 22 + Math.random() * 10 : 1.6 + Math.random() * 1.4, // rows per second
       phase: Math.random() * Math.PI * 2,
     }
@@ -169,15 +185,20 @@ export function auroraFrame(cols: number, rows: number, strength: number, t: num
     let html = '', run = '', runColor = ''
     for (let c = 0; c < cols; c++) {
       let ch = ' ', color = ''
-      const present = wobble(c * 0.6, t * 0.5, 1) // is there a curtain over this stretch of horizon?
+      // The curtains reshape slowly, about as fast as clouds change
+      const slow = t * 0.06
+      const present = wobble(c * 0.6, slow * 0.5, 1) // is there a curtain over this stretch of horizon?
       if (r >= top && r <= bottom && present > 0.5) {
-        const base = bottom - wobble(c, t, 2) * span * 0.35 // the curtain's wavy lower edge
-        const length = (0.25 + 0.75 * wobble(c * 1.7, t * 1.3, 3)) * span * 0.75 * strength // this ray's height
+        const base = bottom - wobble(c, slow, 2) * span * 0.35 // the curtain's wavy lower edge
+        const length = (0.25 + 0.75 * wobble(c * 1.7, slow * 1.3, 3)) * span * 0.75 * strength // this ray's height
         const up = (base - r) / length // 0 at the lower edge, 1 at the ray's tip
         if (up >= 0 && up <= 1) {
-          // Steady shimmer: each cell's sparkle changes a few times a second, not every frame
-          const sparkle = Math.sin(c * 12.9898 + r * 4.1 + Math.floor(t * 3) * 78.233) * 43758.5453
-          if (sparkle - Math.floor(sparkle) < (1 - up * 0.75) * (present - 0.35) * 1.6) {
+          // Each cell has a fixed place in the pattern, and twinkles in and out slowly like a star:
+          // its own 3-7 second rhythm, so the curtain shimmers gently instead of flickering
+          const hash = (n: number) => { const v = Math.sin(n) * 43758.5453; return v - Math.floor(v) }
+          const seed = hash(c * 12.9898 + r * 78.233)
+          const pulse = 0.8 + 0.2 * Math.sin((t * 2 * Math.PI) / (3 + hash(seed * 91.7) * 4) + seed * 6.283)
+          if (seed < (1 - up * 0.75) * (present - 0.35) * 1.6 * pulse) {
             ch = up < 0.15 ? '|' : up < 0.45 ? '!' : up < 0.75 ? ':' : '.'
             color = up < 0.35 ? 'g' : up < 0.65 ? 't' : 'v'
           }

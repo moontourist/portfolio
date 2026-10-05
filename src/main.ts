@@ -399,7 +399,13 @@ function showClouds(p: (typeof peaks)[number]) {
     if (!reduceMotion) sim = new CloudSim(cols, rows, density, breeze)
     // Rain or snow when it's really coming down (snow wins if both)
     const kind = clouds.snow > 0.05 ? 'snow' : clouds.rain > 0.05 ? 'rain' : null
-    if (kind) precipitation = new Precipitation(cols, rows, kind, kind === 'snow' ? clouds.snow : clouds.rain, breeze)
+    // It falls from the clouds: the lowest cloud cell in each column, as the clouds are right now
+    const cloudBase = (c: number) => {
+      const field = sim?.density ?? density
+      for (let r = rows - 1; r >= 0; r--) if (field[r * cols + c] > 0.03) return r
+      return null
+    }
+    if (kind) precipitation = new Precipitation(cols, rows, kind, kind === 'snow' ? clouds.snow : clouds.rain, breeze, cloudBase)
     drawEffects(performance.now() / 1000) // drawn right away; still, for reduced motion
     const compass = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(clouds.windFrom / 45) % 8]
     note.innerHTML =
