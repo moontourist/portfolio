@@ -1,10 +1,10 @@
-// A small fluid simulation for the clouds, so the cursor moves through the sky like a plane through cloud.
+// A small fluid simulation for the clouds, so they swirl around the cursor as it moves through the sky.
 //
 // Stable Fluids (Jos Stam, 1999) on the same coarse grid as the ASCII sky. The breeze is part of the airflow,
 // and the pointer is a solid obstacle in it: air can't pass through the pointer, so the incompressibility
-// step diverts the flow around it. Cloud is pushed out of its path, wraps around its edges and closes up in
-// a wake behind it. Clouds relax back toward the live weather pattern over a few seconds, except right
-// around the pointer, so the gap holds while the pointer is there and heals after it leaves.
+// step diverts the flow around it, and the clouds riding on that air bend and curl around the cursor.
+// (It doesn't clear a hole: the clouds stay whole, they just get pushed around.) Clouds relax back toward
+// the live weather pattern over a few seconds.
 //
 // Cells are 7.2 x 20 px (one character), so vertical motion is scaled by that aspect to keep shapes round.
 
@@ -169,8 +169,7 @@ export class CloudSim {
       }
     }
 
-    // 4. Carry the clouds on the air. The pointer pushes cloud out of its own space; away from it,
-    //    the clouds ease back toward the live pattern, which drifts with the breeze.
+    // 4. Carry the clouds on the air, then ease them back toward the live pattern, which drifts with the breeze.
     //    Transport is MacCormack: a plain step back along the flow, a step forward again to measure the
     //    blur that introduced, and a correction for it, clamped to the cells it came from. Plain
     //    resampling smears thin cloud across clear sky; this keeps cloud edges where they are.
@@ -201,15 +200,9 @@ export class CloudSim {
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         const k = y * cols + x
-        if (solid[k]) {
-          this.densityNext[k] = 0
-          continue
-        }
         const carried = corrected[k]
         const live = this.sample(this.target, x - this.windOffset, y)
-        // No healing right around the pointer, so its gap holds while it's there
-        const near = Math.min(1, Math.max(0, (this.pointerDistance(x, y) - OBSTACLE_RADIUS) / (OBSTACLE_RADIUS * 1.5)))
-        this.densityNext[k] = carried + (live - carried) * relax * near
+        this.densityNext[k] = carried + (live - carried) * relax
       }
     }
     ;[this.density, this.densityNext] = [this.densityNext, this.density]
