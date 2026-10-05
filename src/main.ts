@@ -7,8 +7,10 @@ import { peaks } from './peaks'
 declare const __COMMIT__: string
 declare const __BUILT__: string
 
-// A different Washington peak on every visit
-const peak = peaks[Math.floor(Math.random() * peaks.length)]
+// A different Washington peak on every visit; "Next peak" moves through the rest
+let peakIndex = Math.floor(Math.random() * peaks.length)
+const peak = peaks[peakIndex]
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // A faint ASCII starfield across the poster, wide enough for any screen
 const starfield = Array.from({ length: 40 }, () =>
@@ -56,20 +58,24 @@ app.innerHTML = `
   </nav>
 
   <header>
-    <div class="relative overflow-hidden bg-secondary text-secondary-content md:pb-44">
-      <pre aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 opacity-40">${starfield}</pre>
+    <!-- Poster colours come from the --poster-* variables in style.css -->
+    <div class="draw relative overflow-hidden bg-(--poster-sky) text-(--poster-ink) md:pb-44">
+      <pre aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star) opacity-40">${starfield}</pre>
       ${corners}
       <div class="relative max-w-4xl px-6 pt-16 md:px-12">
-        <p class="readout">${peak.lat.toFixed(4)}° N  ${peak.lon.toFixed(4)}° W</p>
-        <h1 class="display mt-6 text-7xl sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
+        <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
+        <h1 class="display mt-6 text-7xl text-(--poster-name) sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
         <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
       </div>
       <!-- Phones: the peak follows the text, edge to edge. From 768px it stands at the poster's bottom right, on the strip. -->
-      <div aria-hidden="true" class="relative mt-8 w-full text-accent md:absolute md:right-0 md:bottom-0 md:mt-0 md:w-[min(44rem,55%)]">${landscape(peak.grid)}</div>
+      <div id="peak-art" aria-hidden="true" class="relative mt-8 w-full cursor-pointer text-(--poster-ground) md:absolute md:right-0 md:bottom-0 md:mt-0 md:w-[min(44rem,55%)]"></div>
     </div>
-    <div class="flex items-center justify-between gap-6 bg-accent px-6 py-3 text-accent-content md:px-12">
-      <p class="readout opacity-100">${peak.name}  ${peak.metres} m / ${peak.feet} ft</p>
-      <span aria-hidden="true" class="hidden h-5 w-40 shrink-0 sm:block">${barcode(peak.name)}</span>
+    <div class="draw flex items-center justify-between gap-6 bg-(--poster-ground) px-6 py-3 text-white md:px-12">
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
+        <p id="peak-name" aria-live="polite" class="readout opacity-100"></p>
+        <button id="next-peak" type="button" class="readout inline-flex items-center underline underline-offset-4 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current pointer-coarse:min-h-11">Next peak</button>
+      </div>
+      <span id="barcode" aria-hidden="true" class="barcode hidden h-5 w-40 shrink-0 sm:block"></span>
     </div>
   </header>
 
@@ -136,6 +142,52 @@ app.innerHTML = `
     </div>
   </footer>
 `
+
+// Coordinates decode into place, Marathon-style: digits flicker, then settle left to right
+let scrambleRun = 0
+let settledRun = 0
+function scramble(el: HTMLElement, text: string) {
+  const run = ++scrambleRun
+  if (reduceMotion) return void (el.textContent = text)
+  const start = performance.now()
+  const frame = () => {
+    if (run !== scrambleRun || run === settledRun) return // a newer peak took over, or the safety net already landed it
+    const progress = Math.min(1, (performance.now() - start) / 700)
+    const settled = Math.floor(progress * text.length)
+    el.textContent = [...text]
+      .map((c, i) => (i < settled || !/\d/.test(c) ? c : String(Math.floor(Math.random() * 10))))
+      .join('')
+    if (progress < 1) requestAnimationFrame(frame)
+  }
+  requestAnimationFrame(frame)
+  // Safety net: if animation frames are paused (background tab, screenshot tools), land on the real value anyway
+  setTimeout(() => {
+    if (run !== scrambleRun) return
+    settledRun = run
+    el.textContent = text
+  }, 900)
+}
+
+// Put a peak into the poster. New elements replay the draw-in animation from style.css.
+function showPeak(p: (typeof peaks)[number]) {
+  const coords = `${p.lat.toFixed(4)}° N  ${p.lon.toFixed(4)}° W`
+  scramble(document.querySelector<HTMLElement>('#coords')!, coords)
+  document.querySelector('#coords-sr')!.textContent = coords
+  document.querySelector('#peak-art')!.innerHTML = landscape(p.grid)
+  document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
+  document.querySelector('#barcode')!.innerHTML = barcode(p.name)
+  // Same safety net for the draw-in: once it should be over, jump any unfinished animation to its end
+  setTimeout(() => document.querySelectorAll('.draw').forEach(el => el.getAnimations({ subtree: true }).forEach(a => a.finish())), 1500)
+}
+
+function nextPeak() {
+  peakIndex = (peakIndex + 1) % peaks.length
+  showPeak(peaks[peakIndex])
+}
+
+showPeak(peak)
+document.querySelector('#next-peak')!.addEventListener('click', nextPeak)
+document.querySelector('#peak-art')!.addEventListener('click', nextPeak)
 
 // Live Pacific time for the status panel
 const clock = document.querySelector<HTMLElement>('#clock')!

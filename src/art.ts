@@ -39,13 +39,17 @@ export function logo(): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 160">${stripes}<g fill="#fff" shape-rendering="crispEdges">${pixels(MOON, '#', 8, 70, 32)}</g></svg>`
 }
 
-// A mountain grid: rock in the text colour, snow in white
+// A mountain grid: rock in the text colour, snow in white.
+// Each row is its own group with --r = rows from the bottom, so CSS can draw it in from the ground up.
 export function landscape(grid: string[]): string {
   const width = Math.max(...grid.map(r => r.length))
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${grid.length}" shape-rendering="crispEdges">
-    <g fill="currentColor">${pixels(grid, '#', 1)}</g>
-    <g fill="#fff">${pixels(grid, '*', 1)}</g>
-  </svg>`
+  const rows = grid
+    .map((row, y) => `<g class="row" style="--r:${grid.length - 1 - y}">
+      <g fill="currentColor">${pixels([row], '#', 1, 0, y)}</g>
+      <g fill="#fff">${pixels([row], '*', 1, 0, y)}</g>
+    </g>`)
+    .join('')
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${grid.length}" shape-rendering="crispEdges">${rows}</svg>`
 }
 
 // A barcode made from the bits of a string: a 1 is a wide bar, a 0 a thin one

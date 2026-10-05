@@ -24,6 +24,8 @@
       try { theme = localStorage.getItem('theme') } catch {}
       theme ??= matchMedia('(prefers-color-scheme: dark)').matches ? 'sverige-dark' : 'sverige'
       document.documentElement.dataset.theme = theme
+      // Poster colourway for comparison: add ?poster=yellow to the address to see the softer yellow
+      document.documentElement.dataset.poster = new URLSearchParams(location.search).get('poster') ?? 'night'
     </script>
   </head>
   <body>

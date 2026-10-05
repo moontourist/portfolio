@@ -131,3 +131,40 @@
   transform-origin: left top;
   transform: translate(0.7px, 0.7px) rotate(45deg);
 }
+
+/* Poster colours. Night is the default; ?poster=yellow shows the softer-yellow version for comparison.
+   The poster keeps the same colours in light and dark mode. */
+:root {
+  --poster-sky: #0c3558;    /* night sky, a lifted Fjällnatt */
+  --poster-ground: #061626; /* mountain rock and the strip it stands on */
+  --poster-ink: #e8e4da;    /* Månljus: coordinates, intro, crosshairs */
+  --poster-name: #fecc02;   /* Flaggul: the name is the flag's yellow on night blue */
+  --poster-star: #ffffff;
+}
+:root[data-poster="yellow"] {
+  --poster-sky: #f2c94c;    /* a warmer, slightly muted print yellow */
+  --poster-ground: #163a5c; /* navy lifted a touch */
+  --poster-ink: #12161c;
+  --poster-name: #12161c;
+  --poster-star: #12161c;
+}
+
+/* The poster's one authored moment: the mountain draws in from the ground up, row by row,
+   then the barcode prints. It replays whenever "Next peak" swaps the mountain. */
+@keyframes pixel-in {
+  from { opacity: 0; }
+}
+@keyframes print {
+  from { clip-path: inset(0 100% 0 0); }
+}
+.draw .row {
+  animation: pixel-in 90ms ease-out backwards;
+  animation-delay: calc(200ms + var(--r) * 55ms);
+}
+.draw .barcode svg {
+  animation: print 450ms cubic-bezier(0.16, 1, 0.3, 1) 750ms backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .draw .row,
+  .draw .barcode svg { animation: none; }
+}
