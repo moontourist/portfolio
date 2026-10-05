@@ -50,7 +50,7 @@ A creative technologist: one person across several crafts. By day he runs infras
 
 - Projects: `tascii` (public, github.com/moontourist/tascii) and `cardatro` (private terminal card game in C#).
 - Contact: matthewgaryerickson@gmail.com, linkedin.com/in/matthewg-erickson.
-- Absences, do not fabricate: no testimonials, metrics, employers beyond Halo, or photos yet. Skill descriptions in `src/data.ts` are still Claude's drafts. `sharpmas` was built by a friend (Scotty / scadoshi) and must never be presented as Matt's work.
+- Absences, do not fabricate: no testimonials, metrics, employers beyond Halo, or photos yet. The craft lines in `src/data.ts` were written by Claude from Matt's own words and facts; Matt should reword them as he likes. `sharpmas` was built by a friend (Scotty / scadoshi) and must never be presented as Matt's work.
 
 ## Product Principles
 
