@@ -23,3 +23,8 @@ https://github.com/tilezen/joerd/blob/master/docs/attribution.md
 
 Live cloud cover: weather data by Open-Meteo.com (https://open-meteo.com/), licensed under CC BY 4.0
 (https://creativecommons.org/licenses/by/4.0/).
+
+----
+
+Northern-lights visibility uses the planetary K-index from NOAA's Space Weather Prediction Center
+(https://www.swpc.noaa.gov/), a US government work in the public domain.

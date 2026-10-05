@@ -1,6 +1,10 @@
 // Live cloud cover over a peak, from Open-Meteo (free, no key; weather data by Open-Meteo.com, CC BY 4.0).
 
-export type Clouds = { total: number; low: number; mid: number; high: number } // percent
+// Cloud cover in percent; rain in mm over the last hour; snowfall in cm; wind in km/h, from a compass bearing
+export type Clouds = {
+  total: number; low: number; mid: number; high: number
+  rain: number; snow: number; windKmh: number; windFrom: number
+}
 
 const cache = new Map<string, Promise<Clouds | null>>()
 
@@ -9,7 +13,7 @@ export function cloudsAt(lat: number, lonWest: number): Promise<Clouds | null> {
   if (!cache.has(key)) {
     const url =
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${-lonWest}` +
-      '&current=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high'
+      '&current=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,rain,showers,snowfall,wind_speed_10m,wind_direction_10m'
     cache.set(
       key,
       fetch(url, { signal: AbortSignal.timeout(5000) })
@@ -19,6 +23,10 @@ export function cloudsAt(lat: number, lonWest: number): Promise<Clouds | null> {
           low: c.cloud_cover_low,
           mid: c.cloud_cover_mid,
           high: c.cloud_cover_high,
+          rain: (c.rain ?? 0) + (c.showers ?? 0),
+          snow: c.snowfall ?? 0,
+          windKmh: c.wind_speed_10m ?? 0,
+          windFrom: c.wind_direction_10m ?? 270,
         }))
         .catch(() => null), // no weather is fine: the sky just stays clear
     )

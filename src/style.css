@@ -265,3 +265,8 @@
   .craft:hover .craft-icon, .craft:focus-within .craft-icon { translate: none; }
   .craft:hover .accent, .craft:focus-within .accent { animation: none; }
 }
+
+/* Northern lights: green at the base of the curtains, teal through the middle, violet at the tops */
+.aurora-g { color: #5dffa0; }
+.aurora-t { color: #6fe0d2; }
+.aurora-v { color: #b98cff; }

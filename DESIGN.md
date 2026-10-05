@@ -207,12 +207,14 @@ The page's one loud moment: a live window onto a real Washington peak. Layers, b
 - the sky gradient, coloured by the sun's real altitude at the peak (`src/daylight.ts`), checked every minute;
 - the real stars behind the peak at this moment (Hipparcos catalogue, `src/sky.ts`), as `*` `+` `.` by brightness, fading out in daylight; about 40% twinkle;
 - the sun as a small pixel disc when it's in view;
-- live cloud cover from Open-Meteo as ASCII cloud banks (`-` high, `~` mid, `=` low), tinted by the light; heavy cover also greys the sky. The clouds are a small fluid simulation (`src/fluid.ts`, Stable Fluids on the character grid): the breeze is part of the airflow and the pointer is a solid body in it, so clouds bend and curl around the cursor as it passes, without clearing a hole (Matt preferred no gap: more whimsical); they relax back to the live pattern within a few seconds. Still for reduced motion; paused off-screen;
+- at night, shooting stars (rare; more often within two days of a real meteor-shower peak, which the readout names) and, when NOAA's planetary Kp index says they'd be visible from the peak's latitude and the view faces north, ASCII northern-lights curtains (green base, teal, violet tips), all behind the clouds;
+- in front of the mountains, ASCII rain (`|`, slanting `/` or `\` with the wind) or snow (`*` `.`) when it's really precipitating at the peak;
+- live cloud cover from Open-Meteo as ASCII cloud banks (`-` high, `~` mid, `=` low), tinted by the light; heavy cover also greys the sky. The clouds are a small fluid simulation (`src/fluid.ts`, Stable Fluids on the character grid): the breeze is the real wind across the view (`src/effects.ts`) and is part of the airflow and the pointer is a solid body in it, so clouds bend and curl around the cursor as it passes, without clearing a hole (Matt preferred no gap: more whimsical); they relax back to the live pattern within a few seconds. Still for reduced motion; paused off-screen;
 - the mountain scene, generated from real elevation data (`tools/skyline.py`, `src/peaks.ts`): a view from a lookout with hillshading and three depth tones, drawn as text grids;
 - thin crosshairs, the coordinates, the light readout ("Real sky  Golden hour 18:05 PT  looking north"), the cloud readout ("Cloud 84%  live via Open-Meteo"), the display name and the introduction;
 - the strip with the peak's name, elevation, a "Next peak" button and a peak counter ("Peak 3 / 8") so visitors know there are more.
 
-Poster text carries a thin outline in the sky's own colour (`.halo`), invisible on open sky, so it stays legible when clouds pass behind. `?clouds=low,mid,high` previews any weather.
+Poster text carries a thin outline in the sky's own colour (`.halo`), invisible on open sky, so it stays legible when clouds pass behind. Previews: `?clouds=low,mid,high`, `?rain=mm`, `?snow=cm`, `?wind=kmh,fromDegrees`, `?kp=7` (aurora night), `?meteors=1` (shower night).
 
 Scrolling adds depth parallax: the scene is drawn as three layers (far ranges; the peak's own range with its snow; near foothills), each back layer filled solid beneath, and as the poster scrolls away the stars, clouds and far ranges drift slowest, the peak's range a little faster, the foothills with the page (`DRIFT` in `src/main.ts`).
 

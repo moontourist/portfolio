@@ -6,6 +6,7 @@ import { skyAbove, project } from './sky'
 import { sunPosition, palette, lightName } from './daylight'
 import { cloudsAt, cloudDensity, cloudText } from './weather'
 import { CloudSim } from './fluid'
+import { breezeAcross, Precipitation, Meteors, activeShower, auroraStrength, auroraFrame, latestKp } from './effects'
 
 // Filled in at build time by vite.config.ts
 declare const __COMMIT__: string
@@ -102,6 +103,8 @@ app.innerHTML = `
     <!-- Poster colours come from the --poster-* variables in style.css -->
     <div class="draw poster-sky relative overflow-hidden text-(--poster-ink) md:pb-[clamp(16rem,18.2vw,26rem)]">
       <pre id="sky" aria-hidden="true" class="sky-stars pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star)"></pre>
+      <pre id="aurora" aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 opacity-55"></pre>
+      <pre id="meteors" aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star)"></pre>
       <div id="sun" aria-hidden="true" class="pointer-events-none absolute hidden size-7 -translate-1/2">${sun}</div>
       <div aria-hidden="true" class="intro-fade pointer-events-none absolute inset-0 overflow-hidden">
         <pre id="clouds" class="font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
@@ -120,6 +123,7 @@ app.innerHTML = `
       <!-- The scene spans the poster's full width. Phones: below the text. From 768px: along the bottom, on the strip.
            Its height follows the scene's own proportions (40 rows : 220 columns, about 18.2% of the width), so wide screens never crop the summit; phones crop the sides, keeping the peak in view. -->
       <div id="peak-art" aria-hidden="true" class="relative mt-8 h-[clamp(9rem,18.2vw,26rem)] w-full cursor-pointer text-(--poster-ground) md:absolute md:inset-x-0 md:bottom-0 md:mt-0"></div>
+      <pre id="precip" aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-cloud) opacity-50"></pre>
     </div>
     <div class="draw flex items-center justify-between gap-6 bg-(--poster-strip) px-6 py-3 text-white md:px-12">
       <div class="intro-fade flex flex-wrap items-center gap-x-5 gap-y-1">
@@ -250,9 +254,14 @@ const peakTime = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angel
 function showLight(p: (typeof peaks)[number]) {
   const moment = now()
   const { alt, az } = sunPosition(p.lat, p.lon, moment)
-  document.querySelector('#sky-note')!.textContent =
-    `Real sky  ${lightName(alt, az)} ${peakTime.format(moment)} PT  looking ${p.look}`
   const { colors, stars } = palette(alt, cloudCover / 100)
+  dark = stars > 0.5
+  shower = dark ? activeShower(moment) : null
+  aurora = dark && p.look === 'north' ? auroraStrength(kp, p.lat) : 0 // the aurora is in the northern sky
+  document.querySelector('#sky-note')!.textContent =
+    `Real sky  ${lightName(alt, az)} ${peakTime.format(moment)} PT  looking ${p.look}` +
+    (shower ? `  ${shower.name} tonight` : '') + (aurora ? `  aurora  Kp ${kp.toFixed(1)}` : '')
+  setupNightEffects()
   const root = document.documentElement.style
   for (const [key, value] of Object.entries(colors)) root.setProperty(`--poster-${key}`, value)
   root.setProperty('--stars', stars.toFixed(2))
@@ -265,6 +274,31 @@ function showLight(p: (typeof peaks)[number]) {
 // The light changes slowly; check it every minute
 setInterval(() => showLight(peaks[peakIndex]), 60_000)
 
+// Night effects: shooting stars (more on real meteor-shower nights) and the northern lights when NOAA's
+// geomagnetic index says they're visible from here. ?kp=7 previews an aurora night; ?meteors=1 a shower.
+const params = new URLSearchParams(location.search)
+let dark = false
+let shower: ReturnType<typeof activeShower> = null
+let kp = Number(params.get('kp') ?? 0)
+let aurora = 0
+let meteors: Meteors | null = null
+function setupNightEffects() {
+  const sky = document.querySelector('#sky')!.getBoundingClientRect()
+  const rows = Math.ceil(sky.height / CELL.height), cols = Math.ceil(sky.width / CELL.width)
+  const perMinute = !dark ? 0 : params.has('meteors') ? 12 : shower ? 1.5 + shower.zhr / 15 : 1.2
+  meteors = perMinute && !reduceMotion ? new Meteors(cols, rows, perMinute) : null
+  if (!meteors) document.querySelector('#meteors')!.textContent = ''
+  if (!aurora) document.querySelector('#aurora')!.textContent = ''
+  drawEffects(performance.now() / 1000) // a first frame now; for reduced motion it's the only one
+}
+if (!params.has('kp')) latestKp().then(value => {
+  if (value == null) return
+  kp = value
+  showLight(peaks[peakIndex])
+})
+let precipitation: Precipitation | null = null
+let drawEffects = (_t: number) => {} // set below with the animation loop; also used to draw a first frame
+
 // The clouds as a fluid: a breeze carries them and they flow around the pointer (see fluid.ts).
 // The sim steps every frame while the poster is on screen and the tab is visible, and redraws at ~30fps.
 let sim: CloudSim | null = null
@@ -276,14 +310,35 @@ let sim: CloudSim | null = null
     requestAnimationFrame(frame)
     const dt = Math.min(0.05, (now - last) / 1000)
     last = now
-    if (!sim || document.hidden || poster.classList.contains('paused')) return
-    sim.step(dt)
+    if (document.hidden || poster.classList.contains('paused')) return
+    sim?.step(dt)
+    precipitation?.step(dt, now / 1000)
+    meteors?.step(dt)
     if (now - lastDraw > 33) {
       lastDraw = now
-      layer.textContent = cloudText(sim.density, sim.rows, sim.cols)
+      if (sim) layer.textContent = cloudText(sim.density, sim.rows, sim.cols)
+      drawEffects(now / 1000)
     }
   }
   if (!reduceMotion) requestAnimationFrame(frame)
+
+  // Rain/snow and meteors share one grid size with the sky; the aurora draws its own coloured rows
+  const blank = (rows: number, cols: number) => Array.from({ length: rows }, () => Array<string>(cols).fill(' '))
+  drawEffects = (t: number) => {
+    const sky = document.querySelector('#sky')!.getBoundingClientRect()
+    const rows = Math.ceil(sky.height / CELL.height), cols = Math.ceil(sky.width / CELL.width)
+    if (precipitation) {
+      const grid = blank(rows, cols)
+      precipitation.draw(grid)
+      document.querySelector('#precip')!.textContent = grid.map(r => r.join('')).join('\n')
+    }
+    if (meteors) {
+      const grid = blank(rows, cols)
+      meteors.draw(grid)
+      document.querySelector('#meteors')!.textContent = grid.map(r => r.join('')).join('\n')
+    }
+    if (aurora) document.querySelector('#aurora')!.innerHTML = auroraFrame(cols, rows, aurora, t)
+  }
 
   // The pointer is a solid body in the air: clouds part around it and close up behind it, like a plane
   // through cloud. Touch drags work too, until the page starts scrolling.
@@ -314,11 +369,23 @@ function showClouds(p: (typeof peaks)[number]) {
   note.textContent = ''
   cloudCover = 0
   sim = null
-  // ?clouds=low,mid,high (percentages) previews any weather instead of the live reading
-  const preview = new URLSearchParams(location.search).get('clouds')?.split(',').map(Number)
-  const live = preview?.length === 3
-    ? Promise.resolve({ low: preview[0], mid: preview[1], high: preview[2], total: Math.max(...preview) })
-    : cloudsAt(p.lat, p.lon)
+  // Previews: ?clouds=low,mid,high (percent), ?rain=2 (mm), ?snow=1 (cm), ?wind=40,270 (km/h, from degrees)
+  const q = new URLSearchParams(location.search)
+  const cloudPreview = q.get('clouds')?.split(',').map(Number)
+  const windPreview = q.get('wind')?.split(',').map(Number)
+  const live = cloudsAt(p.lat, p.lon).then(real => {
+    const base = real ?? { total: 0, low: 0, mid: 0, high: 0, rain: 0, snow: 0, windKmh: 10, windFrom: 270 }
+    if (!real && !q.size) return null
+    return {
+      ...base,
+      ...(cloudPreview?.length === 3 && { low: cloudPreview[0], mid: cloudPreview[1], high: cloudPreview[2], total: Math.max(...cloudPreview) }),
+      ...(q.has('rain') && { rain: Number(q.get('rain')) }),
+      ...(q.has('snow') && { snow: Number(q.get('snow')) }),
+      ...(windPreview?.length === 2 && { windKmh: windPreview[0], windFrom: windPreview[1] }),
+    }
+  })
+  precipitation = null
+  document.querySelector('#precip')!.textContent = ''
   live.then(clouds => {
     if (!clouds || peaks[peakIndex] !== p) return
     const box = document.querySelector('#sky')!.getBoundingClientRect()
@@ -328,8 +395,17 @@ function showClouds(p: (typeof peaks)[number]) {
     const density = cloudDensity(clouds, rows, cols)
     // Reduced motion: the live pattern, still. Otherwise the clouds go into the fluid sim below.
     layer.textContent = cloudText(density, rows, cols) // drawn right away; the sim takes over from the next frame
-    if (!reduceMotion) sim = new CloudSim(cols, rows, density)
-    note.innerHTML = `Cloud ${clouds.total}%  live via <a class="underline underline-offset-2" href="https://open-meteo.com/">Open-Meteo</a>`
+    const breeze = breezeAcross(clouds.windKmh, clouds.windFrom, p.look) // the real wind, across the view
+    if (!reduceMotion) sim = new CloudSim(cols, rows, density, breeze)
+    // Rain or snow when it's really coming down (snow wins if both)
+    const kind = clouds.snow > 0.05 ? 'snow' : clouds.rain > 0.05 ? 'rain' : null
+    if (kind) precipitation = new Precipitation(cols, rows, kind, kind === 'snow' ? clouds.snow : clouds.rain, breeze)
+    drawEffects(performance.now() / 1000) // drawn right away; still, for reduced motion
+    const compass = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(clouds.windFrom / 45) % 8]
+    note.innerHTML =
+      `Cloud ${clouds.total}%  wind ${Math.round(clouds.windKmh)} km/h ${compass}` +
+      (kind === 'snow' ? `  snow ${clouds.snow.toFixed(1)} cm` : kind === 'rain' ? `  rain ${clouds.rain.toFixed(1)} mm` : '') +
+      `  via <a class="underline underline-offset-2" href="https://open-meteo.com/">Open-Meteo</a>`
   })
 }
 
@@ -372,7 +448,7 @@ if (!reduceMotion) {
     const progress = Math.min(1, Math.max(0, -posterEl.getBoundingClientRect().top / posterEl.offsetHeight))
     const move = (sel: string, px: number) =>
       document.querySelectorAll<HTMLElement>(sel).forEach(el => (el.style.translate = `0 ${(progress * px).toFixed(1)}px`))
-    move('#sky', DRIFT.stars)
+    move('#sky, #aurora, #meteors', DRIFT.stars)
     move('#clouds', DRIFT.clouds)
     move('#peak-art [data-depth="far"]', DRIFT.far)
     move('#peak-art [data-depth="mid"]', DRIFT.mid)

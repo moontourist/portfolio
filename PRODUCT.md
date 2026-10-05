@@ -35,7 +35,7 @@ A creative technologist: one person across several crafts. By day he runs infras
 
 - Single page: profile, about, projects, crafts (infrastructure, code, audio, photography, games), a status panel, and contact links (email, LinkedIn, GitHub, Instagram). The email address is shown in the footer as text.
 - Link previews use `public/og.png`, a screenshot of the poster. A plain fallback shows when JavaScript is off.
-- The header shows a randomly chosen Washington peak on each visit, drawn from real elevation data, under its real current sky: light from the sun's position, the real stars, and live cloud cover from Open-Meteo. `?peak=` picks a mountain, `?at=` previews any moment.
+- The header shows a randomly chosen Washington peak on each visit, drawn from real elevation data, under its real current sky: light from the sun's position, the real stars, live cloud cover, wind, rain and snow from Open-Meteo, shooting stars on real meteor-shower nights, and the northern lights when NOAA's geomagnetic index says they're visible. `?peak=` picks a mountain, `?at=` previews any moment.
 - Light and dark themes with a toggle.
 - Undecided: whether photography gets its own section (no photos are on the site yet).
 
