@@ -6,7 +6,7 @@ import { skyAbove, project } from './sky'
 import { sunPosition, palette, lightName } from './daylight'
 import { cloudsAt, cloudDensity, cloudText } from './weather'
 import { CloudSim } from './fluid'
-import { breezeAcross, Precipitation, Meteors, activeShower, auroraStrength, auroraFrame, latestKp } from './effects'
+import { breezeAcross, Meteors, activeShower, auroraStrength, auroraFrame, latestKp } from './effects'
 
 // Filled in at build time by vite.config.ts
 declare const __COMMIT__: string
@@ -123,7 +123,6 @@ app.innerHTML = `
       <!-- The scene spans the poster's full width. Phones: below the text. From 768px: along the bottom, on the strip.
            Its height follows the scene's own proportions (40 rows : 220 columns, about 18.2% of the width), so wide screens never crop the summit; phones crop the sides, keeping the peak in view. -->
       <div id="peak-art" aria-hidden="true" class="relative mt-8 h-[clamp(9rem,18.2vw,26rem)] w-full cursor-pointer text-(--poster-ground) md:absolute md:inset-x-0 md:bottom-0 md:mt-0"></div>
-      <pre id="precip" aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-cloud) opacity-50"></pre>
     </div>
     <div class="draw flex items-center justify-between gap-6 bg-(--poster-strip) px-6 py-3 text-white md:px-12">
       <div class="intro-fade flex flex-wrap items-center gap-x-5 gap-y-1">
@@ -296,7 +295,6 @@ if (!params.has('kp')) latestKp().then(value => {
   kp = value
   showLight(peaks[peakIndex])
 })
-let precipitation: Precipitation | null = null
 let drawEffects = (_t: number) => {} // set below with the animation loop; also used to draw a first frame
 
 // The clouds as a fluid: a breeze carries them and they flow around the pointer (see fluid.ts).
@@ -312,7 +310,6 @@ let sim: CloudSim | null = null
     last = now
     if (document.hidden || poster.classList.contains('paused')) return
     sim?.step(dt)
-    precipitation?.step(dt, now / 1000)
     meteors?.step(dt)
     if (now - lastDraw > 33) {
       lastDraw = now
@@ -322,16 +319,11 @@ let sim: CloudSim | null = null
   }
   if (!reduceMotion) requestAnimationFrame(frame)
 
-  // Rain/snow and meteors share one grid size with the sky; the aurora draws its own coloured rows
+  // Meteors share one grid size with the sky; the aurora draws its own coloured rows
   const blank = (rows: number, cols: number) => Array.from({ length: rows }, () => Array<string>(cols).fill(' '))
   drawEffects = (t: number) => {
     const sky = document.querySelector('#sky')!.getBoundingClientRect()
     const rows = Math.ceil(sky.height / CELL.height), cols = Math.ceil(sky.width / CELL.width)
-    if (precipitation) {
-      const grid = blank(rows, cols)
-      precipitation.draw(grid)
-      document.querySelector('#precip')!.textContent = grid.map(r => r.join('')).join('\n')
-    }
     if (meteors) {
       const grid = blank(rows, cols)
       meteors.draw(grid)
@@ -384,8 +376,6 @@ function showClouds(p: (typeof peaks)[number]) {
       ...(windPreview?.length === 2 && { windKmh: windPreview[0], windFrom: windPreview[1] }),
     }
   })
-  precipitation = null
-  document.querySelector('#precip')!.textContent = ''
   live.then(clouds => {
     if (!clouds || peaks[peakIndex] !== p) return
     const box = document.querySelector('#sky')!.getBoundingClientRect()
@@ -397,16 +387,8 @@ function showClouds(p: (typeof peaks)[number]) {
     layer.textContent = cloudText(density, rows, cols) // drawn right away; the sim takes over from the next frame
     const breeze = breezeAcross(clouds.windKmh, clouds.windFrom, p.look) // the real wind, across the view
     if (!reduceMotion) sim = new CloudSim(cols, rows, density, breeze)
-    // Rain or snow when it's really coming down (snow wins if both)
+    // Rain and snow are reported in the readout but not drawn: from a lookout miles away you'd never see the drops
     const kind = clouds.snow > 0.05 ? 'snow' : clouds.rain > 0.05 ? 'rain' : null
-    // It falls from the clouds: the lowest cloud cell in each column, as the clouds are right now
-    const cloudBase = (c: number) => {
-      const field = sim?.density ?? density
-      for (let r = rows - 1; r >= 0; r--) if (field[r * cols + c] > 0.03) return r
-      return null
-    }
-    if (kind) precipitation = new Precipitation(cols, rows, kind, kind === 'snow' ? clouds.snow : clouds.rain, breeze, cloudBase)
-    drawEffects(performance.now() / 1000) // drawn right away; still, for reduced motion
     const compass = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(clouds.windFrom / 45) % 8]
     note.innerHTML =
       `Cloud ${clouds.total}%  wind ${Math.round(clouds.windKmh)} km/h ${compass}` +

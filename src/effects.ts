@@ -1,6 +1,5 @@
 // Small live sky effects, all drawn as ASCII on the sky's character grid and all driven by real data:
-//   rain and snow       - when it's actually precipitating at the peak (Open-Meteo)
-//   wind                - the clouds' breeze and the rain's slant follow the real wind
+//   wind                - the clouds' breeze follows the real wind
 //   shooting stars      - at night, rare, and more frequent on real meteor-shower nights
 //   northern lights     - only when NOAA's geomagnetic index says they'd be visible from Washington
 
@@ -14,73 +13,6 @@ export function breezeAcross(kmh: number, fromDeg: number, look: 'north' | 'sout
   const rightward = look === 'north' ? eastward : -eastward // facing north, east is on the right
   const speed = Math.min(3, 0.15 + kmh * 0.03) // a light breeze still moves a little; storms cap out
   return rightward * speed
-}
-
-type Drop = { x: number; y: number; speed: number; phase: number }
-
-/** Rain or snow, falling from the clouds and down in front of the mountains.
- *  `cloudBase(col)` gives the lowest cloud row in a column right now (or null if it's clear), so every
- *  drop is born under a real cloud, and moves with the clouds as they drift and swirl. */
-export class Precipitation {
-  private drops: Drop[] = []
-  private cols: number
-  private rows: number
-  private kind: 'rain' | 'snow'
-  private breeze: number
-  private cloudBase: (col: number) => number | null
-  constructor(cols: number, rows: number, kind: 'rain' | 'snow', intensity: number /* rain mm/h, snow cm/h */,
-    breeze: number, cloudBase: (col: number) => number | null) {
-    this.cols = cols
-    this.rows = rows
-    this.kind = kind
-    this.breeze = breeze
-    this.cloudBase = cloudBase
-    const share = kind === 'rain' ? Math.min(0.05, 0.006 + intensity * 0.008) : Math.min(0.04, 0.006 + intensity * 0.02)
-    const count = Math.round(cols * rows * share)
-    // Start mid-fall: each drop somewhere between its cloud and the ground
-    for (let i = 0; i < count; i++) {
-      const d = this.spawn()
-      d.y += Math.random() * (rows - d.y)
-      this.drops.push(d)
-    }
-  }
-
-  // A new drop at the base of a cloud. Tries a few columns; if the sky is clear there, it falls from the top.
-  private spawn(): Drop {
-    const rain = this.kind === 'rain'
-    let x = Math.random() * this.cols, base: number | null = null
-    for (let tries = 0; tries < 12 && base === null; tries++) {
-      x = Math.random() * this.cols
-      base = this.cloudBase(Math.floor(x))
-    }
-    return {
-      x,
-      y: base === null ? -1 : base + Math.random(),
-      speed: rain ? 22 + Math.random() * 10 : 1.6 + Math.random() * 1.4, // rows per second
-      phase: Math.random() * Math.PI * 2,
-    }
-  }
-
-  step(dt: number, t: number) {
-    for (const d of this.drops) {
-      d.y += d.speed * dt
-      const sway = this.kind === 'snow' ? Math.sin(t * 1.3 + d.phase) * 0.6 : 0
-      d.x += (this.breeze * (this.kind === 'rain' ? 4 : 1.5) + sway) * dt
-      if (d.y >= this.rows) Object.assign(d, this.spawn())
-      d.x = ((d.x % this.cols) + this.cols) % this.cols
-    }
-  }
-
-  draw(grid: string[][]) {
-    // Rain slants with the wind; snow is a mix of flakes
-    const slant = this.breeze * 4 / 22
-    const rainChar = slant > 0.12 ? '\\' : slant < -0.12 ? '/' : '|'
-    for (const d of this.drops) {
-      const r = Math.floor(d.y), c = Math.floor(d.x)
-      if (r < 0 || r >= this.rows) continue
-      grid[r][c] = this.kind === 'rain' ? rainChar : d.phase > Math.PI ? '*' : '.'
-    }
-  }
 }
 
 // Major annual meteor showers: peak date (month, day) and how many meteors an hour at best (ZHR)
