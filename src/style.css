@@ -285,3 +285,19 @@
 :root[data-name="ranger"] h1.display {
   font-size: clamp(3.4rem, 8.5vw, 6.5rem);
 }
+/* Two Times New Roman refinements for comparison */
+:root[data-name="eva85"] .display {
+  transform: scaleX(0.85); /* same bold italic, squashed less: still tall, less title-card */
+}
+:root[data-name="survey"] .display {
+  font-style: normal; /* upright bold capitals, widely spaced, like peak names on USGS topo maps */
+  letter-spacing: 0.12em;
+  line-height: 1;
+  transform: none;
+}
+:root[data-name="survey"] h1.display {
+  font-size: clamp(2.6rem, 6.8vw, 5.5rem);
+}
+:root[data-name="eva85"] h1.display {
+  font-size: clamp(4rem, 10vw, 7rem);
+}
