@@ -254,3 +254,29 @@
 @media (prefers-reduced-motion: reduce) {
   .drift { animation: none; }
 }
+
+/* Status panel lines waiting to print (main.ts reveals them one at a time) */
+.pending {
+  opacity: 0;
+}
+
+/* Craft icons answer a hover or keyboard focus: the yellow pixels blink twice and the icon lifts a pixel */
+@keyframes accent-blink {
+  50% { opacity: 0.15; }
+}
+.craft-icon {
+  transition: translate 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.craft:hover .craft-icon,
+.craft:focus-within .craft-icon {
+  translate: 0 -2px;
+}
+.craft:hover .accent,
+.craft:focus-within .accent {
+  animation: accent-blink 400ms steps(1) 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .craft-icon { transition: none; }
+  .craft:hover .craft-icon, .craft:focus-within .craft-icon { translate: none; }
+  .craft:hover .accent, .craft:focus-within .accent { animation: none; }
+}

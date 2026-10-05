@@ -69,6 +69,18 @@ export function landscape(grid: string[]): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${grid.length}" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" class="h-full w-full" style="--steps:${grid.length}">${rows}</svg>`
 }
 
+// Split a scene into three depth layers for parallax: far ranges, the peak's own range (with all snow),
+// and near foothills. Each back layer is filled solid down to the ground underneath the layers in front,
+// so when the layers drift apart on scroll they only ever reveal sky above the ridges, never holes.
+export function depthLayers(grid: string[]): { far: string[]; mid: string[]; near: string[] } {
+  const isFar = (c: string) => c === '=' || c === '+'
+  const isNear = (c: string) => c === '#' || c === 'h'
+  const far = grid.map(row => [...row].map(c => (c === '.' ? '.' : isFar(c) ? c : '=')).join(''))
+  const mid = grid.map(row => [...row].map(c => (c === '.' || isFar(c) ? '.' : isNear(c) ? '%' : c)).join(''))
+  const near = grid.map(row => [...row].map(c => (isNear(c) ? c : '.')).join(''))
+  return { far, mid, near }
+}
+
 // A thin registration crosshair, as printed in a poster's corners
 export const crosshair = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="size-4" stroke="currentColor" stroke-width="1"><path d="M8 0v16M0 8h16"/></svg>`
 
@@ -152,7 +164,7 @@ export function icon(name: IconName): string {
   const grid = ICONS[name]
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" shape-rendering="crispEdges" class="size-full">
     <g fill="currentColor">${pixels(grid, '#', 1)}</g>
-    <g fill="#fecc02">${pixels(grid, '+', 1)}</g>
+    <g fill="#fecc02" class="accent">${pixels(grid, '+', 1)}</g>
   </svg>`
 }
 

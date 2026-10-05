@@ -1,6 +1,6 @@
 import './style.css'
 import { profile, status, crafts, projects, links } from './data'
-import { logo, landscape, crosshair, icon, sun } from './art'
+import { logo, landscape, depthLayers, crosshair, icon, sun } from './art'
 import { peaks } from './peaks'
 import { skyAbove, project } from './sky'
 import { sunPosition, palette, lightName } from './daylight'
@@ -73,9 +73,9 @@ const section = (title: string, body: string) => `
   </section>`
 
 // A shell prompt line for the terminal panel (decorative, so hidden from screen readers)
-const prompt = (command: string) => `
+const prompt = (command: string, id = '') => `
   <p aria-hidden="true" class="font-mono text-sm">
-    <span class="text-primary">matt@baker</span><span class="opacity-75">:~$</span> ${command}
+    <span class="text-primary">matt@baker</span><span class="opacity-75">:~$</span> <span ${id ? `id="${id}"` : ''}>${command}</span>
   </p>`
 
 // Only tag projects "In progress" when some are finished, otherwise the tag says nothing
@@ -138,8 +138,8 @@ app.innerHTML = `
     ${section('Crafts', `
       <ul class="grid max-w-2xl gap-y-10 2xl:max-w-none 2xl:grid-cols-2 2xl:gap-x-16">
         ${crafts.map(c => `
-          <li class="grid grid-cols-[2.5rem_1fr] gap-x-5">
-            <span aria-hidden="true" class="mt-1 size-10">${icon(c.icon)}</span>
+          <li class="craft grid grid-cols-[2.5rem_1fr] gap-x-5">
+            <span aria-hidden="true" class="craft-icon mt-1 size-10">${icon(c.icon)}</span>
             <div>
               <h3 class="font-semibold">${c.name}</h3>
               <p class="mt-1 opacity-80">${c.detail}</p>
@@ -170,7 +170,7 @@ app.innerHTML = `
 
     ${section('Status', `
       <div class="notch border border-base-300 bg-base-200">
-        <div class="border-b border-base-300 px-5 py-3">${prompt('status --all')}</div>
+        <div class="border-b border-base-300 px-5 py-3">${prompt('status --all', 'status-cmd')}</div>
         <dl class="grid gap-px bg-base-300">
           ${[
             { label: 'System', value: '<span class="status status-success"></span> Nominal' },
@@ -184,7 +184,7 @@ app.innerHTML = `
               <dd class="flex items-center gap-2 text-right font-mono">${s.value}</dd>
             </div>`).join('')}
         </dl>
-        <div class="border-t border-base-300 px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
+        <div id="status-end" class="border-t border-base-300 px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
       </div>`)}
     </div>
   </main>
@@ -231,7 +231,11 @@ function showPeak(p: (typeof peaks)[number], first = false) {
   setTimeout(() => scramble(document.querySelector<HTMLElement>('#coords')!, coords), first && !reduceMotion ? FADE_IN_AT : 0)
   drawSky(p, first && !reduceMotion)
   showLight(p)
-  document.querySelector('#peak-art')!.innerHTML = landscape(p.grid)
+  // Three depth layers, back to front; scrolling drifts the back ones (see the parallax below)
+  const layers = depthLayers(p.grid)
+  document.querySelector('#peak-art')!.innerHTML = (['far', 'mid', 'near'] as const)
+    .map(depth => `<div class="depth absolute inset-0" data-depth="${depth}">${landscape(layers[depth])}</div>`)
+    .join('')
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
   document.querySelector('#peak-count')!.textContent = `Peak ${peaks.indexOf(p) + 1} / ${peaks.length}`
   showClouds(p)
@@ -309,6 +313,52 @@ const poster = document.querySelector('header .draw')!
 new IntersectionObserver(([entry]) => poster.classList.toggle('paused', !entry.isIntersecting)).observe(poster)
 document.querySelector('#next-peak')!.addEventListener('click', nextPeak)
 document.querySelector('#peak-art')!.addEventListener('click', nextPeak)
+
+// Depth parallax: as the poster scrolls away, the stars and far ranges drift slowest, the peak's range a bit
+// faster, and the foothills move with the page. Pixels per full poster height of scroll; tune here.
+const DRIFT = { stars: 90, clouds: 70, far: 55, mid: 25, near: 0 }
+if (!reduceMotion) {
+  const posterEl = document.querySelector<HTMLElement>('header .draw')!
+  let queued = false
+  const drift = () => {
+    queued = false
+    const progress = Math.min(1, Math.max(0, -posterEl.getBoundingClientRect().top / posterEl.offsetHeight))
+    const move = (sel: string, px: number) =>
+      document.querySelectorAll<HTMLElement>(sel).forEach(el => (el.style.translate = `0 ${(progress * px).toFixed(1)}px`))
+    move('#sky', DRIFT.stars)
+    move('#clouds', DRIFT.clouds)
+    move('#peak-art [data-depth="far"]', DRIFT.far)
+    move('#peak-art [data-depth="mid"]', DRIFT.mid)
+  }
+  addEventListener('scroll', () => queued || (queued = requestAnimationFrame(drift) > 0), { passive: true })
+}
+
+// The status panel runs its command the first time it scrolls into view: `status --all` types out, then
+// each readout prints on its own beat. The text is in the page from the start (screen readers get it all);
+// only its appearance is staged. Skipped for reduced motion.
+if (!reduceMotion) {
+  const cmd = document.querySelector<HTMLElement>('#status-cmd')!
+  const lines = [...document.querySelectorAll<HTMLElement>('main dl > div'), document.querySelector<HTMLElement>('#status-end')!]
+  const text = cmd.textContent!
+  cmd.textContent = ''
+  lines.forEach(l => l.classList.add('pending'))
+  const show = () => {
+    cmd.textContent = text
+    lines.forEach(l => l.classList.remove('pending'))
+  }
+  new IntersectionObserver((entries, watcher) => {
+    if (!entries[0].isIntersecting) return
+    watcher.disconnect()
+    let i = 0
+    const type = setInterval(() => {
+      cmd.textContent = text.slice(0, ++i)
+      if (i < text.length) return
+      clearInterval(type)
+      lines.forEach((line, n) => setTimeout(() => line.classList.remove('pending'), 250 + n * 140))
+    }, 55)
+    setTimeout(show, 4000) // safety net: everything shows even if timers are throttled
+  }, { threshold: 0.4 }).observe(document.querySelector('main dl')!)
+}
 
 // Live Pacific time for the status panel
 const clock = document.querySelector<HTMLElement>('#clock')!
