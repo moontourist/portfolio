@@ -49,9 +49,10 @@ export const projects: Project[] = [
   },
 ]
 
-// nav: true also shows the link in the top bar. Every link shows in the footer.
+// nav: true also shows the link in the top bar; phone: true keeps it there on narrow screens.
+// Every link shows in the footer.
 export const links = [
-  { name: 'Email', url: 'mailto:matthewgaryerickson@gmail.com', nav: true },
+  { name: 'Email', url: 'mailto:matthewgaryerickson@gmail.com', nav: true, phone: true },
   { name: 'LinkedIn', url: 'https://www.linkedin.com/in/matthewg-erickson', nav: true },
   { name: 'GitHub', url: 'https://github.com/moontourist', nav: true },
   { name: 'Instagram', url: 'https://instagram.com/moon.tourist', nav: false },

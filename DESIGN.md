@@ -200,7 +200,7 @@ There are no cards. Projects are a plain list separated by 1px rules. The only c
 - **Internal Padding:** 24px per cell, 12px by 20px for prompt rows
 
 ### Navigation
-A full-width bar with a bottom rule. On the left, the stripe logo (40px) and the "moontourist" wordmark, hidden below 640px. On the right, the Email, LinkedIn and GitHub ghost buttons and the theme toggle. The footer repeats every link, Instagram included, as plain links.
+A full-width bar with a bottom rule. On the left, the stripe logo (40px) and the "moontourist" wordmark; below 640px the wordmark is visually hidden but still read by screen readers. On the right, the Email, LinkedIn and GitHub ghost buttons and the theme toggle; below 640px only Email and the toggle stay (links marked `phone` in `src/data.ts`). The toggle is an on/off switch labelled "Dark" with a small square that fills when dark mode is on (`aria-pressed`). On touch screens every nav button and footer link is at least 44px tall. The footer repeats every link, Instagram included, as plain links. The barcode in the poster strip is hidden below 640px.
 
 ### Poster Header (signature component)
 The page's one loud moment. Full-width Flaggul block containing:

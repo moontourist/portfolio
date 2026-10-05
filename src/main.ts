@@ -41,10 +41,12 @@ app.innerHTML = `
   <nav class="navbar gap-1 border-b border-base-300 px-6 md:px-12">
     <a href="/" class="flex flex-1 items-center gap-3">
       <span class="w-10">${logo()}</span>
-      <span class="hidden font-semibold sm:inline">moontourist</span>
+      <span class="sr-only font-semibold sm:not-sr-only">moontourist</span>
     </a>
-    ${links.filter(l => l.nav).map(l => `<a class="btn btn-ghost btn-sm" href="${l.url}">${l.name}</a>`).join('')}
-    <button id="theme-toggle" class="btn btn-ghost btn-sm"></button>
+    ${links.filter(l => l.nav).map(l => `<a class="btn btn-ghost btn-sm pointer-coarse:h-11 ${'phone' in l ? '' : 'hidden sm:inline-flex'}" href="${l.url}">${l.name}</a>`).join('')}
+    <button id="theme-toggle" type="button" aria-pressed="false" class="btn btn-ghost btn-sm gap-2 pointer-coarse:h-11">
+      <span aria-hidden="true" class="size-2.5 border border-current"></span>Dark
+    </button>
   </nav>
 
   <header class="relative overflow-hidden bg-secondary text-secondary-content">
@@ -58,7 +60,7 @@ app.innerHTML = `
     </div>
     <div class="relative flex items-center justify-between gap-6 bg-accent px-6 py-3 text-accent-content md:px-12">
       <p class="label opacity-100">${peak.name}  ${peak.metres} m / ${peak.feet} ft</p>
-      <span aria-hidden="true" class="h-5 w-40">${barcode(peak.name)}</span>
+      <span aria-hidden="true" class="hidden h-5 w-40 shrink-0 sm:block">${barcode(peak.name)}</span>
     </div>
   </header>
 
@@ -106,7 +108,7 @@ app.innerHTML = `
   <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-base-300 px-6 py-8 text-sm md:px-12">
     <p class="opacity-70">Made in Washington.</p>
     <div class="flex flex-wrap gap-x-6 gap-y-2">
-      ${links.map(l => `<a class="link link-hover" href="${l.url}">${l.name}</a>`).join('')}
+      ${links.map(l => `<a class="link link-hover inline-flex items-center pointer-coarse:min-h-11" href="${l.url}">${l.name}</a>`).join('')}
     </div>
   </footer>
 `
@@ -124,13 +126,19 @@ const tick = () => (clock.textContent = `${time.format(new Date())} PT`)
 tick()
 setInterval(tick, 1000)
 
-// Dark mode toggle. The starting theme is set in index.html before the page draws.
+// Dark mode toggle: an on/off switch labelled "Dark", with a square that fills when it's on.
+// The starting theme is set in index.html before the page draws.
 const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle')!
+const box = toggle.querySelector('span')!
 const html = document.documentElement
-const label = () => (toggle.textContent = html.dataset.theme === 'sverige-dark' ? 'Light' : 'Dark')
-label()
+const show = () => {
+  const dark = html.dataset.theme === 'sverige-dark'
+  toggle.setAttribute('aria-pressed', String(dark))
+  box.classList.toggle('bg-current', dark)
+}
+show()
 toggle.addEventListener('click', () => {
   html.dataset.theme = html.dataset.theme === 'sverige-dark' ? 'sverige' : 'sverige-dark'
   try { localStorage.setItem('theme', html.dataset.theme) } catch {}
-  label()
+  show()
 })
