@@ -3,6 +3,10 @@ import { profile, status, crafts, projects, links } from './data'
 import { logo, landscape, barcode, crosshair, icon } from './art'
 import { peaks } from './peaks'
 
+// Filled in at build time by vite.config.ts
+declare const __COMMIT__: string
+declare const __BUILT__: string
+
 // A different Washington peak on every visit
 const peak = peaks[Math.floor(Math.random() * peaks.length)]
 
@@ -13,8 +17,8 @@ const starfield = Array.from({ length: 40 }, () =>
   ).join(''),
 ).join('\n')
 
-// Crosshairs pinned to each corner of a block
-const corners = ['top-3 left-3', 'top-3 right-3', 'bottom-3 left-3', 'bottom-3 right-3']
+// Crosshairs pinned to each corner of a block. On phones the bottom pair would sit on the mountain, so they wait for 768px.
+const corners = ['top-3 left-3', 'top-3 right-3', 'hidden md:block bottom-3 left-3', 'hidden md:block bottom-3 right-3']
   .map(pos => `<span aria-hidden="true" class="absolute ${pos}">${crosshair}</span>`)
   .join('')
 
@@ -60,8 +64,8 @@ app.innerHTML = `
         <h1 class="display mt-6 text-7xl sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
         <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
       </div>
-      <!-- Phones: the peak follows the text. From 768px it stands at the poster's bottom right, on the strip. -->
-      <div aria-hidden="true" class="relative mt-6 ml-auto w-full max-w-xl px-6 text-accent md:absolute md:right-0 md:bottom-0 md:mt-0 md:w-[min(44rem,55%)] md:max-w-none md:px-0">${landscape(peak.grid)}</div>
+      <!-- Phones: the peak follows the text, edge to edge. From 768px it stands at the poster's bottom right, on the strip. -->
+      <div aria-hidden="true" class="relative mt-8 w-full text-accent md:absolute md:right-0 md:bottom-0 md:mt-0 md:w-[min(44rem,55%)]">${landscape(peak.grid)}</div>
     </div>
     <div class="flex items-center justify-between gap-6 bg-accent px-6 py-3 text-accent-content md:px-12">
       <p class="readout opacity-100">${peak.name}  ${peak.metres} m / ${peak.feet} ft</p>
@@ -96,6 +100,11 @@ app.innerHTML = `
               <h3 class="font-semibold">${c.name}</h3>
               <p class="mt-1 opacity-80">${c.detail}</p>
               ${c.link ? `<a class="link link-primary mt-2 inline-block text-sm" href="${c.link.url}">${c.link.label}</a>` : ''}
+              ${c.sample ? `
+                <figure class="mt-4 border border-base-300 bg-base-200">
+                  <pre class="overflow-x-auto px-5 py-4 font-mono text-sm leading-relaxed">${c.sample.join('\n')}<span aria-hidden="true" class="ml-2 inline-block h-[1.1em] w-[0.6em] bg-secondary align-text-bottom"></span></pre>
+                  <figcaption class="readout border-t border-base-300 px-5 py-2">Excerpt of real output</figcaption>
+                </figure>` : ''}
             </div>
           </li>`).join('')}
       </ul>`)}
@@ -106,8 +115,9 @@ app.innerHTML = `
         <div class="grid grid-cols-2 gap-px bg-base-300 sm:grid-cols-3">
           ${[
             { label: 'System', value: '<span class="status status-success"></span> Nominal' },
-            { label: 'Peak', value: peak.name },
             ...status,
+            { label: 'Last deploy', value: __BUILT__ },
+            { label: 'Commit', value: __COMMIT__ },
             { label: 'Local time', value: '<span id="clock"></span>' },
           ].map(s => `
             <div class="flex flex-col items-center gap-2 bg-base-200 p-6 text-center">

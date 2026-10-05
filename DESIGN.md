@@ -160,7 +160,7 @@ The Swedish flag over a winter landscape: yellow and blue for identity, navy and
 
 A left-aligned single column with a maximum width of 56rem (896px), inset by a 24px gutter on phones and 48px from 768px up. On wide screens the right side of the page stays open on purpose. The poster header and the nav run full width; everything else sits in the column.
 
-Sections are separated by a 1px top rule and 56px of padding above and below. Text blocks inside cap at 42rem. Crafts are a list with a 40px pixel icon beside each name and line. The status panel grid is two columns on phones and three from 640px, separated by single 1px lines. On phones the pixel peak follows the poster text; from 768px it stands at the poster's bottom right, up to 44rem or 55% wide, running off the right edge and resting on the navy strip, with the poster padded 176px at the bottom so text never overlaps it. The starfield is generated to the screen's width so it fills any display.
+Sections are separated by a 1px top rule and 56px of padding above and below. Text blocks inside cap at 42rem. Crafts are a list with a 40px pixel icon beside each name and line. The status panel grid is two columns on phones and three from 640px, separated by single 1px lines. On phones the pixel peak follows the poster text and runs edge to edge, and the poster's bottom crosshairs are hidden so they don't sit on the mountain; from 768px it stands at the poster's bottom right, up to 44rem or 55% wide, running off the right edge and resting on the navy strip, with the poster padded 176px at the bottom so text never overlaps it. The starfield is generated to the screen's width so it fills any display.
 
 Breakpoints are Tailwind's defaults; the ones in use are 640px and 768px.
 
@@ -214,10 +214,13 @@ The page's one loud moment. Full-width Flaggul block containing:
 The peak is chosen at random from `src/peaks.ts` on every visit. Each grid is 12 rows tall so every mountain sits on the same baseline.
 
 ### Terminal Status Panel (signature component)
-The only place terminal styling appears. A notched panel opening with a prompt line (`matt@baker:~$ status --all`), then a grid of readouts with centred label-style field names and mono values (System, Operator, Region, Current build, Next deploy, a live Pacific-time clock), closing on an empty prompt with a blinking Flaggul block cursor. The prompt lines are hidden from screen readers. The readouts are System, Peak (this visit's), Region, Current build, Next deploy and Local time. The clipped corners get a 1px diagonal line so the border stays continuous. The cursor blinks every 1.1s in hard steps and stops for visitors who prefer reduced motion. It is the page's only ambient motion.
+The only place terminal styling appears. A notched panel opening with a prompt line (`matt@baker:~$ status --all`), then a grid of readouts with centred label-style field names and mono values (System, Operator, Region, Current build, Next deploy, a live Pacific-time clock), closing on an empty prompt with a blinking Flaggul block cursor. The prompt lines are hidden from screen readers. The readouts are System, Current build, Next deploy, Last deploy (build date) and Commit (both filled in at build time by `vite.config.ts`), and Local time. Readouts must report something the rest of the page doesn't. The clipped corners get a 1px diagonal line so the border stays continuous. The cursor blinks every 1.1s in hard steps and stops for visitors who prefer reduced motion. It is the page's only ambient motion.
 
 ### Crafts List (signature component)
 One row per craft (Infrastructure, Code, Audio, Photography, Games): a 40px pixel icon drawn on a 12×12 grid in the text colour with Flaggul accents, the craft name in semibold mono and one plain line in Matt's own words, plus an optional text link (Photography links to Instagram). It replaces a skills list on purpose: every craft gets equal standing.
+
+### Program Still
+Real output from one of Matt's programs, shown as a bordered `pre` in Snödis or Midnatt with a static Flaggul block cursor and a readout caption ("Excerpt of real output"). Used for cardatro under Games. It is the one allowed exception to keeping terminal styling inside the status panel, because it shows real work rather than decoration. The cursor here does not blink; the status panel keeps the page's only motion.
 
 ### Section Heading
 A squashed italic serif title with a 4px Flaggul bar on its left and 16px padding. No numbers, no labels above it.

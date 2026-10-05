@@ -48,7 +48,7 @@ A creative technologist: one person across several crafts. By day he runs infras
 
 ## Evidence on Hand
 
-- Projects: `tascii` (public, github.com/moontourist/tascii) and `cardatro` (private terminal card game in C#).
+- Projects: `tascii` (public, github.com/moontourist/tascii) and `cardatro` (private terminal card game in C#). The Games craft shows an excerpt of cardatro's real console output (a dealt hand with chip values, then "Select Cards 0-7:"); keep it matching what the program actually prints.
 - Contact: matthewgaryerickson@gmail.com, linkedin.com/in/matthewg-erickson.
 - Absences, do not fabricate: no testimonials, metrics, employers beyond Halo, or photos yet. The craft lines in `src/data.ts` were written by Claude from Matt's own words and facts; Matt should reword them as he likes. `sharpmas` was built by a friend (Scotty / scadoshi) and must never be presented as Matt's work.
 

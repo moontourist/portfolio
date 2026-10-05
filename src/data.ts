@@ -7,6 +7,7 @@ export type Craft = {
   icon: IconName // pixel icon drawn in src/art.ts
   detail: string
   link?: { label: string; url: string }
+  sample?: string[] // real program output, shown as a terminal still
 }
 export type ProjectStatus = 'complete' | 'active'
 export type Project = {
@@ -22,12 +23,12 @@ export const profile = {
   role: 'Infrastructure Engineer',
   company: 'Halo',
   location: 'Washington state',
-  bio: "By day I keep the infrastructure running at Halo, living in AWS, Kubernetes and Datadog. On the side I'm learning C#, one small program at a time, working toward building a game of my own. Before all that I trained as an audio engineer, and when I'm away from the keyboard I'm usually behind a camera.",
+  // Draft by Claude from what Matt has said; rewrite in your own words. Facts live in crafts below, so this is the why.
+  bio: "I started out as an audio engineer, ended up running infrastructure, and now I'm learning to write the software myself. A game is where all of that meets: sound, systems, code and an eye for a frame. That's what I'm building toward, one small program at a time.",
 }
 
-// Readouts for the status panel. The status light, this visit's peak and local time are added in main.ts.
+// Readouts for the status panel. The status light, last deploy date, commit and local time are added in main.ts.
 export const status = [
-  { label: 'Region', value: 'Washington, US' },
   { label: 'Current build', value: 'C# via Advent of Code' },
   { label: 'Next deploy', value: 'First game' },
 ]
@@ -42,23 +43,36 @@ export const crafts: Craft[] = [
   {
     name: 'Code',
     icon: 'terminal',
-    detail: 'Learning C# one small program at a time, mostly Advent of Code and tools that save me clicks at work. Written in Neovim, run in Ghostty.',
+    detail: 'C#, mostly Advent of Code and small tools that save me clicks at work. Written in Neovim, run in Ghostty.',
   },
   {
     name: 'Audio',
     icon: 'wave',
-    detail: 'Trained as an audio engineer. Pro Tools and Ableton are still where I spend studio time.',
+    detail: 'Pro Tools and Ableton are still where I spend studio time.',
   },
   {
     name: 'Photography',
     icon: 'camera',
-    detail: "When I'm away from the keyboard I'm usually behind a camera, chasing the right light.",
+    detail: 'Usually behind a camera when I step away from the keyboard, chasing the right light.',
     link: { label: 'See photos on Instagram', url: 'https://instagram.com/moon.tourist' },
   },
   {
     name: 'Games',
     icon: 'gamepad',
-    detail: 'Where all of this is heading. cardatro, a terminal card game in C#, is the first step.',
+    detail: 'cardatro is the first one. This is what it prints so far:',
+    sample: [
+      '---------------------',
+      'Ace of Spades',
+      'chips: 11',
+      'Queen of Hearts',
+      'chips: 10',
+      'Seven of Clubs',
+      'chips: 7',
+      'Two of Diamonds',
+      'chips: 2',
+      '---------------------',
+      'Select Cards 0-7:',
+    ],
   },
 ]
 
