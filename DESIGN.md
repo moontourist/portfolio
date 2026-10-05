@@ -176,6 +176,8 @@ Flat. There are no shadows anywhere. On the page, depth comes from tonal layerin
 Square corners throughout, radius 0 on every component. The one exception is the notch: the status panel has its top-right and bottom-left corners clipped at 45° by 18px, after Marathon's UI frames. Pixel art is built from squares on a grid and drawn crisp. The logo is three parallelograms slanted like the Toyota TRD decal, in Flaggul, Flaggblå and Fjällnatt, with a white pixel crescent moon on top.
 
 ### Named Rules
+**The Text Sky, Pixel Earth Rule.** Everything in the sky is drawn in text characters (ASCII stars, rain and cloud lines); the land is pixel art generated from terrain data. Matt chose this split: pixel-art clouds were tried and rejected because they broke the programmer voice of the sky.
+
 **The Square Rule.** No rounded corners. Clip a corner instead of rounding it, and only on terminal-style panels.
 
 ## Components
@@ -207,10 +209,12 @@ The page's one loud moment: a live window onto a real Washington peak. Layers, b
 - the sky gradient, coloured by the sun's real altitude at the peak (`src/daylight.ts`), checked every minute;
 - the real stars behind the peak at this moment (Hipparcos catalogue, `src/sky.ts`), as `*` `+` `.` by brightness, fading out in daylight; about 40% twinkle;
 - the sun as a small pixel disc when it's in view;
-- live cloud cover from Open-Meteo as drifting ASCII cloud banks (`-` high, `~` mid, `=` low), tinted by the light;
+- live cloud cover from Open-Meteo as drifting ASCII cloud banks (`-` high, `~` mid, `=` low), tinted by the light; heavy cover also greys the sky;
 - the mountain scene, generated from real elevation data (`tools/skyline.py`, `src/peaks.ts`): a view from a lookout with hillshading and three depth tones, drawn as text grids;
 - thin crosshairs, the coordinates, the light readout ("Golden hour, 18:05 local time. The real sky, looking north"), the cloud readout, the display name and the introduction;
 - the strip with the peak's name, elevation, a "Next peak" button and a barcode generated from the name.
+
+Poster text carries a thin outline in the sky's own colour (`.halo`), invisible on open sky, so it stays legible when clouds pass behind. `?clouds=low,mid,high` previews any weather.
 
 First load is the one authored sequence: ASCII rain falls and lands as the starfield, the mountain draws in from the ground up, then the rest of the page fades in (about 4 seconds; skipped for reduced motion, with a 6-second failsafe). "Next peak" redraws the scene without the rain. `?peak=` picks a mountain and `?at=` previews any moment.
 
@@ -246,3 +250,4 @@ A squashed italic serif title with a 4px Flaggul bar on its left and 16px paddin
 - **Don't** use cream page backgrounds; light mode is cool Glaciärvit (#eef2f5).
 - **Don't** strip the poster, stars or pixel art in the name of minimalism.
 - **Don't** tint the flag colours with the time of day, or fake the sky: no invented stars, weather or light.
+- **Don't** draw sky elements as pixel art; the sky stays text (see The Text Sky, Pixel Earth Rule).

@@ -26,81 +26,52 @@ export function cloudsAt(lat: number, lonWest: number): Promise<Clouds | null> {
   return cache.get(key)!
 }
 
-// A small seeded random generator, so a peak's clouds stay put through the hour instead of reshuffling
-function random(seed: number) {
-  return () => {
-    seed = (seed + 0x6d2b79f5) | 0
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+// Smooth value noise that repeats every `period` cells across, so a doubled row drifts seamlessly
+function noise(x: number, y: number, period: number, seed: number): number {
+  const hash = (ix: number, iy: number) => {
+    const h = Math.sin((((ix % period) + period) % period) * 127.1 + iy * 311.7 + seed * 74.7) * 43758.5453
+    return h - Math.floor(h)
   }
+  const ix = Math.floor(x), iy = Math.floor(y)
+  const fx = x - ix, fy = y - iy
+  const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy)
+  const top = hash(ix, iy) + (hash(ix + 1, iy) - hash(ix, iy)) * sx
+  const bottom = hash(ix, iy + 1) + (hash(ix + 1, iy + 1) - hash(ix, iy + 1)) * sx
+  return top + (bottom - top) * sy
 }
 
-export const CLOUD_CELL = 6 // px per cloud pixel, close to the mountains' pixel size
-
 /**
- * Pixel-art clouds for a sky of `cols` x `rows` cells, drawn as an SVG two skies wide so it can drift
- * forever without a seam (clouds wrap around the edge). Three kinds, by the live data:
- *   low cloud  -> big cumulus with flat bases, down among the ranges
- *   mid cloud  -> smaller puffy patches
- *   high cloud -> long thin streaks of cirrus
- * Each cloud is a cluster of round puffs, shaded like the mountains: lit tops, mid-tone bodies,
- * shadowed undersides, in the --poster-cloud* colours for the current light.
+ * ASCII cloud layers for a sky grid: wispy high cloud near the top, mid-level cloud, and low cloud down
+ * by the mountains. How much of each band is cloud follows the live percentages; thin edges use light
+ * characters and thick cores heavier ones, so even full overcast has texture. Each row is doubled so the
+ * layer can drift sideways forever without a seam.
  */
-export function cloudScene(clouds: Clouds, cols: number, rows: number, seed: number): string {
-  const rand = random(seed)
-  const grid: string[][] = Array.from({ length: rows }, () => Array(cols).fill(' '))
-  const puff = (cx: number, cy: number, w: number, h: number, flatBase: boolean) => {
-    // A cloud: a row of overlapping circles along a base, tallest in the middle
-    const puffs = Math.max(2, Math.round(w / Math.max(3, h * 0.9)))
-    const circles = Array.from({ length: puffs }, (_, i) => {
-      const t = puffs === 1 ? 0.5 : i / (puffs - 1)
-      const r = h * (0.45 + 0.55 * Math.sin(Math.PI * t)) * (0.75 + rand() * 0.4)
-      return { x: cx - w / 2 + t * w, y: cy + h / 2 - r * 0.9, r }
-    })
-    const top = cy - h, base = cy + h / 2
-    for (let y = Math.floor(top - 2); y <= Math.ceil(base); y++) {
-      if (y < 0 || y >= rows) continue
-      for (let x = Math.floor(cx - w / 2 - h); x <= Math.ceil(cx + w / 2 + h); x++) {
-        if (flatBase && y > base) continue
-        const inside = circles.some(c => (x - c.x) ** 2 + ((y - c.y) * 1.15) ** 2 <= c.r * c.r)
-        if (!inside) continue
-        // Shade by height within the cloud: lit top, body, shadowed underside
-        const depth = (y - top) / (base - top)
-        const tone = depth < 0.45 ? 'L' : depth < 0.8 ? 'M' : 'S'
-        const col = ((x % cols) + cols) % cols // wrap around so the drift loops
-        if (grid[y][col] === ' ' || tone < grid[y][col]) grid[y][col] = tone
+export function cloudField(clouds: Clouds, rows: number, cols: number): string {
+  const layers = [
+    { cover: clouds.high, from: 0.04, to: 0.32, chars: '.-', stretch: 3, seed: 1 },
+    { cover: clouds.mid, from: 0.28, to: 0.6, chars: '.-~', stretch: 2.5, seed: 2 },
+    { cover: clouds.low, from: 0.55, to: 0.88, chars: '.~=', stretch: 2, seed: 3 },
+  ]
+  const period = Math.ceil(cols / 12) // noise cells across one copy of the row
+  const lines: string[] = []
+  for (let r = 0; r < rows; r++) {
+    const y = r / rows
+    let line = ''
+    for (let c = 0; c < cols; c++) {
+      let ch = ' '
+      for (const l of layers) {
+        if (y < l.from || y > l.to || l.cover <= 0) continue
+        // Fade the band's edges so layers don't end in straight lines
+        const edge = Math.min(y - l.from, l.to - y) / ((l.to - l.from) / 2)
+        const n =
+          0.65 * noise((c / cols) * period, r / l.stretch, period, l.seed) +
+          0.35 * noise((c / cols) * period * 2, r / (l.stretch / 2), period * 2, l.seed + 9)
+        const thickness = n * Math.min(1, edge * 2.5) - (1 - l.cover / 100) // > 0 means cloud here
+        if (thickness > 0) ch = l.chars[Math.min(l.chars.length - 1, Math.floor(thickness * l.chars.length * 2.2))]
       }
+      line += ch
     }
+    lines.push(line + line)
   }
-  const streak = (cx: number, cy: number, w: number) => {
-    for (let x = Math.floor(cx - w / 2); x <= cx + w / 2; x++) {
-      const y = Math.round(cy + Math.sin(x / 7) * 0.6)
-      if (y < 0 || y >= rows || rand() < 0.12) continue
-      const col = ((x % cols) + cols) % cols
-      if (grid[y][col] === ' ') grid[y][col] = 'M'
-    }
-  }
-  const scale = cols / 200 // a 1280px-wide poster is about 200 cells
-  const count = (cover: number, perScreen: number) => Math.round((cover / 100) * perScreen * scale)
-  for (let i = 0; i < count(clouds.high, 9); i++) streak(rand() * cols, rows * (0.05 + rand() * 0.18), 18 + rand() * 40)
-  for (let i = 0; i < count(clouds.mid, 7); i++) puff(rand() * cols, rows * (0.22 + rand() * 0.22), 8 + rand() * 14, 3 + rand() * 2.5, true)
-  for (let i = 0; i < count(clouds.low, 5); i++) puff(rand() * cols, rows * (0.5 + rand() * 0.22), 20 + rand() * 26, 6 + rand() * 4, true)
-
-  const fills: Record<string, string> = { L: 'var(--poster-cloud)', M: 'var(--poster-cloud-mid)', S: 'var(--poster-cloud-shade)' }
-  let rects = ''
-  for (let y = 0; y < rows; y++) {
-    const row = grid[y].join('')
-    for (let x = 0; x < cols; ) {
-      let n = 1
-      while (x + n < cols && row[x + n] === row[x]) n++
-      if (row[x] !== ' ') {
-        // Draw each run twice: once in each copy of the sky
-        rects += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${fills[row[x]]}"/>`
-        rects += `<rect x="${x + cols}" y="${y}" width="${n}" height="1" fill="${fills[row[x]]}"/>`
-      }
-      x += n
-    }
-  }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cols * 2} ${rows}" width="${cols * 2 * CLOUD_CELL}" height="${rows * CLOUD_CELL}" shape-rendering="crispEdges">${rects}</svg>`
+  return lines.join('\n')
 }

@@ -26,27 +26,27 @@ const STOPS: Stop[] = [
   { at: -18, stars: 1, colors: { // night
     'sky-top': '#08182c', 'sky-horizon': '#0c3558', ground: '#061626', 'near-lit': '#0e2a44', mid: '#0a2440',
     'mid-lit': '#16395c', far: '#10304f', snow: '#e3eaf2', 'snow-shade': '#b4c3d2', 'far-snow': '#a9bccd',
-    ink: '#e8e4da', name: '#fecc02', star: '#ffffff', cloud: '#3e4e66', 'cloud-mid': '#2f3d54', 'cloud-shade': '#222e42', strip: '#061626', sun: '#ffd28a', overcast: '#141c28' } },
+    ink: '#e8e4da', name: '#fecc02', star: '#ffffff', cloud: '#c7d3df', strip: '#061626', sun: '#ffd28a', overcast: '#141c28' } },
   { at: -9, stars: 0.75, colors: { // blue hour: indigo sky, lavender snow
     'sky-top': '#0b1a40', 'sky-horizon': '#3a3b7c', ground: '#0b1330', 'near-lit': '#18214c', mid: '#1c2858',
     'mid-lit': '#2a356e', far: '#333d77', snow: '#cfcaf2', 'snow-shade': '#9c9bd0', 'far-snow': '#8f8fc4',
-    ink: '#ece8f4', name: '#fecc02', star: '#ffffff', cloud: '#9a95d0', 'cloud-mid': '#7570b0', 'cloud-shade': '#4f4a88', strip: '#0b1330', sun: '#ffb070', overcast: '#25274a' } },
+    ink: '#ece8f4', name: '#fecc02', star: '#ffffff', cloud: '#a9a5d8', strip: '#0b1330', sun: '#ffb070', overcast: '#25274a' } },
   { at: -3, stars: 0.25, colors: { // afterglow: purple mountains, pink alpenglow, orange horizon
     'sky-top': '#1f2a62', 'sky-horizon': '#e8875f', ground: '#1a1434', 'near-lit': '#36234d', mid: '#3a2a5c',
     'mid-lit': '#673c73', far: '#7a4e86', snow: '#f7bccb', 'snow-shade': '#b282b4', 'far-snow': '#d69dba',
-    ink: '#fdf2ea', name: '#fecc02', star: '#ffffff', cloud: '#ffbfae', 'cloud-mid': '#de8f9c', 'cloud-shade': '#7e5a88', strip: '#1a1434', sun: '#ff9a5c', overcast: '#3b2f4e' } },
+    ink: '#fdf2ea', name: '#fecc02', star: '#ffffff', cloud: '#f2a7a6', strip: '#1a1434', sun: '#ff9a5c', overcast: '#3b2f4e' } },
   { at: 3, stars: 0, colors: { // golden hour
     'sky-top': '#2b4f8f', 'sky-horizon': '#ffb36b', ground: '#2a2638', 'near-lit': '#63473f', mid: '#47455f',
     'mid-lit': '#9b6852', far: '#8a7c9a', snow: '#ffdcb3', 'snow-shade': '#b9a6c2', 'far-snow': '#e8c9b5',
-    ink: '#ffffff', name: '#fecc02', star: '#ffffff', cloud: '#ffe2bc', 'cloud-mid': '#ebbaa2', 'cloud-shade': '#9c8398', strip: '#2a2638', sun: '#ffd28a', overcast: '#474757' } },
+    ink: '#ffffff', name: '#fecc02', star: '#ffffff', cloud: '#ffd2a8', strip: '#2a2638', sun: '#ffd28a', overcast: '#474757' } },
   { at: 12, stars: 0, colors: { // daylight: blue sky, white snow, green-grey forest
     'sky-top': '#25599e', 'sky-horizon': '#9cc8ec', ground: '#1d3428', 'near-lit': '#2e5240', mid: '#38526b',
     'mid-lit': '#58778f', far: '#7b98b4', snow: '#ffffff', 'snow-shade': '#c4d4e6', 'far-snow': '#dce8f3',
-    ink: '#ffffff', name: '#fecc02', star: '#ffffff', cloud: '#ffffff', 'cloud-mid': '#e2eaf3', 'cloud-shade': '#b5c5d7', strip: '#1d3428', sun: '#fff6d8', overcast: '#4d6073' } },
+    ink: '#ffffff', name: '#fecc02', star: '#ffffff', cloud: '#ffffff', strip: '#1d3428', sun: '#fff6d8', overcast: '#4d6073' } },
   { at: 50, stars: 0, colors: { // high sun
     'sky-top': '#22579c', 'sky-horizon': '#8ec1ec', ground: '#1b3426', 'near-lit': '#31583f', mid: '#3a566f',
     'mid-lit': '#5f7f97', far: '#80a0bc', snow: '#ffffff', 'snow-shade': '#cad9ea', 'far-snow': '#e0ebf5',
-    ink: '#ffffff', name: '#fecc02', star: '#ffffff', cloud: '#ffffff', 'cloud-mid': '#e6edf5', 'cloud-shade': '#bccbdb', strip: '#1b3426', sun: '#fffbea', overcast: '#506579' } },
+    ink: '#ffffff', name: '#fecc02', star: '#ffffff', cloud: '#ffffff', strip: '#1b3426', sun: '#fffbea', overcast: '#506579' } },
 ]
 
 const hex = (h: string) => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16))

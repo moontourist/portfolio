@@ -148,9 +148,7 @@
 @property --poster-ink { syntax: "<color>"; inherits: true; initial-value: #e8e4da; }
 @property --poster-name { syntax: "<color>"; inherits: true; initial-value: #fecc02; }
 @property --poster-star { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
-@property --poster-cloud { syntax: "<color>"; inherits: true; initial-value: #3e4e66; }
-@property --poster-cloud-mid { syntax: "<color>"; inherits: true; initial-value: #2f3d54; }
-@property --poster-cloud-shade { syntax: "<color>"; inherits: true; initial-value: #222e42; }
+@property --poster-cloud { syntax: "<color>"; inherits: true; initial-value: #c7d3df; }
 @property --poster-strip { syntax: "<color>"; inherits: true; initial-value: #061626; }
 @property --poster-sun { syntax: "<color>"; inherits: true; initial-value: #ffd28a; }
 @property --stars { syntax: "<number>"; inherits: true; initial-value: 1; }
@@ -158,8 +156,7 @@
 :root {
   transition-property: --poster-sky-top, --poster-sky-horizon, --poster-ground, --poster-near-lit, --poster-mid,
     --poster-mid-lit, --poster-far, --poster-snow, --poster-snow-shade, --poster-far-snow, --poster-ink,
-    --poster-name, --poster-star, --poster-cloud, --poster-cloud-mid, --poster-cloud-shade, --poster-strip,
-    --poster-sun, --stars;
+    --poster-name, --poster-star, --poster-cloud, --poster-strip, --poster-sun, --stars;
   transition-duration: 1500ms;
 }
 /* Poster text gets a thin outline in the sky's own colour. On open sky it's invisible; when a cloud

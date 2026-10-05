@@ -4,7 +4,7 @@ import { logo, landscape, barcode, crosshair, icon, sun } from './art'
 import { peaks } from './peaks'
 import { skyAbove, project } from './sky'
 import { sunPosition, palette, lightName } from './daylight'
-import { cloudsAt, cloudScene, CLOUD_CELL } from './weather'
+import { cloudsAt, cloudField } from './weather'
 
 // Filled in at build time by vite.config.ts
 declare const __COMMIT__: string
@@ -103,7 +103,7 @@ app.innerHTML = `
       <pre id="sky" aria-hidden="true" class="sky-stars pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star)"></pre>
       <div id="sun" aria-hidden="true" class="pointer-events-none absolute hidden size-7 -translate-1/2">${sun}</div>
       <div aria-hidden="true" class="intro-fade pointer-events-none absolute inset-0 overflow-hidden">
-        <div id="clouds" class="drift w-max"></div>
+        <pre id="clouds" class="drift w-max font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
       </div>
       <div class="intro-fade">${corners}</div>
       <div class="intro-fade halo relative max-w-4xl px-6 pt-16 md:px-12">
@@ -257,7 +257,7 @@ setInterval(() => showLight(peaks[peakIndex]), 60_000)
 function showClouds(p: (typeof peaks)[number]) {
   const layer = document.querySelector<HTMLElement>('#clouds')!
   const note = document.querySelector<HTMLElement>('#weather')!
-  layer.innerHTML = ''
+  layer.textContent = ''
   note.textContent = ''
   cloudCover = 0
   // ?clouds=low,mid,high (percentages) previews any weather instead of the live reading
@@ -268,11 +268,9 @@ function showClouds(p: (typeof peaks)[number]) {
   live.then(clouds => {
     if (!clouds || peaks[peakIndex] !== p) return
     const box = document.querySelector('#sky')!.getBoundingClientRect()
-    // Seeded by peak and hour, so the clouds stay put while you look, and change through the day
-    const seed = [...p.name].reduce((h, c) => h * 31 + c.charCodeAt(0), 0) + Math.floor(now().getTime() / 3_600_000)
     cloudCover = clouds.total
     showLight(p)
-    layer.innerHTML = cloudScene(clouds, Math.ceil(box.width / CLOUD_CELL), Math.ceil(box.height / CLOUD_CELL), seed)
+    layer.textContent = cloudField(clouds, Math.ceil(box.height / CELL.height), Math.ceil(box.width / CELL.width))
     note.innerHTML = `Cloud cover ${clouds.total}% right now, live from <a class="underline underline-offset-2" href="https://open-meteo.com/">Open-Meteo</a>`
   })
 }
