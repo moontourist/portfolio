@@ -62,26 +62,30 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* Bold italic Times, after the Evangelion title cards */
-.display {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 0.85;
-  text-transform: uppercase;
-  /* Squash sideways so the letters read tall. Lower = taller and thinner. */
-  transform: scaleX(0.7);
-  transform-origin: left;
-}
+/* Custom pieces live in the components layer so Tailwind utilities (opacity-100, etc.) can still override them */
+@layer components {
+  /* Bold italic Times, after the Evangelion title cards */
+  .display {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 0.85;
+    text-transform: uppercase;
+    /* Squash sideways so the letters read tall. Lower = taller and thinner. */
+    transform: scaleX(0.7);
+    transform-origin: left;
+  }
 
-/* Small mono readout labels, used only inside the terminal panel */
-.label {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  opacity: 0.6;
+  /* Small mono readouts for real data: coordinates, the peak strip, status field names.
+     75% strength keeps them quiet but above the 4.5:1 contrast minimum. */
+  .readout {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
 }
 
 /* Block cursor at the end of the terminal panel: the page's one bit of ambient motion */

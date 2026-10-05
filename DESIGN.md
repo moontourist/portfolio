@@ -149,7 +149,7 @@ The Swedish flag over a winter landscape: yellow and blue for identity, navy and
 - **Title** (500, 1.125rem): project names, set in mono because they are repo names.
 - **Body lead** (400, 1.125rem, line-height 1.625): the one-line introduction in the poster and the About paragraph. Keep to about 42rem wide.
 - **Body** (400, 1rem, line-height 1.5): project descriptions, skill details, footer.
-- **Label** (400, 0.75rem, 0.15em tracking, uppercase, 60% opacity): data readouts only, such as coordinates, the peak strip and status panel field names.
+- **Label** (400, 0.75rem, 0.15em tracking, uppercase, 75% opacity, the `.readout` class): data readouts only, such as coordinates, the peak strip and status panel field names.
 
 ### Named Rules
 **The Readout Rule.** Uppercase tracked labels label data: a coordinate, an elevation, a status field. They never sit above headings or paragraphs as decoration.
