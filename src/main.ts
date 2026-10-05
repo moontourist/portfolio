@@ -4,7 +4,7 @@ import { logo, landscape, barcode, crosshair, icon, sun } from './art'
 import { peaks } from './peaks'
 import { skyAbove, project } from './sky'
 import { sunPosition, palette, lightName } from './daylight'
-import { cloudsAt, cloudField } from './weather'
+import { cloudsAt, cloudScene, CLOUD_CELL } from './weather'
 
 // Filled in at build time by vite.config.ts
 declare const __COMMIT__: string
@@ -103,10 +103,10 @@ app.innerHTML = `
       <pre id="sky" aria-hidden="true" class="sky-stars pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star)"></pre>
       <div id="sun" aria-hidden="true" class="pointer-events-none absolute hidden size-7 -translate-1/2">${sun}</div>
       <div aria-hidden="true" class="intro-fade pointer-events-none absolute inset-0 overflow-hidden">
-        <pre id="clouds" class="drift w-max font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
+        <div id="clouds" class="drift w-max"></div>
       </div>
       <div class="intro-fade">${corners}</div>
-      <div class="intro-fade relative max-w-4xl px-6 pt-16 md:px-12">
+      <div class="intro-fade halo relative max-w-4xl px-6 pt-16 md:px-12">
         <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
         <p id="sky-note" class="readout mt-1"></p>
         <p id="weather" class="readout mt-1"></p>
@@ -232,6 +232,7 @@ function showPeak(p: (typeof peaks)[number], first = false) {
   setTimeout(() => document.querySelectorAll('header .draw').forEach(finishAll), first ? INTRO_DONE_AT : 2200)
 }
 
+let cloudCover = 0 // latest cloud cover for the current peak, in percent; greys the sky when overcast
 // The real light at the peak right now: sky colours, how many stars show, and the sun if it's in view
 const peakTime = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit', hour12: false })
 function showLight(p: (typeof peaks)[number]) {
@@ -239,7 +240,7 @@ function showLight(p: (typeof peaks)[number]) {
   const { alt, az } = sunPosition(p.lat, p.lon, moment)
   document.querySelector('#sky-note')!.textContent =
     `${lightName(alt, az)}, ${peakTime.format(moment)} local time. The real sky, looking ${p.look}`
-  const { colors, stars } = palette(alt)
+  const { colors, stars } = palette(alt, cloudCover / 100)
   const root = document.documentElement.style
   for (const [key, value] of Object.entries(colors)) root.setProperty(`--poster-${key}`, value)
   root.setProperty('--stars', stars.toFixed(2))
@@ -256,12 +257,22 @@ setInterval(() => showLight(peaks[peakIndex]), 60_000)
 function showClouds(p: (typeof peaks)[number]) {
   const layer = document.querySelector<HTMLElement>('#clouds')!
   const note = document.querySelector<HTMLElement>('#weather')!
-  layer.textContent = ''
+  layer.innerHTML = ''
   note.textContent = ''
-  cloudsAt(p.lat, p.lon).then(clouds => {
+  cloudCover = 0
+  // ?clouds=low,mid,high (percentages) previews any weather instead of the live reading
+  const preview = new URLSearchParams(location.search).get('clouds')?.split(',').map(Number)
+  const live = preview?.length === 3
+    ? Promise.resolve({ low: preview[0], mid: preview[1], high: preview[2], total: Math.max(...preview) })
+    : cloudsAt(p.lat, p.lon)
+  live.then(clouds => {
     if (!clouds || peaks[peakIndex] !== p) return
     const box = document.querySelector('#sky')!.getBoundingClientRect()
-    layer.textContent = cloudField(clouds, Math.ceil(box.height / CELL.height), Math.ceil(box.width / CELL.width))
+    // Seeded by peak and hour, so the clouds stay put while you look, and change through the day
+    const seed = [...p.name].reduce((h, c) => h * 31 + c.charCodeAt(0), 0) + Math.floor(now().getTime() / 3_600_000)
+    cloudCover = clouds.total
+    showLight(p)
+    layer.innerHTML = cloudScene(clouds, Math.ceil(box.width / CLOUD_CELL), Math.ceil(box.height / CLOUD_CELL), seed)
     note.innerHTML = `Cloud cover ${clouds.total}% right now, live from <a class="underline underline-offset-2" href="https://open-meteo.com/">Open-Meteo</a>`
   })
 }
