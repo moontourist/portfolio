@@ -47,7 +47,7 @@ const SCENE_FILLS: Record<string, string> = {
   '%': 'var(--poster-mid)', // the peak's own range in shadow, a step lighter
   'm': 'var(--poster-mid-lit)', // the peak's own range in sunlight
   '=': 'var(--poster-far)', // ranges beyond, lighter again
-  '*': '#fff', // sunlit snow
+  '*': 'var(--poster-snow)', // sunlit snow
   's': 'var(--poster-snow-shade)', // snow in shadow
   '+': 'var(--poster-far-snow)', // distant snow
 }
@@ -170,3 +170,7 @@ export function icon(name: IconName): string {
     <g fill="#fecc02">${pixels(grid, '+', 1)}</g>
   </svg>`
 }
+
+// The sun: a small pixel disc in the palette's sun colour
+const SUN = ['..###..', '.#####.', '#######', '#######', '#######', '.#####.', '..###..']
+export const sun = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7 7" shape-rendering="crispEdges" class="size-full" fill="var(--poster-sun)">${pixels(SUN, '#', 1)}</svg>`

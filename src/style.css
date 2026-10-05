@@ -132,35 +132,63 @@
   transform: translate(0.7px, 0.7px) rotate(45deg);
 }
 
-/* Poster colours. Night is the default; ?poster=yellow shows the softer-yellow version for comparison.
-   The poster keeps the same colours in light and dark mode. */
+/* Poster colours. main.ts sets these from the real light at the peak (see daylight.ts); these defaults
+   are the night palette, shown until the script runs. ?poster=yellow shows the static yellow version.
+   Registering them as colours lets them ease from one light to the next instead of snapping. */
+@property --poster-sky-top { syntax: "<color>"; inherits: true; initial-value: #08182c; }
+@property --poster-sky-horizon { syntax: "<color>"; inherits: true; initial-value: #0c3558; }
+@property --poster-ground { syntax: "<color>"; inherits: true; initial-value: #061626; }
+@property --poster-near-lit { syntax: "<color>"; inherits: true; initial-value: #0e2a44; }
+@property --poster-mid { syntax: "<color>"; inherits: true; initial-value: #0a2440; }
+@property --poster-mid-lit { syntax: "<color>"; inherits: true; initial-value: #16395c; }
+@property --poster-far { syntax: "<color>"; inherits: true; initial-value: #10304f; }
+@property --poster-snow { syntax: "<color>"; inherits: true; initial-value: #e3eaf2; }
+@property --poster-snow-shade { syntax: "<color>"; inherits: true; initial-value: #b4c3d2; }
+@property --poster-far-snow { syntax: "<color>"; inherits: true; initial-value: #a9bccd; }
+@property --poster-ink { syntax: "<color>"; inherits: true; initial-value: #e8e4da; }
+@property --poster-name { syntax: "<color>"; inherits: true; initial-value: #fecc02; }
+@property --poster-star { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+@property --poster-cloud { syntax: "<color>"; inherits: true; initial-value: #c7d3df; }
+@property --poster-strip { syntax: "<color>"; inherits: true; initial-value: #061626; }
+@property --poster-sun { syntax: "<color>"; inherits: true; initial-value: #ffd28a; }
+@property --stars { syntax: "<number>"; inherits: true; initial-value: 1; }
+
 :root {
-  --poster-sky: #0c3558;    /* night sky, a lifted Fjällnatt */
-  --poster-ground: #061626; /* mountain rock and the strip it stands on */
-  --poster-ink: #e8e4da;    /* Månljus: coordinates, intro, crosshairs */
-  --poster-name: #fecc02;   /* Flaggul: the name is the flag's yellow on night blue */
-  --poster-star: #ffffff;
-  --poster-near-lit: #0e2a44; /* sunlit faces of the foothills */
-  --poster-mid: #0a2440;    /* the peak's own range, a step lighter than the foothills */
-  --poster-mid-lit: #16395c;
-  --poster-snow-shade: #b4c3d2;
-  --poster-far: #10304f;    /* ranges beyond, fading toward the sky */
-  --poster-far-snow: #a9bccd;
-  --poster-cloud: #c7d3df;
+  transition-property: --poster-sky-top, --poster-sky-horizon, --poster-ground, --poster-near-lit, --poster-mid,
+    --poster-mid-lit, --poster-far, --poster-snow, --poster-snow-shade, --poster-far-snow, --poster-ink,
+    --poster-name, --poster-star, --poster-cloud, --poster-strip, --poster-sun, --stars;
+  transition-duration: 1500ms;
 }
 :root[data-poster="yellow"] {
-  --poster-sky: #f2c94c;    /* a warmer, slightly muted print yellow */
-  --poster-ground: #163a5c; /* navy lifted a touch */
-  --poster-ink: #12161c;
-  --poster-name: #12161c;
-  --poster-star: #12161c;
+  --poster-sky-top: #f2c94c;
+  --poster-sky-horizon: #f2c94c;
+  --poster-ground: #163a5c;
   --poster-near-lit: #1f4a70;
   --poster-mid: #2b4f70;
   --poster-mid-lit: #3c6488;
-  --poster-snow-shade: #d9dde2;
   --poster-far: #4a6a85;
+  --poster-snow: #ffffff;
+  --poster-snow-shade: #d9dde2;
   --poster-far-snow: #fdf3d0;
+  --poster-ink: #12161c;
+  --poster-name: #12161c;
+  --poster-star: #12161c;
   --poster-cloud: #ffffff;
+  --poster-strip: #163a5c;
+}
+
+/* The sky: its top colour holds behind the text, then blends to the horizon colour behind the mountains */
+.poster-sky {
+  background: linear-gradient(to bottom, var(--poster-sky-top) 0 62%, var(--poster-sky-horizon));
+}
+
+/* Stars fade with daylight (--stars). During the first-load rain they're always visible, then settle. */
+.sky-stars {
+  opacity: calc(0.6 * var(--stars));
+  transition: opacity 2500ms ease-in-out;
+}
+.intro .sky-stars {
+  opacity: 0.6;
 }
 
 /* The poster's one authored moment: the mountain draws in from the ground up, row by row,

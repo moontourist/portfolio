@@ -1,8 +1,9 @@
 import './style.css'
 import { profile, status, crafts, projects, links } from './data'
-import { logo, landscape, barcode, crosshair, icon } from './art'
+import { logo, landscape, barcode, crosshair, icon, sun } from './art'
 import { peaks } from './peaks'
-import { skyAbove } from './sky'
+import { skyAbove, project } from './sky'
+import { sunPosition, palette, lightName } from './daylight'
 import { cloudsAt, cloudField } from './weather'
 
 // Filled in at build time by vite.config.ts
@@ -13,6 +14,10 @@ declare const __BUILT__: string
 let peakIndex = Math.floor(Math.random() * peaks.length)
 const peak = peaks[peakIndex]
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+// The moment the sky shows: now, or any time given as ?at=2026-10-05T18:45-07:00 (handy for previewing sunsets)
+const atParam = new URLSearchParams(location.search).get('at')
+const now = () => (atParam ? new Date(atParam) : new Date())
 
 // First-load timeline (ms). The rain builds the sky, the mountain draws in, then the rest of the page fades in.
 // The matching mountain/barcode delays live in style.css (--intro). Slow everything down by raising these together.
@@ -40,7 +45,7 @@ function drawSky(p: (typeof peaks)[number], rain: boolean) {
   const box = sky.getBoundingClientRect()
   const grid = { rows: Math.ceil(box.height / CELL.height), cols: Math.ceil(box.width / CELL.width), cellWidth: CELL.width, cellHeight: CELL.height }
   const lines: string[][] = Array.from({ length: grid.rows }, () => Array(grid.cols).fill(' '))
-  for (const s of skyAbove(p.lat, p.lon, new Date(), grid, p.look)) lines[s.row][s.col] = star(s.char, s.row, rain)
+  for (const s of skyAbove(p.lat, p.lon, now(), grid, p.look)) lines[s.row][s.col] = star(s.char, s.row, rain)
   sky.innerHTML = lines.map(l => l.join('')).join('\n')
 }
 
@@ -91,8 +96,9 @@ app.innerHTML = `
 
   <header>
     <!-- Poster colours come from the --poster-* variables in style.css -->
-    <div class="draw relative overflow-hidden bg-(--poster-sky) text-(--poster-ink) md:pb-64">
-      <pre id="sky" aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star) opacity-60"></pre>
+    <div class="draw poster-sky relative overflow-hidden text-(--poster-ink) md:pb-64">
+      <pre id="sky" aria-hidden="true" class="sky-stars pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star)"></pre>
+      <div id="sun" aria-hidden="true" class="pointer-events-none absolute hidden size-7 -translate-1/2">${sun}</div>
       <div aria-hidden="true" class="intro-fade pointer-events-none absolute inset-0 overflow-hidden">
         <pre id="clouds" class="drift w-max font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
       </div>
@@ -108,7 +114,7 @@ app.innerHTML = `
            Its height follows the screen width; narrow screens crop the sides, keeping the peak in view. -->
       <div id="peak-art" aria-hidden="true" class="relative mt-8 h-[clamp(9rem,20vw,17rem)] w-full cursor-pointer text-(--poster-ground) md:absolute md:inset-x-0 md:bottom-0 md:mt-0"></div>
     </div>
-    <div class="draw flex items-center justify-between gap-6 bg-(--poster-ground) px-6 py-3 text-white md:px-12">
+    <div class="draw flex items-center justify-between gap-6 bg-(--poster-strip) px-6 py-3 text-white md:px-12">
       <div class="intro-fade flex flex-wrap items-center gap-x-5 gap-y-1">
         <p id="peak-name" aria-live="polite" class="readout opacity-100"></p>
         <button id="next-peak" type="button" class="readout inline-flex items-center underline underline-offset-4 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current pointer-coarse:min-h-11">Next peak</button>
@@ -214,7 +220,7 @@ function showPeak(p: (typeof peaks)[number], first = false) {
   // On first load the coordinates decode as they fade in; after that, straight away
   setTimeout(() => scramble(document.querySelector<HTMLElement>('#coords')!, coords), first && !reduceMotion ? FADE_IN_AT : 0)
   drawSky(p, first && !reduceMotion)
-  document.querySelector('#sky-note')!.textContent = `The real sky behind it right now, looking ${p.look}`
+  showLight(p)
   document.querySelector('#peak-art')!.innerHTML = landscape(p.grid)
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
   document.querySelector('#barcode')!.innerHTML = barcode(p.name)
@@ -222,6 +228,27 @@ function showPeak(p: (typeof peaks)[number], first = false) {
   // Same safety net for the draw-in: once it should be over, jump the poster's animations to their end
   setTimeout(() => document.querySelectorAll('header .draw').forEach(finishAll), first ? INTRO_DONE_AT : 2200)
 }
+
+// The real light at the peak right now: sky colours, how many stars show, and the sun if it's in view
+const peakTime = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit', hour12: false })
+function showLight(p: (typeof peaks)[number]) {
+  const moment = now()
+  const { alt, az } = sunPosition(p.lat, p.lon, moment)
+  document.querySelector('#sky-note')!.textContent =
+    `${lightName(alt, az)}, ${peakTime.format(moment)} local time. The real sky, looking ${p.look}`
+  if (document.documentElement.dataset.poster === 'yellow') return // the static yellow version keeps its colours
+  const { colors, stars } = palette(alt)
+  const root = document.documentElement.style
+  for (const [key, value] of Object.entries(colors)) root.setProperty(`--poster-${key}`, value)
+  root.setProperty('--stars', stars.toFixed(2))
+  const sky = document.querySelector('#sky')!.getBoundingClientRect()
+  const at = project(alt, az, p.look, { rows: sky.height / CELL.height, cols: sky.width / CELL.width, cellWidth: CELL.width, cellHeight: CELL.height })
+  const disc = document.querySelector<HTMLElement>('#sun')!
+  disc.classList.toggle('hidden', !at)
+  if (at) Object.assign(disc.style, { left: `${at.x * 100}%`, top: `${at.y * sky.height}px` })
+}
+// The light changes slowly; check it every minute
+setInterval(() => showLight(peaks[peakIndex]), 60_000)
 
 // Live clouds over the peak. Ignores answers that arrive after the visitor has moved to another peak.
 function showClouds(p: (typeof peaks)[number]) {
@@ -254,6 +281,7 @@ addEventListener('resize', () => {
   clearTimeout(resizeTimer)
   resizeTimer = setTimeout(() => {
     drawSky(peaks[peakIndex], false)
+    showLight(peaks[peakIndex])
     showClouds(peaks[peakIndex])
   }, 200)
 })
