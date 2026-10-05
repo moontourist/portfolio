@@ -13,6 +13,7 @@ const PRESSURE_ITERATIONS = 24
 const BREEZE_SECONDS = 2 // how quickly disturbed air settles back to the breeze
 const RELAX_SECONDS = 4 // how quickly the clouds settle back to the live pattern
 const OBSTACLE_RADIUS = 4 // pointer size, in cell widths (about 29 px)
+const MAX_PUSH = 12 // fastest the pointer can push the air, cell widths per second; higher tears cloud apart
 
 export class CloudSim {
   readonly cols: number
@@ -50,7 +51,10 @@ export class CloudSim {
 
   /** The pointer is at cell (x, y), moving (vx, vy) cell widths per second. */
   setObstacle(x: number, y: number, vx: number, vy: number) {
-    this.obstacle = { x, y, vx, vy }
+    // A fast flick still moves the pointer, but only pushes the air so hard
+    const speed = Math.hypot(vx, vy)
+    const scale = speed > MAX_PUSH ? MAX_PUSH / speed : 1
+    this.obstacle = { x, y, vx: vx * scale, vy: vy * scale }
   }
 
   clearObstacle() {
@@ -167,8 +171,33 @@ export class CloudSim {
 
     // 4. Carry the clouds on the air. The pointer pushes cloud out of its own space; away from it,
     //    the clouds ease back toward the live pattern, which drifts with the breeze.
+    //    Transport is MacCormack: a plain step back along the flow, a step forward again to measure the
+    //    blur that introduced, and a correction for it, clamped to the cells it came from. Plain
+    //    resampling smears thin cloud across clear sky; this keeps cloud edges where they are.
     this.windOffset = (this.windOffset + this.wind * dt) % cols
     const relax = 1 - Math.exp(-dt / RELAX_SECONDS)
+    const back = this.densityNext // reuse as scratch: the plain backward step
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const k = y * cols + x
+        back[k] = this.sample(this.density, x - this.u[k] * dt, y - this.v[k] * dt * ASPECT)
+      }
+    }
+    const corrected = this.pressure // reuse as scratch: pressure isn't needed again this step
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        const k = y * cols + x
+        const sx = x - this.u[k] * dt, sy = Math.min(rows - 1, Math.max(0, y - this.v[k] * dt * ASPECT))
+        const forward = this.sample(back, x + this.u[k] * dt, y + this.v[k] * dt * ASPECT)
+        let value = back[k] + 0.5 * (this.density[k] - forward)
+        // Never brighter or dimmer than the four cells it was carried from
+        const x0 = Math.floor(sx), y0 = Math.floor(sy)
+        const a = this.density[this.at(x0, y0)], b = this.density[this.at(x0 + 1, y0)]
+        const c = this.density[this.at(x0, y0 + 1)], d = this.density[this.at(x0 + 1, y0 + 1)]
+        value = Math.min(Math.max(a, b, c, d), Math.max(Math.min(a, b, c, d), value))
+        corrected[k] = value
+      }
+    }
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         const k = y * cols + x
@@ -176,7 +205,7 @@ export class CloudSim {
           this.densityNext[k] = 0
           continue
         }
-        const carried = this.sample(this.density, x - this.u[k] * dt, y - this.v[k] * dt * ASPECT)
+        const carried = corrected[k]
         const live = this.sample(this.target, x - this.windOffset, y)
         // No healing right around the pointer, so its gap holds while it's there
         const near = Math.min(1, Math.max(0, (this.pointerDistance(x, y) - OBSTACLE_RADIUS) / (OBSTACLE_RADIUS * 1.5)))

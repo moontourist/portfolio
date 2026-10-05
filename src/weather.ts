@@ -76,7 +76,7 @@ export function cloudDensity(clouds: Clouds, rows: number, cols: number): Float3
 
 /** The ASCII character for a thickness at a height (0-1 down the sky): blank when clear. */
 export function cloudChar(thickness: number, y: number): string {
-  if (thickness <= 0.004) return ' '
+  if (thickness <= 0.012) return ' ' // the faintest wisps stay invisible, so motion can't smear haze across clear sky
   const band = [...BANDS].reverse().find(b => y >= b.from) ?? BANDS[0] // the lowest band at or above this height
   const chars = band.chars
   return chars[Math.min(chars.length - 1, Math.floor(thickness * chars.length * 2.2))]
