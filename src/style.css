@@ -162,7 +162,7 @@
 :root { --intro: 1700ms; }
 .draw .row {
   animation: pixel-in 150ms ease-out backwards;
-  animation-delay: calc(var(--intro) + 200ms + var(--r) * 110ms);
+  animation-delay: calc(var(--intro) + 200ms + var(--r) * (1400ms / var(--steps))); /* whole mountain in ~1.4s */
 }
 .draw .barcode svg {
   animation: print 600ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--intro) + 1700ms) backwards;

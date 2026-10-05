@@ -1,0 +1,10 @@
+[
+  {"name": "Mt. Baker", "lat": 48.7768, "lon": 121.8145, "look": "north", "width": 16, "depth": 12, "snowline": 2100, "cols": 100, "rows": 30},
+  {"name": "Mt. Rainier", "lat": 46.8529, "lon": 121.7604, "look": "north", "width": 22, "depth": 14, "snowline": 2500, "cols": 100, "rows": 30},
+  {"name": "Mt. Adams", "lat": 46.2025, "lon": 121.4908, "look": "north", "width": 18, "depth": 14, "snowline": 2600, "cols": 100, "rows": 30},
+  {"name": "Mt. St. Helens", "lat": 46.1912, "lon": 122.1944, "look": "south", "width": 14, "depth": 10, "snowline": 2200, "cols": 100, "rows": 30},
+  {"name": "Glacier Peak", "lat": 48.1125, "lon": 121.1139, "look": "north", "width": 16, "depth": 7, "snowline": 2300, "cols": 100, "rows": 30},
+  {"name": "Mt. Shuksan", "lat": 48.8311, "lon": 121.6031, "look": "south", "width": 12, "depth": 8, "snowline": 2000, "cols": 100, "rows": 30},
+  {"name": "Mt. Olympus", "lat": 47.8014, "lon": 123.7111, "look": "north", "width": 14, "depth": 10, "snowline": 1900, "cols": 100, "rows": 30},
+  {"name": "Mt. Stuart", "lat": 47.4751, "lon": 120.9026, "look": "north", "width": 12, "depth": 8, "snowline": 2500, "cols": 100, "rows": 30}
+]

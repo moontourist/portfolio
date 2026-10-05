@@ -27,7 +27,7 @@ function horizon(raDeg: number, decDeg: number, latDeg: number, localSiderealDeg
 }
 
 /**
- * Stars visible from (lat, lonWest) at `date`, looking south, laid onto a character grid.
+ * Stars visible from (lat, lonWest) at `date`, facing `look`, laid onto a character grid.
  * The bottom of the grid is the horizon and the top is `topAltitude` degrees up; the grid's width
  * covers the same number of degrees per pixel, so the sky isn't stretched (capped at 180° wide).
  */
@@ -36,6 +36,7 @@ export function skyAbove(
   lonWest: number,
   date: Date,
   grid: { rows: number; cols: number; cellWidth: number; cellHeight: number },
+  look: 'north' | 'south' = 'south',
   topAltitude = 60,
 ): SkyStar[] {
   const localSidereal = siderealDegrees(date) - lonWest
@@ -46,9 +47,11 @@ export function skyAbove(
   for (const [ra, dec, mag] of STARS) {
     const { alt, az } = horizon(ra, dec, lat, localSidereal)
     if (alt <= 0 || alt >= topAltitude) continue
-    const offset = az - 180 // degrees west (+) or east (-) of due south
+    // Degrees to the viewer's right of straight ahead. Facing south, east is on the left;
+    // facing north, west is on the left.
+    const ahead = look === 'north' ? 0 : 180
+    const offset = ((az - ahead + 540) % 360) - 180
     if (Math.abs(offset) >= halfWidth) continue
-    // Facing south, east is on the left and west on the right
     const col = Math.floor(((offset + halfWidth) / (2 * halfWidth)) * grid.cols)
     const row = Math.floor((1 - alt / topAltitude) * grid.rows)
     const key = `${row},${col}`

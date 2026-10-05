@@ -39,7 +39,7 @@ function drawSky(p: (typeof peaks)[number], rain: boolean) {
   const box = sky.getBoundingClientRect()
   const grid = { rows: Math.ceil(box.height / CELL.height), cols: Math.ceil(box.width / CELL.width), cellWidth: CELL.width, cellHeight: CELL.height }
   const lines: string[][] = Array.from({ length: grid.rows }, () => Array(grid.cols).fill(' '))
-  for (const s of skyAbove(p.lat, p.lon, new Date(), grid)) lines[s.row][s.col] = star(s.char, s.row, rain)
+  for (const s of skyAbove(p.lat, p.lon, new Date(), grid, p.look)) lines[s.row][s.col] = star(s.char, s.row, rain)
   sky.innerHTML = lines.map(l => l.join('')).join('\n')
 }
 
@@ -90,12 +90,12 @@ app.innerHTML = `
 
   <header>
     <!-- Poster colours come from the --poster-* variables in style.css -->
-    <div class="draw relative overflow-hidden bg-(--poster-sky) text-(--poster-ink) md:pb-44">
+    <div class="draw relative overflow-hidden bg-(--poster-sky) text-(--poster-ink) md:pb-56">
       <pre id="sky" aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star) opacity-60"></pre>
       <div class="intro-fade">${corners}</div>
       <div class="intro-fade relative max-w-4xl px-6 pt-16 md:px-12">
         <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
-        <p class="readout mt-1">The real sky above it right now, facing south</p>
+        <p id="sky-note" class="readout mt-1"></p>
         <h1 class="display mt-6 text-7xl text-(--poster-name) sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
         <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
       </div>
@@ -208,6 +208,7 @@ function showPeak(p: (typeof peaks)[number], first = false) {
   // On first load the coordinates decode as they fade in; after that, straight away
   setTimeout(() => scramble(document.querySelector<HTMLElement>('#coords')!, coords), first && !reduceMotion ? FADE_IN_AT : 0)
   drawSky(p, first && !reduceMotion)
+  document.querySelector('#sky-note')!.textContent = `The real sky behind it right now, looking ${p.look}`
   document.querySelector('#peak-art')!.innerHTML = landscape(p.grid)
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
   document.querySelector('#barcode')!.innerHTML = barcode(p.name)

@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Elevation tile cache and output from tools/skyline.py
+tools/*.png
+tools/grids.json

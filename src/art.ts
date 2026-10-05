@@ -49,7 +49,7 @@ export function landscape(grid: string[]): string {
       <g fill="#fff">${pixels([row], '*', 1, 0, y)}</g>
     </g>`)
     .join('')
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${grid.length}" shape-rendering="crispEdges">${rows}</svg>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${grid.length}" shape-rendering="crispEdges" style="--steps:${grid.length}">${rows}</svg>`
 }
 
 // A barcode made from the bits of a string: a 1 is a wide bar, a 0 a thin one
