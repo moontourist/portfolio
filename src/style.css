@@ -140,7 +140,10 @@
   --poster-ink: #e8e4da;    /* Månljus: coordinates, intro, crosshairs */
   --poster-name: #fecc02;   /* Flaggul: the name is the flag's yellow on night blue */
   --poster-star: #ffffff;
+  --poster-near-lit: #0e2a44; /* sunlit faces of the foothills */
   --poster-mid: #0a2440;    /* the peak's own range, a step lighter than the foothills */
+  --poster-mid-lit: #16395c;
+  --poster-snow-shade: #b4c3d2;
   --poster-far: #10304f;    /* ranges beyond, fading toward the sky */
   --poster-far-snow: #a9bccd;
   --poster-cloud: #c7d3df;
@@ -151,7 +154,10 @@
   --poster-ink: #12161c;
   --poster-name: #12161c;
   --poster-star: #12161c;
+  --poster-near-lit: #1f4a70;
   --poster-mid: #2b4f70;
+  --poster-mid-lit: #3c6488;
+  --poster-snow-shade: #d9dde2;
   --poster-far: #4a6a85;
   --poster-far-snow: #fdf3d0;
   --poster-cloud: #ffffff;

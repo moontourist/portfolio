@@ -42,10 +42,13 @@ export function logo(): string {
 // A mountain scene. Each row is its own group with --r = rows from the bottom, so CSS can draw it in
 // from the ground up. Runs of the same character become one wide rect, which keeps big scenes light.
 const SCENE_FILLS: Record<string, string> = {
-  '#': 'currentColor', // near foothills, in the poster's ground colour
-  '%': 'var(--poster-mid)', // the peak's own range, a step lighter
+  '#': 'currentColor', // near foothills in shadow, in the poster's ground colour
+  'h': 'var(--poster-near-lit)', // near foothills in sunlight
+  '%': 'var(--poster-mid)', // the peak's own range in shadow, a step lighter
+  'm': 'var(--poster-mid-lit)', // the peak's own range in sunlight
   '=': 'var(--poster-far)', // ranges beyond, lighter again
-  '*': '#fff', // snow
+  '*': '#fff', // sunlit snow
+  's': 'var(--poster-snow-shade)', // snow in shadow
   '+': 'var(--poster-far-snow)', // distant snow
 }
 export function landscape(grid: string[]): string {
