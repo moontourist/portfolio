@@ -168,6 +168,16 @@
 .halo h1 {
   -webkit-text-stroke-width: 10px;
 }
+/* The small readouts sit in the high cloud band, and an outline can't fill the gaps between their spaced-out
+   letters, so they get a solid patch of sky instead (the outline doesn't change layout). Faded by colour,
+   not opacity, so the patch stays solid. */
+.halo .readout {
+  width: fit-content;
+  opacity: 1;
+  color: color-mix(in oklab, var(--poster-ink) 75%, transparent);
+  background: var(--poster-sky-top);
+  outline: 3px solid var(--poster-sky-top);
+}
 
 /* The sky: its top colour holds behind the text, then blends to the horizon colour behind the mountains */
 .poster-sky {

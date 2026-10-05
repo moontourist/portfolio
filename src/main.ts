@@ -68,8 +68,8 @@ const corners = ['top-3 left-3', 'top-3 right-3', 'hidden md:block bottom-3 left
 
 // Section heading: squashed serif with a yellow bar. Kept smaller than the hero name.
 // Sections are separated by space, not rules: generous between groups, tight from heading to content.
-const section = (title: string, body: string) => `
-  <section class="mt-16 first:mt-0 lg:mt-24 lg:first:mt-0">
+const section = (title: string, body: string, place = '') => `
+  <section class="mt-16 first:mt-0 lg:mt-24 lg:first:mt-0 ${place}">
     <h2 class="mb-6 border-l-4 border-secondary pl-4 text-4xl sm:text-5xl"><span class="display inline-block">${title}</span></h2>
     ${body}
   </section>`
@@ -138,10 +138,10 @@ app.innerHTML = `
   </header>
 
   <!-- Below the poster, the station's desk: the log (who Matt is) on the left, the console (what's running)
-       in a rail on the right under the peak counter. One column on phones, in the same order. -->
+       in a rail on the right under the peak counter. On wide screens it's a 2x2 grid so the second headings
+       line up, and Status stays in view while Crafts scrolls past. One column on phones, in source order. -->
   <main id="main" tabindex="-1" class="intro-fade px-6 pt-16 pb-24 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-secondary md:px-12 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(22rem,26rem)] lg:gap-x-16 xl:gap-x-24">
-    <div>
-    ${section('About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`)}
+    ${section('About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`, 'lg:col-start-1 lg:row-start-1')}
 
     ${section('Crafts', `
       <ul class="grid max-w-2xl gap-y-10 2xl:max-w-none 2xl:grid-cols-2 2xl:gap-x-16">
@@ -159,9 +159,8 @@ app.innerHTML = `
                 </figure>` : ''}
             </div>
           </li>`).join('')}
-      </ul>`)}
-    </div>
-    <div class="mt-16 border-t border-base-300 pt-16 lg:mt-0 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
+      </ul>`, 'lg:col-start-1 lg:row-start-2')}
+    <div aria-hidden="true" class="hidden border-l border-base-300 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:block"></div>
     ${section('Projects', `
       <ul>
         ${projects.map(p => `
@@ -174,7 +173,7 @@ app.innerHTML = `
             ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
             ${p.note ? `<p class="readout mt-2">${p.note}</p>` : ''}
           </li>`).join('')}
-      </ul>`)}
+      </ul>`, 'border-t border-base-300 pt-16 lg:col-start-2 lg:row-start-1 lg:mt-0! lg:border-t-0 lg:pt-0 lg:pl-12')}
 
     ${section('Status', `
       <div class="notch border border-base-300 bg-base-200">
@@ -193,8 +192,7 @@ app.innerHTML = `
             </div>`).join('')}
         </dl>
         <div id="status-end" class="border-t border-base-300 px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
-      </div>`)}
-    </div>
+      </div>`, 'lg:sticky lg:top-8 lg:col-start-2 lg:row-start-2 lg:self-start lg:pl-12')}
   </main>
 
   <footer class="intro-fade flex flex-wrap items-center justify-between gap-4 border-t border-base-300 px-6 py-8 text-sm md:px-12">
