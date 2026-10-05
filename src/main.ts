@@ -1,17 +1,16 @@
 import './style.css'
-import { profile, status, skills, tools, projects, links } from './data'
-import { logo, landscape, barcode, crosshair } from './art'
+import { profile, status, crafts, projects, links } from './data'
+import { logo, landscape, barcode, crosshair, icon } from './art'
 import { peaks } from './peaks'
-
-document.querySelector<HTMLLinkElement>('link[rel=icon]')!.href =
-  'data:image/svg+xml,' + encodeURIComponent(logo())
 
 // A different Washington peak on every visit
 const peak = peaks[Math.floor(Math.random() * peaks.length)]
 
-// A faint ASCII starfield across the poster
-const starfield = Array.from({ length: 24 }, () =>
-  Array.from({ length: 180 }, () => (Math.random() < 0.025 ? '.+*'[Math.floor(Math.random() * 3)] : ' ')).join(''),
+// A faint ASCII starfield across the poster, wide enough for any screen
+const starfield = Array.from({ length: 40 }, () =>
+  Array.from({ length: Math.ceil(screen.width / 7) + 20 }, () =>
+    Math.random() < 0.025 ? '.+*'[Math.floor(Math.random() * 3)] : ' ',
+  ).join(''),
 ).join('\n')
 
 // Crosshairs pinned to each corner of a block
@@ -20,13 +19,14 @@ const corners = ['top-3 left-3', 'top-3 right-3', 'bottom-3 left-3', 'bottom-3 r
   .join('')
 
 // Section heading: squashed serif with a yellow bar. Kept smaller than the hero name.
+// The first section skips its top rule, since the navy strip already closes the poster.
 const section = (title: string, body: string) => `
-  <section class="border-t border-base-300 py-14">
+  <section class="border-t border-base-300 py-14 first:border-t-0">
     <h2 class="display mb-8 border-l-4 border-secondary pl-4 text-4xl sm:text-5xl">${title}</h2>
     ${body}
   </section>`
 
-// A shell prompt line for the terminal panel
+// A shell prompt line for the terminal panel (decorative, so hidden from screen readers)
 const prompt = (command: string) => `
   <p aria-hidden="true" class="font-mono text-sm">
     <span class="text-primary">matt@baker</span><span class="opacity-75">:~$</span> ${command}
@@ -38,6 +38,8 @@ const mixedStatus = new Set(projects.map(p => p.status)).size > 1
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 app.innerHTML = `
+  <a href="#main" class="btn btn-secondary btn-sm sr-only fixed top-3 left-3 z-10 focus:not-sr-only">Skip to content</a>
+
   <nav class="navbar gap-1 border-b border-base-300 px-6 md:px-12">
     <a href="/" class="flex flex-1 items-center gap-3">
       <span class="w-10">${logo()}</span>
@@ -49,66 +51,78 @@ app.innerHTML = `
     </button>
   </nav>
 
-  <header class="relative overflow-hidden bg-secondary text-secondary-content">
-    <pre aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 opacity-40">${starfield}</pre>
-    ${corners}
-    <div class="relative max-w-4xl px-6 pt-16 md:px-12">
-      <p class="readout">${peak.lat.toFixed(4)}° N  ${peak.lon.toFixed(4)}° W</p>
-      <h1 class="display mt-6 text-7xl sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
-      <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
-      <div aria-hidden="true" class="mt-6 ml-auto w-full max-w-xl text-accent">${landscape(peak.grid)}</div>
+  <header>
+    <div class="relative overflow-hidden bg-secondary text-secondary-content md:pb-44">
+      <pre aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 opacity-40">${starfield}</pre>
+      ${corners}
+      <div class="relative max-w-4xl px-6 pt-16 md:px-12">
+        <p class="readout">${peak.lat.toFixed(4)}° N  ${peak.lon.toFixed(4)}° W</p>
+        <h1 class="display mt-6 text-7xl sm:text-9xl">${profile.name.replace(' ', '<br>')}</h1>
+        <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
+      </div>
+      <!-- Phones: the peak follows the text. From 768px it stands at the poster's bottom right, on the strip. -->
+      <div aria-hidden="true" class="relative mt-6 ml-auto w-full max-w-xl px-6 text-accent md:absolute md:right-0 md:bottom-0 md:mt-0 md:w-[min(44rem,55%)] md:max-w-none md:px-0">${landscape(peak.grid)}</div>
     </div>
-    <div class="relative flex items-center justify-between gap-6 bg-accent px-6 py-3 text-accent-content md:px-12">
+    <div class="flex items-center justify-between gap-6 bg-accent px-6 py-3 text-accent-content md:px-12">
       <p class="readout opacity-100">${peak.name}  ${peak.metres} m / ${peak.feet} ft</p>
       <span aria-hidden="true" class="hidden h-5 w-40 shrink-0 sm:block">${barcode(peak.name)}</span>
     </div>
   </header>
 
-  <main class="max-w-4xl px-6 md:px-12">
+  <main id="main" tabindex="-1" class="max-w-4xl px-6 outline-none md:px-12">
 
     ${section('About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`)}
 
     ${section('Projects', `
       <ul class="max-w-2xl">
         ${projects.map(p => `
-          <li class="border-b border-base-300 py-5 first:pt-0">
+          <li class="border-b border-base-300 py-5 first:pt-0 last:border-b-0 last:pb-0">
             <div class="flex items-baseline justify-between gap-4">
               <h3 class="font-mono text-lg font-medium">${p.name}</h3>
               ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
             </div>
             <p class="mt-1 opacity-80">${p.description}</p>
             ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
+            ${p.note ? `<p class="readout mt-2">${p.note}</p>` : ''}
           </li>`).join('')}
       </ul>`)}
 
-    ${section('Skills', `
-      <dl class="grid max-w-2xl gap-x-10 gap-y-1 sm:grid-cols-[max-content_1fr] sm:gap-y-5">
-        ${skills.map(s => `<dt class="font-semibold">${s.name}</dt><dd class="mb-4 opacity-80 sm:mb-0">${s.detail}</dd>`).join('')}
-      </dl>
-      <p class="mt-10 max-w-2xl opacity-80">Outside of work I spend my time in ${tools.slice(0, -1).join(', ')} and ${tools.at(-1)}.</p>`)}
+    ${section('Crafts', `
+      <ul class="grid max-w-2xl gap-8">
+        ${crafts.map(c => `
+          <li class="grid grid-cols-[2.5rem_1fr] gap-x-5">
+            <span aria-hidden="true" class="mt-1 size-10">${icon(c.icon)}</span>
+            <div>
+              <h3 class="font-semibold">${c.name}</h3>
+              <p class="mt-1 opacity-80">${c.detail}</p>
+              ${c.link ? `<a class="link link-primary mt-2 inline-block text-sm" href="${c.link.url}">${c.link.label}</a>` : ''}
+            </div>
+          </li>`).join('')}
+      </ul>`)}
 
     ${section('Status', `
       <div class="notch border border-base-300 bg-base-200">
         <div class="border-b border-base-300 px-5 py-3">${prompt('status --all')}</div>
-        <div class="grid grid-cols-2 sm:grid-cols-3">
+        <div class="grid grid-cols-2 gap-px bg-base-300 sm:grid-cols-3">
           ${[
             { label: 'System', value: '<span class="status status-success"></span> Nominal' },
+            { label: 'Peak', value: peak.name },
             ...status,
             { label: 'Local time', value: '<span id="clock"></span>' },
           ].map(s => `
-            <div class="flex flex-col items-center gap-2 border-r border-b border-base-300 p-6 text-center">
+            <div class="flex flex-col items-center gap-2 bg-base-200 p-6 text-center">
               <p class="readout">${s.label}</p>
               <p class="flex items-center gap-2 font-mono">${s.value}</p>
             </div>`).join('')}
         </div>
-        <div class="px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
+        <div class="border-t border-base-300 px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
       </div>`)}
   </main>
 
   <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-base-300 px-6 py-8 text-sm md:px-12">
     <p class="opacity-70">Made in Washington.</p>
     <div class="flex flex-wrap gap-x-6 gap-y-2">
-      ${links.map(l => `<a class="link link-hover inline-flex items-center pointer-coarse:min-h-11" href="${l.url}">${l.name}</a>`).join('')}
+      ${links.map(l => `<a class="link link-hover inline-flex items-center pointer-coarse:min-h-11" href="${l.url}">${l.footer ?? l.name}</a>`).join('')}
     </div>
   </footer>
 `

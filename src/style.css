@@ -85,6 +85,8 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     opacity: 0.75;
+    /* Keep the double spaces between values, but still wrap on narrow screens */
+    white-space: pre-wrap;
   }
 }
 
@@ -104,7 +106,28 @@
   .cursor { animation: none; }
 }
 
-/* Clipped corners on panels, after Marathon's UI frames */
+/* Clipped corners on panels, after Marathon's UI frames.
+   The clip cuts the border off the two corners, so a 1px line is redrawn along each diagonal. */
 .notch {
+  position: relative;
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+.notch::before,
+.notch::after {
+  content: "";
+  position: absolute;
+  width: 25.5px; /* 18px * √2, the length of the diagonal */
+  border-top: 1px solid var(--color-base-300);
+}
+.notch::before {
+  top: 18px;
+  right: 0;
+  transform-origin: right top;
+  transform: translate(-0.7px, -0.7px) rotate(45deg);
+}
+.notch::after {
+  bottom: 18px;
+  left: 0;
+  transform-origin: left top;
+  transform: translate(0.7px, 0.7px) rotate(45deg);
 }

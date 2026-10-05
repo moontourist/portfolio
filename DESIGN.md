@@ -160,7 +160,7 @@ The Swedish flag over a winter landscape: yellow and blue for identity, navy and
 
 A left-aligned single column with a maximum width of 56rem (896px), inset by a 24px gutter on phones and 48px from 768px up. On wide screens the right side of the page stays open on purpose. The poster header and the nav run full width; everything else sits in the column.
 
-Sections are separated by a 1px top rule and 56px of padding above and below. Text blocks inside cap at 42rem. Skills use a two-column term/description grid from 640px and stack below it. The status panel grid is two columns on phones and three from 640px. The pixel peak sits at the bottom right of the poster, up to 36rem wide, resting on the navy strip.
+Sections are separated by a 1px top rule and 56px of padding above and below. Text blocks inside cap at 42rem. Crafts are a list with a 40px pixel icon beside each name and line. The status panel grid is two columns on phones and three from 640px, separated by single 1px lines. On phones the pixel peak follows the poster text; from 768px it stands at the poster's bottom right, up to 44rem or 55% wide, running off the right edge and resting on the navy strip, with the poster padded 176px at the bottom so text never overlaps it. The starfield is generated to the screen's width so it fills any display.
 
 Breakpoints are Tailwind's defaults; the ones in use are 640px and 768px.
 
@@ -214,7 +214,10 @@ The page's one loud moment. Full-width Flaggul block containing:
 The peak is chosen at random from `src/peaks.ts` on every visit. Each grid is 12 rows tall so every mountain sits on the same baseline.
 
 ### Terminal Status Panel (signature component)
-The only place terminal styling appears. A notched panel opening with a prompt line (`matt@baker:~$ status --all`), then a grid of readouts with centred label-style field names and mono values (System, Operator, Region, Current build, Next deploy, a live Pacific-time clock), closing on an empty prompt with a blinking Flaggul block cursor. The cursor blinks every 1.1s in hard steps and stops for visitors who prefer reduced motion. It is the page's only ambient motion.
+The only place terminal styling appears. A notched panel opening with a prompt line (`matt@baker:~$ status --all`), then a grid of readouts with centred label-style field names and mono values (System, Operator, Region, Current build, Next deploy, a live Pacific-time clock), closing on an empty prompt with a blinking Flaggul block cursor. The prompt lines are hidden from screen readers. The readouts are System, Peak (this visit's), Region, Current build, Next deploy and Local time. The clipped corners get a 1px diagonal line so the border stays continuous. The cursor blinks every 1.1s in hard steps and stops for visitors who prefer reduced motion. It is the page's only ambient motion.
+
+### Crafts List (signature component)
+One row per craft (Infrastructure, Code, Audio, Photography, Games): a 40px pixel icon drawn on a 12×12 grid in the text colour with Flaggul accents, the craft name in semibold mono and one plain line in Matt's own words, plus an optional text link (Photography links to Instagram). It replaces a skills list on purpose: every craft gets equal standing.
 
 ### Section Heading
 A squashed italic serif title with a 4px Flaggul bar on its left and 16px padding. No numbers, no labels above it.
@@ -226,7 +229,8 @@ A squashed italic serif title with a 4px Flaggul bar on its left and 16px paddin
 - **Do** confine Flaggul to the poster block plus thin accents (heading bars, badges, cursor).
 - **Do** set the name and section titles in bold italic Times, squashed to 70% width, and everything else in JetBrains Mono.
 - **Do** draw new pixel art as text grids (`#` rock, `*` snow) rendered with crisp edges, and keep peak grids 12 rows tall.
-- **Do** use real data in readouts: true coordinates, true elevations, a live clock.
+- **Do** use real data in readouts: true coordinates, true elevations, a live clock, this visit's peak.
+- **Do** draw craft icons as 12×12 text grids in `src/art.ts` (`#` in the text colour, `+` in Flaggul), matching the peaks.
 - **Do** keep terminal styling inside the status panel, and respect reduced motion for anything that moves.
 
 ### Don't:

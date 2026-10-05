@@ -1,12 +1,20 @@
 // All site content lives here. Edit this file to change what the page says.
 
-export type Skill = { name: string; detail: string }
+import type { IconName } from './art'
+
+export type Craft = {
+  name: string
+  icon: IconName // pixel icon drawn in src/art.ts
+  detail: string
+  link?: { label: string; url: string }
+}
 export type ProjectStatus = 'complete' | 'active'
 export type Project = {
   name: string
   status: ProjectStatus
   description: string
   url?: string
+  note?: string // shown instead of a source link, e.g. for private repos
 }
 
 export const profile = {
@@ -17,23 +25,42 @@ export const profile = {
   bio: "By day I keep the infrastructure running at Halo, living in AWS, Kubernetes and Datadog. On the side I'm learning C#, one small program at a time, working toward building a game of my own. Before all that I trained as an audio engineer, and when I'm away from the keyboard I'm usually behind a camera.",
 }
 
-// Readouts for the status panel. Local time and the status light are added in main.ts.
+// Readouts for the status panel. The status light, this visit's peak and local time are added in main.ts.
 export const status = [
-  { label: 'Operator', value: 'M. Erickson' },
   { label: 'Region', value: 'Washington, US' },
   { label: 'Current build', value: 'C# via Advent of Code' },
   { label: 'Next deploy', value: 'First game' },
 ]
 
-export const skills: Skill[] = [
-  // Draft wording: rewrite these in your own words
-  { name: 'AWS', detail: 'Where most of my day job lives.' },
-  { name: 'Kubernetes', detail: 'Deploying, debugging and keeping clusters healthy.' },
-  { name: 'Datadog', detail: 'Monitoring and alerting, so I know something broke before anyone else does.' },
-  { name: 'C#', detail: 'The language I\'m learning to build software in, through Advent of Code and small tools.' },
+// One line per craft, in your own words. Order is the order on the page.
+export const crafts: Craft[] = [
+  {
+    name: 'Infrastructure',
+    icon: 'rack',
+    detail: "My day job at Halo. AWS, Kubernetes and Datadog: keeping systems up, and knowing first when they aren't.",
+  },
+  {
+    name: 'Code',
+    icon: 'terminal',
+    detail: 'Learning C# one small program at a time, mostly Advent of Code and tools that save me clicks at work. Written in Neovim, run in Ghostty.',
+  },
+  {
+    name: 'Audio',
+    icon: 'wave',
+    detail: 'Trained as an audio engineer. Pro Tools and Ableton are still where I spend studio time.',
+  },
+  {
+    name: 'Photography',
+    icon: 'camera',
+    detail: "When I'm away from the keyboard I'm usually behind a camera, chasing the right light.",
+    link: { label: 'See photos on Instagram', url: 'https://instagram.com/moon.tourist' },
+  },
+  {
+    name: 'Games',
+    icon: 'gamepad',
+    detail: 'Where all of this is heading. cardatro, a terminal card game in C#, is the first step.',
+  },
 ]
-
-export const tools: string[] = ['Neovim', 'Ghostty', 'Pro Tools', 'Ableton', 'a camera']
 
 export const projects: Project[] = [
   {
@@ -46,13 +73,14 @@ export const projects: Project[] = [
     name: 'cardatro',
     status: 'active',
     description: 'A terminal card game in C#, inspired by Balatro.',
+    note: 'Private for now',
   },
 ]
 
 // nav: true also shows the link in the top bar; phone: true keeps it there on narrow screens.
-// Every link shows in the footer.
+// Every link shows in the footer, using footer text when it's set.
 export const links = [
-  { name: 'Email', url: 'mailto:matthewgaryerickson@gmail.com', nav: true, phone: true },
+  { name: 'Email', url: 'mailto:matthewgaryerickson@gmail.com', nav: true, phone: true, footer: 'matthewgaryerickson@gmail.com' },
   { name: 'LinkedIn', url: 'https://www.linkedin.com/in/matthewg-erickson', nav: true },
   { name: 'GitHub', url: 'https://github.com/moontourist', nav: true },
   { name: 'Instagram', url: 'https://instagram.com/moon.tourist', nav: false },
