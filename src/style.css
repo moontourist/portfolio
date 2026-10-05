@@ -193,21 +193,33 @@
   opacity: 0.6;
 }
 
-/* The poster's one authored moment: the mountain draws in from the ground up, row by row,
-   It replays whenever "Next peak" swaps the mountain. */
-@keyframes pixel-in {
-  from { opacity: 0; }
+/* The poster's one authored moment: a line traces the peak's real skyline left to right, like a plotter,
+   then the terrain rises in under it by depth, far ranges first, like haze lifting, and the line fades.
+   It replays whenever "Next peak" swaps the mountain. The ridge is hidden unless animating, so reduced
+   motion (and the finishAll safety net) just shows the finished scene. */
+@keyframes trace {
+  from { stroke-dashoffset: 1; }
 }
-@keyframes print {
-  from { clip-path: inset(0 100% 0 0); }
+@keyframes ridge {
+  0%, 75% { opacity: 1; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8%); }
 }
 /* On first load the mountain waits for the rain (--intro); after that it draws straight away.
-   Timeline on first load: rain 0-2.5s, mountain 1.9-3.4s, page fades in from 3.3s (FADE_IN_AT in main.ts). */
+   Timeline on first load: rain 0-2.5s, ridge traced 1.9-2.8s, terrain rises 2.4-3.4s, page fades in
+   from 3.3s (FADE_IN_AT in main.ts). */
 :root { --intro: 1700ms; }
-.draw .row {
-  animation: pixel-in 150ms ease-out backwards;
-  animation-delay: calc(var(--intro) + 200ms + var(--r) * (1400ms / var(--steps))); /* whole mountain in ~1.4s */
+.ridge { opacity: 0; }
+.draw .ridge { animation: ridge 1600ms ease-in calc(var(--intro) + 200ms); }
+.draw .ridge path {
+  stroke-dasharray: 1;
+  animation: trace 900ms cubic-bezier(0.45, 0, 0.2, 1) calc(var(--intro) + 200ms) backwards;
 }
+.draw [data-depth] > svg { animation: rise 600ms cubic-bezier(0.16, 1, 0.3, 1) backwards; }
+.draw [data-depth="far"] > svg { animation-delay: calc(var(--intro) + 700ms); }
+.draw [data-depth="mid"] > svg { animation-delay: calc(var(--intro) + 900ms); }
+.draw [data-depth="near"] > svg { animation-delay: calc(var(--intro) + 1100ms); }
 
 /* Everything except the sky and mountain is hidden until they're built, then fades in.
    index.html adds .intro before the first paint (only when motion is allowed) and removes it after 6s
@@ -219,7 +231,7 @@
   opacity: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  .draw .row { animation: none; }
+  .draw [data-depth] > svg, .draw .ridge, .draw .ridge path { animation: none; }
 }
 
 /* Twinkling stars: a slow dim and brighten, paused off-screen, off for reduced motion */

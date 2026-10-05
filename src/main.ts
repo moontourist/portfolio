@@ -1,6 +1,6 @@
 import './style.css'
 import { profile, status, crafts, projects, links } from './data'
-import { logo, landscape, depthLayers, crosshair, icon, sun } from './art'
+import { logo, landscape, ridgeline, depthLayers, crosshair, icon, sun } from './art'
 import { peaks } from './peaks'
 import { skyAbove, project } from './sky'
 import { sunPosition, palette, lightName } from './daylight'
@@ -242,7 +242,7 @@ function showPeak(p: (typeof peaks)[number], first = false) {
   const layers = depthLayers(p.grid)
   document.querySelector('#peak-art')!.innerHTML = (['far', 'mid', 'near'] as const)
     .map(depth => `<div class="depth absolute inset-0" data-depth="${depth}">${landscape(layers[depth])}</div>`)
-    .join('')
+    .join('') + `<div class="absolute inset-0">${ridgeline(p.grid)}</div>`
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
   document.querySelector('#peak-count')!.textContent = `Peak ${peaks.indexOf(p) + 1} / ${peaks.length}`
   showClouds(p)
