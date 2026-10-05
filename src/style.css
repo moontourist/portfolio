@@ -240,21 +240,6 @@
   .star, .twinkle { animation: none; }
 }
 
-/* Live clouds drift slowly sideways. The layer is two copies wide, so sliding it half its width loops
-   without a seam. Paused off-screen, still for reduced motion. */
-@keyframes drift {
-  to { transform: translateX(-50%); }
-}
-.drift {
-  animation: drift 420s linear infinite;
-}
-.paused .drift {
-  animation-play-state: paused;
-}
-@media (prefers-reduced-motion: reduce) {
-  .drift { animation: none; }
-}
-
 /* Status panel lines waiting to print (main.ts reveals them one at a time) */
 .pending {
   opacity: 0;

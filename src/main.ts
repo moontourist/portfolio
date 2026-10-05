@@ -4,7 +4,8 @@ import { logo, landscape, depthLayers, crosshair, icon, sun } from './art'
 import { peaks } from './peaks'
 import { skyAbove, project } from './sky'
 import { sunPosition, palette, lightName } from './daylight'
-import { cloudsAt, cloudField } from './weather'
+import { cloudsAt, cloudDensity, cloudText } from './weather'
+import { CloudSim } from './fluid'
 
 // Filled in at build time by vite.config.ts
 declare const __COMMIT__: string
@@ -103,7 +104,7 @@ app.innerHTML = `
       <pre id="sky" aria-hidden="true" class="sky-stars pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star)"></pre>
       <div id="sun" aria-hidden="true" class="pointer-events-none absolute hidden size-7 -translate-1/2">${sun}</div>
       <div aria-hidden="true" class="intro-fade pointer-events-none absolute inset-0 overflow-hidden">
-        <pre id="clouds" class="drift w-max font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
+        <pre id="clouds" class="font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
       </div>
       <div class="intro-fade">${corners}</div>
       <!-- Name first in the code so screen readers hear it before the readouts; the readouts still show above it -->
@@ -264,6 +265,40 @@ function showLight(p: (typeof peaks)[number]) {
 // The light changes slowly; check it every minute
 setInterval(() => showLight(peaks[peakIndex]), 60_000)
 
+// The clouds as a fluid: a breeze carries them and the pointer stirs them into swirls (see fluid.ts).
+// The sim steps every frame while the poster is on screen and the tab is visible, and redraws at ~30fps.
+let sim: CloudSim | null = null
+{
+  const poster = document.querySelector<HTMLElement>('header .draw')!
+  const layer = document.querySelector<HTMLElement>('#clouds')!
+  let last = performance.now(), lastDraw = 0
+  const frame = (now: number) => {
+    requestAnimationFrame(frame)
+    const dt = Math.min(0.05, (now - last) / 1000)
+    last = now
+    if (!sim || document.hidden || poster.classList.contains('paused')) return
+    sim.step(dt)
+    if (now - lastDraw > 33) {
+      lastDraw = now
+      layer.textContent = cloudText(sim.density, sim.rows, sim.cols)
+    }
+  }
+  if (!reduceMotion) requestAnimationFrame(frame)
+
+  // Pointer movement over the poster pushes the air. Touch drags work too, until the page starts scrolling.
+  let prev: { x: number; y: number } | null = null
+  poster.addEventListener('pointermove', e => {
+    if (!sim) return
+    const box = document.querySelector('#sky')!.getBoundingClientRect()
+    const x = (e.clientX - box.left) / CELL.width
+    const y = (e.clientY - box.top) / CELL.height
+    // Movement in cell widths, both directions, so vertical and horizontal pushes feel the same
+    if (prev) sim.stir(x, y, (e.clientX - prev.x) / CELL.width, (e.clientY - prev.y) / CELL.width)
+    prev = { x: e.clientX, y: e.clientY }
+  })
+  poster.addEventListener('pointerleave', () => (prev = null))
+}
+
 // Live clouds over the peak. Ignores answers that arrive after the visitor has moved to another peak.
 function showClouds(p: (typeof peaks)[number]) {
   const layer = document.querySelector<HTMLElement>('#clouds')!
@@ -271,6 +306,7 @@ function showClouds(p: (typeof peaks)[number]) {
   layer.textContent = ''
   note.textContent = ''
   cloudCover = 0
+  sim = null
   // ?clouds=low,mid,high (percentages) previews any weather instead of the live reading
   const preview = new URLSearchParams(location.search).get('clouds')?.split(',').map(Number)
   const live = preview?.length === 3
@@ -281,7 +317,11 @@ function showClouds(p: (typeof peaks)[number]) {
     const box = document.querySelector('#sky')!.getBoundingClientRect()
     cloudCover = clouds.total
     showLight(p)
-    layer.textContent = cloudField(clouds, Math.ceil(box.height / CELL.height), Math.ceil(box.width / CELL.width))
+    const rows = Math.ceil(box.height / CELL.height), cols = Math.ceil(box.width / CELL.width)
+    const density = cloudDensity(clouds, rows, cols)
+    // Reduced motion: the live pattern, still. Otherwise the clouds go into the fluid sim below.
+    layer.textContent = cloudText(density, rows, cols) // drawn right away; the sim takes over from the next frame
+    if (!reduceMotion) sim = new CloudSim(cols, rows, density)
     note.innerHTML = `Cloud ${clouds.total}%  live via <a class="underline underline-offset-2" href="https://open-meteo.com/">Open-Meteo</a>`
   })
 }

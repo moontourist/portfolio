@@ -40,38 +40,55 @@ function noise(x: number, y: number, period: number, seed: number): number {
   return top + (bottom - top) * sy
 }
 
+// The three cloud bands, top to bottom: wispy high cloud, mid-level cloud, low cloud by the mountains.
+// Each band draws with its own characters, light at the thin edges and heavier in thick cores.
+const BANDS = [
+  { key: 'high', from: 0.04, to: 0.32, chars: '.-', stretch: 3, seed: 1 },
+  { key: 'mid', from: 0.28, to: 0.6, chars: '.-~', stretch: 2.5, seed: 2 },
+  { key: 'low', from: 0.55, to: 0.88, chars: '.~=', stretch: 2, seed: 3 },
+] as const
+
 /**
- * ASCII cloud layers for a sky grid: wispy high cloud near the top, mid-level cloud, and low cloud down
- * by the mountains. How much of each band is cloud follows the live percentages; thin edges use light
- * characters and thick cores heavier ones, so even full overcast has texture. Each row is doubled so the
- * layer can drift sideways forever without a seam.
+ * Cloud thickness for every cell of a sky grid (0 = clear), from the live percentages: how much of each
+ * band is cloud follows its cover. Repeats across the width, so it can drift sideways without a seam.
  */
-export function cloudField(clouds: Clouds, rows: number, cols: number): string {
-  const layers = [
-    { cover: clouds.high, from: 0.04, to: 0.32, chars: '.-', stretch: 3, seed: 1 },
-    { cover: clouds.mid, from: 0.28, to: 0.6, chars: '.-~', stretch: 2.5, seed: 2 },
-    { cover: clouds.low, from: 0.55, to: 0.88, chars: '.~=', stretch: 2, seed: 3 },
-  ]
-  const period = Math.ceil(cols / 12) // noise cells across one copy of the row
-  const lines: string[] = []
+export function cloudDensity(clouds: Clouds, rows: number, cols: number): Float32Array {
+  const density = new Float32Array(rows * cols)
+  const period = Math.ceil(cols / 12) // noise cells across the width
   for (let r = 0; r < rows; r++) {
     const y = r / rows
-    let line = ''
-    for (let c = 0; c < cols; c++) {
-      let ch = ' '
-      for (const l of layers) {
-        if (y < l.from || y > l.to || l.cover <= 0) continue
-        // Fade the band's edges so layers don't end in straight lines
-        const edge = Math.min(y - l.from, l.to - y) / ((l.to - l.from) / 2)
+    for (const band of BANDS) {
+      const cover = clouds[band.key]
+      if (y < band.from || y > band.to || cover <= 0) continue
+      // Fade the band's edges so layers don't end in straight lines
+      const edge = Math.min(y - band.from, band.to - y) / ((band.to - band.from) / 2)
+      for (let c = 0; c < cols; c++) {
         const n =
-          0.65 * noise((c / cols) * period, r / l.stretch, period, l.seed) +
-          0.35 * noise((c / cols) * period * 2, r / (l.stretch / 2), period * 2, l.seed + 9)
-        const thickness = n * Math.min(1, edge * 2.5) - (1 - l.cover / 100) // > 0 means cloud here
-        if (thickness > 0) ch = l.chars[Math.min(l.chars.length - 1, Math.floor(thickness * l.chars.length * 2.2))]
+          0.65 * noise((c / cols) * period, r / band.stretch, period, band.seed) +
+          0.35 * noise((c / cols) * period * 2, r / (band.stretch / 2), period * 2, band.seed + 9)
+        const thickness = n * Math.min(1, edge * 2.5) - (1 - cover / 100)
+        if (thickness > density[r * cols + c]) density[r * cols + c] = thickness
       }
-      line += ch
     }
-    lines.push(line + line)
+  }
+  return density
+}
+
+/** The ASCII character for a thickness at a height (0-1 down the sky): blank when clear. */
+export function cloudChar(thickness: number, y: number): string {
+  if (thickness <= 0.004) return ' '
+  const band = [...BANDS].reverse().find(b => y >= b.from) ?? BANDS[0] // the lowest band at or above this height
+  const chars = band.chars
+  return chars[Math.min(chars.length - 1, Math.floor(thickness * chars.length * 2.2))]
+}
+
+/** Draw a thickness grid as ASCII rows. */
+export function cloudText(density: Float32Array, rows: number, cols: number): string {
+  const lines: string[] = []
+  for (let r = 0; r < rows; r++) {
+    let line = ''
+    for (let c = 0; c < cols; c++) line += cloudChar(density[r * cols + c], r / rows)
+    lines.push(line)
   }
   return lines.join('\n')
 }
