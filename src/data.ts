@@ -24,7 +24,7 @@ export const profile = {
   company: 'Halo',
   location: 'Washington state',
   // Draft by Claude from what Matt has said; rewrite in your own words. Facts live in crafts below, so this is the why.
-  bio: "I started out as an audio engineer, ended up running infrastructure, and now I'm learning to write the software myself. A game is where all of that meets: sound, systems, code and an eye for a frame. That's what I'm building toward, one small program at a time.",
+  bio: "I keep production running at Halo, and write software in C# on the side. I came up through audio engineering, and I'm building toward a game: the one project that needs all of it. Sound, systems, code and an eye for a frame.",
 }
 
 // Readouts for the status panel. The status light, last deploy date, commit and local time are added in main.ts.
