@@ -10,8 +10,11 @@ import { cloudsAt, cloudField } from './weather'
 declare const __COMMIT__: string
 declare const __BUILT__: string
 
-// A different Washington peak on every visit; "Next peak" moves through the rest
-let peakIndex = Math.floor(Math.random() * peaks.length)
+// A different Washington peak on every visit; "Next peak" moves through the rest.
+// ?peak=Mt.%20Rainier picks one (for sharing a link to a particular mountain).
+const peakParam = new URLSearchParams(location.search).get('peak')
+let peakIndex = Math.max(0, peaks.findIndex(p => p.name === peakParam))
+if (!peakParam || peaks[peakIndex].name !== peakParam) peakIndex = Math.floor(Math.random() * peaks.length)
 const peak = peaks[peakIndex]
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -236,7 +239,6 @@ function showLight(p: (typeof peaks)[number]) {
   const { alt, az } = sunPosition(p.lat, p.lon, moment)
   document.querySelector('#sky-note')!.textContent =
     `${lightName(alt, az)}, ${peakTime.format(moment)} local time. The real sky, looking ${p.look}`
-  if (document.documentElement.dataset.poster === 'yellow') return // the static yellow version keeps its colours
   const { colors, stars } = palette(alt)
   const root = document.documentElement.style
   for (const [key, value] of Object.entries(colors)) root.setProperty(`--poster-${key}`, value)

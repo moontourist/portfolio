@@ -133,7 +133,7 @@
 }
 
 /* Poster colours. main.ts sets these from the real light at the peak (see daylight.ts); these defaults
-   are the night palette, shown until the script runs. ?poster=yellow shows the static yellow version.
+   are the night palette, shown until the script runs.
    Registering them as colours lets them ease from one light to the next instead of snapping. */
 @property --poster-sky-top { syntax: "<color>"; inherits: true; initial-value: #08182c; }
 @property --poster-sky-horizon { syntax: "<color>"; inherits: true; initial-value: #0c3558; }
@@ -159,24 +159,6 @@
     --poster-name, --poster-star, --poster-cloud, --poster-strip, --poster-sun, --stars;
   transition-duration: 1500ms;
 }
-:root[data-poster="yellow"] {
-  --poster-sky-top: #f2c94c;
-  --poster-sky-horizon: #f2c94c;
-  --poster-ground: #163a5c;
-  --poster-near-lit: #1f4a70;
-  --poster-mid: #2b4f70;
-  --poster-mid-lit: #3c6488;
-  --poster-far: #4a6a85;
-  --poster-snow: #ffffff;
-  --poster-snow-shade: #d9dde2;
-  --poster-far-snow: #fdf3d0;
-  --poster-ink: #12161c;
-  --poster-name: #12161c;
-  --poster-star: #12161c;
-  --poster-cloud: #ffffff;
-  --poster-strip: #163a5c;
-}
-
 /* The sky: its top colour holds behind the text, then blends to the horizon colour behind the mountains */
 .poster-sky {
   background: linear-gradient(to bottom, var(--poster-sky-top) 0 62%, var(--poster-sky-horizon));

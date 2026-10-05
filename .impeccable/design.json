@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-05T15:09:05+00:00",
+  "generatedAt": "2026-10-05T18:40:37+00:00",
   "title": "Design System: matt-erickson.io",
   "extensions": {
     "colorMeta": {
@@ -343,7 +343,7 @@
       "name": "Poster Header",
       "kind": "custom",
       "refersTo": "poster-header",
-      "description": "The one loud block: Flaggul, ASCII stars, crosshairs, coordinates, display name.",
+      "description": "The live window: real terrain under the peak's real current sky; flag-yellow name over it.",
       "html": "<header class=\"ds-poster\"><pre class=\"ds-stars\">  .     +        *    .\n     *       .      +\n .      +    *        .</pre><span class=\"ds-x ds-tl\">+</span><span class=\"ds-x ds-tr\">+</span><p class=\"ds-coords\">48.7768° N  121.8145° W</p><h1 class=\"ds-name\">Matt<br>Erickson</h1><p class=\"ds-intro\">Infrastructure Engineer at Halo, based in Washington state.</p></header>",
       "css": ".ds-poster{position:relative;overflow:hidden;padding:48px 24px 32px;background:var(--color-secondary,#fecc02);color:var(--color-secondary-content,#12161c);font-family:\"JetBrains Mono\",monospace}.ds-stars{position:absolute;inset:0;margin:0;opacity:.4;font-size:12px;line-height:20px;pointer-events:none}.ds-x{position:absolute;font-size:16px;line-height:1}.ds-tl{top:12px;left:12px}.ds-tr{top:12px;right:12px}.ds-coords{position:relative;margin:0;font-size:.75rem;letter-spacing:.15em;opacity:.6}.ds-name{position:relative;margin:24px 0 0;font:italic 700 4.5rem/.85 \"Times New Roman\",Times,serif;letter-spacing:-.03em;text-transform:uppercase;transform:scaleX(.7);transform-origin:left}.ds-intro{position:relative;margin:32px 0 0;font-size:1.125rem;max-width:28rem}"
     },
@@ -358,23 +358,23 @@
   ],
   "narrative": {
     "northStar": "The Cascade Field Station",
-    "overview": "The site is a remote research post in the Washington mountains, run by one person who keeps the systems up and makes things on the side. Arriving, you see the station's poster first: a full-width block of Swedish flag yellow carrying the operator's name in tall italic serif, a field of ASCII stars, registration crosshairs in the corners, the coordinates and elevation of a Cascade or Olympic peak, and that peak drawn in pixels. Below the poster the station goes quiet: a single left-aligned column of plain monospace text, thin frost-coloured rules, and one terminal readout reporting the operator's status.\n\nThe mood is technical and precise, playful but grown-up, and unmistakably Pacific Northwest. Precision comes from instrument language: coordinates, elevations, mono readouts, crosshairs, a barcode. The play comes from pixel art and ASCII drawn with care, never from jokes. The palette is the Swedish flag (Matt is Swedish American) laid over snow and night sky. Marathon's graphic poster style is the reference for the header; terminal culture for the status panel.\n\nConfirmed rejections: gamer or RPG wording, Japanese text or subtitles, NES.css-style 8-bit chrome, a moon beside the mountain, and stripping the poster down for minimalism. An earlier pass that did that \"lost its sparkle\".",
+    "overview": "The site is a remote research post in the Washington mountains, run by one person who keeps the systems up and makes things on the side. Arriving, you see the station's window first: a full-width live view of a real Cascade or Olympic peak, drawn in pixels from elevation data, under the sky it has right now. The light follows the sun at that peak (daylight, golden hour, sunset glow, blue hour, night), the stars are the real ones behind it, and the clouds are the live cloud cover. Over that view sit the operator's name in tall italic flag-yellow serif, the peak's coordinates and readouts, and registration crosshairs in the corners. Below it the station goes quiet: a single left-aligned column of plain monospace text, thin frost-coloured rules, and one terminal readout reporting the operator's status.\n\nThe mood is technical and precise, playful but grown-up, and unmistakably Pacific Northwest. Precision comes from instrument language: coordinates, elevations, mono readouts, crosshairs, a barcode. The play comes from pixel art and ASCII drawn with care, never from jokes. The palette works in two layers: a fixed brand layer in the Swedish flag's blue and yellow (Matt is Swedish American), and a living world layer that takes whatever light the mountain has. Marathon's graphic poster style is the reference for the header; terminal culture for the status panel.\n\nConfirmed rejections: gamer or RPG wording, Japanese text or subtitles, NES.css-style 8-bit chrome, a moon beside the mountain, and stripping the poster down for minimalism. An earlier pass that did that \"lost its sparkle\".",
     "keyCharacteristics": [
-      "One loud poster block, then a calm single column.",
+      "One live, real-world poster, then a calm single column.",
       "Square corners everywhere; flat surfaces separated by 1px rules.",
       "Two typefaces only: squashed italic Times for the name and section titles, JetBrains Mono for everything else.",
       "Pixel art built from text grids, rendered crisp, never blurred.",
-      "A real place in every visit: a random Washington peak with true coordinates and elevation."
+      "A real place and a real moment in every visit: a random Washington peak with true terrain, coordinates, elevation, stars, light and weather."
     ],
     "rules": [
       {
-        "name": "The One Flag Rule",
-        "body": "Flaggul fills exactly one large area per page, the poster. Everywhere else it appears only as thin bars, small badges or the cursor.",
+        "name": "The Fixed Flag, Living Sky Rule",
+        "body": "Flag blue and yellow belong to the brand layer (logo, name, section bars, links, badges, cursor) and are never tinted by the time of day. Everything in the scene (sky, terrain, snow, clouds, the strip) follows the real light. Text over the sky must stay readable at every sun angle; check new palette stops against the contrast minimums.",
         "section": "colors"
       },
       {
-        "name": "The Two Skies Rule",
-        "body": "Light and dark themes share the flag colours unchanged except for the blue, which lightens to Isblå at night. The poster stays yellow in both themes.",
+        "name": "The Two Themes Rule",
+        "body": "The site's light and dark themes share the flag colours unchanged except for the blue, which lightens to Isblå in dark mode. The poster ignores the site theme and shows the mountain's real light.",
         "section": "colors"
       },
       {
@@ -400,20 +400,22 @@
     ],
     "dos": [
       "**Do** keep every corner square (0px); use the 18px notch only on terminal-style panels.",
-      "**Do** confine Flaggul to the poster block plus thin accents (heading bars, badges, cursor).",
+      "**Do** keep flag blue and yellow fixed (logo, name, heading bars, links, badges, cursor) and let only the scene follow the light.",
       "**Do** set the name and section titles in bold italic Times, squashed to 70% width, and everything else in JetBrains Mono.",
-      "**Do** draw new pixel art as text grids (`#` rock, `*` snow) rendered with crisp edges, and keep peak grids 12 rows tall.",
-      "**Do** use real data in readouts: true coordinates, true elevations, a live clock.",
+      "**Do** generate mountain scenes from real elevation data with `tools/skyline.py` rather than drawing them by hand, keep heights near true (at most 1.3×), and keep every scene the same number of rows.",
+      "**Do** use real data everywhere it appears real: true coordinates, elevations, terrain, stars, sun position, cloud cover and time.",
+      "**Do** draw craft icons as 12×12 text grids in `src/art.ts` (`#` in the text colour, `+` in Flaggul), matching the peaks.",
       "**Do** keep terminal styling inside the status panel, and respect reduced motion for anything that moves."
     ],
     "donts": [
       "**Don't** use gamer or RPG wording (guild, quest, character, stats, equipment, level).",
       "**Don't** add Japanese text or subtitles.",
-      "**Don't** use rounded corners, drop shadows, gradients or 8-bit UI kits like NES.css.",
+      "**Don't** use rounded corners, drop shadows, decorative gradients (the sky is the only one) or 8-bit UI kits like NES.css.",
       "**Don't** put a moon beside the mountain; the moon belongs only in the logo.",
       "**Don't** add numbered section markers or uppercase labels above headings.",
       "**Don't** use cream page backgrounds; light mode is cool Glaciärvit (#eef2f5).",
-      "**Don't** strip the poster, stars or pixel art in the name of minimalism."
+      "**Don't** strip the poster, stars or pixel art in the name of minimalism.",
+      "**Don't** tint the flag colours with the time of day, or fake the sky: no invented stars, weather or light."
     ]
   }
 }
