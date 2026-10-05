@@ -168,3 +168,17 @@
   .draw .row,
   .draw .barcode svg { animation: none; }
 }
+
+/* Twinkling stars: a slow dim and brighten, paused off-screen, off for reduced motion */
+@keyframes twinkle {
+  50% { opacity: 0.15; }
+}
+.twinkle {
+  animation: twinkle var(--t) ease-in-out var(--d) infinite;
+}
+.paused .twinkle {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .twinkle { animation: none; }
+}

@@ -12,10 +12,18 @@ let peakIndex = Math.floor(Math.random() * peaks.length)
 const peak = peaks[peakIndex]
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// A faint ASCII starfield across the poster, wide enough for any screen
+// A faint ASCII starfield across the poster, wide enough for any screen (and a landscape phone).
+// About 40% of the stars twinkle, each on its own slow rhythm so the sky never pulses in sync.
+const star = () => {
+  const c = '.+*'[Math.floor(Math.random() * 3)]
+  if (Math.random() > 0.4) return c
+  const length = (2 + Math.random() * 3).toFixed(2) // 2-5s per twinkle
+  const offset = (-Math.random() * 5).toFixed(2) // negative delay: start mid-twinkle
+  return `<span class="twinkle" style="--t:${length}s;--d:${offset}s">${c}</span>`
+}
 const starfield = Array.from({ length: 40 }, () =>
-  Array.from({ length: Math.ceil(screen.width / 7) + 20 }, () =>
-    Math.random() < 0.025 ? '.+*'[Math.floor(Math.random() * 3)] : ' ',
+  Array.from({ length: Math.ceil(Math.max(screen.width, screen.height) / 7) + 20 }, () =>
+    Math.random() < 0.025 ? star() : ' ',
   ).join(''),
 ).join('\n')
 
@@ -177,7 +185,8 @@ function showPeak(p: (typeof peaks)[number]) {
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
   document.querySelector('#barcode')!.innerHTML = barcode(p.name)
   // Same safety net for the draw-in: once it should be over, jump any unfinished animation to its end
-  setTimeout(() => document.querySelectorAll('.draw').forEach(el => el.getAnimations({ subtree: true }).forEach(a => a.finish())), 1500)
+  // (Only the mountain and barcode: the twinkling stars loop forever and have no end to jump to.)
+  setTimeout(() => document.querySelectorAll('#peak-art, #barcode').forEach(el => el.getAnimations({ subtree: true }).forEach(a => a.finish())), 1500)
 }
 
 function nextPeak() {
@@ -186,6 +195,10 @@ function nextPeak() {
 }
 
 showPeak(peak)
+
+// Stop the twinkling while the poster is scrolled out of view
+const poster = document.querySelector('header .draw')!
+new IntersectionObserver(([entry]) => poster.classList.toggle('paused', !entry.isIntersecting)).observe(poster)
 document.querySelector('#next-peak')!.addEventListener('click', nextPeak)
 document.querySelector('#peak-art')!.addEventListener('click', nextPeak)
 
