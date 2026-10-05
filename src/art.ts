@@ -69,21 +69,6 @@ export function landscape(grid: string[]): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${grid.length}" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" class="h-full w-full" style="--steps:${grid.length}">${rows}</svg>`
 }
 
-// A barcode made from the bits of a string: a 1 is a wide bar, a 0 a thin one
-export function barcode(text: string): string {
-  let x = 0
-  const bars = [...text]
-    .flatMap(c => [...c.charCodeAt(0).toString(2).padStart(8, '0')])
-    .map(bit => {
-      const w = bit === '1' ? 2 : 1
-      const rect = `<rect x="${x}" width="${w}" height="1"/>`
-      x += w + 1
-      return rect
-    })
-    .join('')
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${x} 1" preserveAspectRatio="none" shape-rendering="crispEdges" fill="currentColor" class="h-full w-full">${bars}</svg>`
-}
-
 // A thin registration crosshair, as printed in a poster's corners
 export const crosshair = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="size-4" stroke="currentColor" stroke-width="1"><path d="M8 0v16M0 8h16"/></svg>`
 

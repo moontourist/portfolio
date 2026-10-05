@@ -184,7 +184,7 @@
 }
 
 /* The poster's one authored moment: the mountain draws in from the ground up, row by row,
-   then the barcode prints. It replays whenever "Next peak" swaps the mountain. */
+   It replays whenever "Next peak" swaps the mountain. */
 @keyframes pixel-in {
   from { opacity: 0; }
 }
@@ -198,9 +198,6 @@
   animation: pixel-in 150ms ease-out backwards;
   animation-delay: calc(var(--intro) + 200ms + var(--r) * (1400ms / var(--steps))); /* whole mountain in ~1.4s */
 }
-.draw .barcode svg {
-  animation: print 600ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--intro) + 1700ms) backwards;
-}
 
 /* Everything except the sky and mountain is hidden until they're built, then fades in.
    index.html adds .intro before the first paint (only when motion is allowed) and removes it after 6s
@@ -212,8 +209,7 @@
   opacity: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  .draw .row,
-  .draw .barcode svg { animation: none; }
+  .draw .row { animation: none; }
 }
 
 /* Twinkling stars: a slow dim and brighten, paused off-screen, off for reduced motion */
@@ -257,4 +253,35 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .drift { animation: none; }
+}
+
+/* Name-font comparison (temporary). Each option restyles the name and section headings together. */
+:root[data-name="wpa"] .display {
+  font-family: "League Spartan", sans-serif; /* WPA national-park poster lettering */
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 0.95;
+  transform: none;
+}
+:root[data-name="ranger"] .display {
+  font-family: "Zilla Slab", serif; /* Clarendon-style slab, like old park signs */
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 0.95;
+  transform: none;
+}
+:root[data-name="signage"] .display {
+  font-family: "Big Shoulders Display", sans-serif; /* tall condensed outdoor-sign lettering */
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+  transform: none;
+}
+/* The wider faces need a smaller name to fit the same column */
+:root[data-name="wpa"] h1.display,
+:root[data-name="ranger"] h1.display {
+  font-size: clamp(3.4rem, 8.5vw, 6.5rem);
 }

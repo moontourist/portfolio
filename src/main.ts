@@ -1,6 +1,6 @@
 import './style.css'
 import { profile, status, crafts, projects, links } from './data'
-import { logo, landscape, barcode, crosshair, icon, sun } from './art'
+import { logo, landscape, crosshair, icon, sun } from './art'
 import { peaks } from './peaks'
 import { skyAbove, project } from './sky'
 import { sunPosition, palette, lightName } from './daylight'
@@ -9,6 +9,9 @@ import { cloudsAt, cloudField } from './weather'
 // Filled in at build time by vite.config.ts
 declare const __COMMIT__: string
 declare const __BUILT__: string
+
+// Name-font comparison: ?name=eva (current) | wpa | ranger | signage. Temporary, until one is chosen.
+document.documentElement.dataset.name = new URLSearchParams(location.search).get('name') ?? 'eva'
 
 // A different Washington peak on every visit; "Next peak" moves through the rest.
 // ?peak=Mt.%20Rainier picks one (for sharing a link to a particular mountain).
@@ -23,7 +26,7 @@ const atParam = new URLSearchParams(location.search).get('at')
 const now = () => (atParam ? new Date(atParam) : new Date())
 
 // First-load timeline (ms). The rain builds the sky, the mountain draws in, then the rest of the page fades in.
-// The matching mountain/barcode delays live in style.css (--intro). Slow everything down by raising these together.
+// The matching mountain delays live in style.css (--intro). Slow everything down by raising these together.
 const FADE_IN_AT = 3300
 const INTRO_DONE_AT = 4600
 
@@ -125,7 +128,7 @@ app.innerHTML = `
         <p id="peak-name" aria-live="polite" class="readout opacity-100"></p>
         <button id="next-peak" type="button" class="readout inline-flex items-center underline underline-offset-4 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current pointer-coarse:min-h-11">Next peak</button>
       </div>
-      <span id="barcode" aria-hidden="true" class="intro-fade barcode hidden h-5 w-40 shrink-0 sm:block"></span>
+      <p id="peak-count" class="intro-fade readout shrink-0 opacity-100"></p>
     </div>
   </header>
 
@@ -229,7 +232,7 @@ function showPeak(p: (typeof peaks)[number], first = false) {
   showLight(p)
   document.querySelector('#peak-art')!.innerHTML = landscape(p.grid)
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
-  document.querySelector('#barcode')!.innerHTML = barcode(p.name)
+  document.querySelector('#peak-count')!.textContent = `Peak ${peaks.indexOf(p) + 1} / ${peaks.length}`
   showClouds(p)
   // Same safety net for the draw-in: once it should be over, jump the poster's animations to their end
   setTimeout(() => document.querySelectorAll('header .draw').forEach(finishAll), first ? INTRO_DONE_AT : 2200)
