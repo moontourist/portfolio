@@ -110,13 +110,13 @@ app.innerHTML = `
         <pre id="clouds" class="font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
       </div>
       <div class="intro-fade">${corners}</div>
-      <!-- Name first in the code so screen readers hear it before the readouts; the readouts still show above it -->
-      <div class="intro-fade halo relative flex max-w-4xl flex-col px-6 pt-16 md:px-12">
+      <!-- Name first in the code so screen readers hear it before the readouts. Phones show the readouts above
+           the name; from 768px they move to the top-right corner, so the name stands alone on the left. -->
+      <div class="intro-fade halo relative flex flex-col px-6 pt-16 md:px-12">
         <h1 class="display mt-6 text-7xl text-(--poster-name) sm:text-9xl">${profile.name.replace(' ', ' <br>')}</h1>
         <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
-        <div class="order-first">
-          <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
-          <p id="sky-note" class="readout mt-1"></p>
+        <div class="order-first md:absolute md:top-16 md:right-12 md:flex md:flex-col md:items-end md:text-right">
+          <p id="sky-note" class="readout"></p>
           <p id="weather" class="readout mt-1"></p>
         </div>
       </div>
@@ -131,6 +131,7 @@ app.innerHTML = `
     <div class="draw flex items-center justify-between gap-6 bg-(--poster-strip) px-6 py-3 text-white md:px-12">
       <div class="intro-fade flex flex-wrap items-center gap-x-5 gap-y-1">
         <p id="peak-name" aria-live="polite" class="readout opacity-100"></p>
+        <p class="readout"><span id="coords" aria-hidden="true"></span><span id="coords-sr" class="sr-only"></span></p>
         <button id="next-peak" type="button" class="readout inline-flex items-center underline underline-offset-4 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current pointer-coarse:min-h-11">Next peak</button>
       </div>
       <p id="peak-count" class="intro-fade readout shrink-0 opacity-100"></p>
