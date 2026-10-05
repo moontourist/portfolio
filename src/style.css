@@ -301,3 +301,30 @@
 :root[data-name="eva85"] h1.display {
   font-size: clamp(4rem, 10vw, 7rem);
 }
+/* "Reads infra" candidates */
+:root[data-name="mono"] .display {
+  font-family: var(--font-mono); /* the terminal itself, set big and heavy */
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  transform: none;
+}
+:root[data-name="mono"] h1.display { font-size: clamp(3rem, 8vw, 6.5rem); }
+:root[data-name="barlow"] .display {
+  font-family: "Barlow Condensed", sans-serif; /* California highway signs and licence plates */
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 0.88;
+  transform: none;
+}
+:root[data-name="chakra"] .display {
+  font-family: "Chakra Petch", sans-serif; /* squared, engineered, like hardware labels */
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 0.92;
+  transform: none;
+}
+:root[data-name="chakra"] h1.display { font-size: clamp(3.4rem, 9vw, 7rem); }
