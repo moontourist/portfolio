@@ -29,7 +29,6 @@ export const profile = {
 
 // Readouts for the status panel. The status light, last deploy date, commit and local time are added in main.ts.
 export const status = [
-  { label: 'Current build', value: 'C# via Advent of Code' },
   { label: 'Next deploy', value: 'First game' },
 ]
 

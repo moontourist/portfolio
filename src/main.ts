@@ -65,10 +65,10 @@ const corners = ['top-3 left-3', 'top-3 right-3', 'hidden md:block bottom-3 left
   .join('')
 
 // Section heading: squashed serif with a yellow bar. Kept smaller than the hero name.
-// The first section skips its top rule, since the navy strip already closes the poster.
+// Sections are separated by space, not rules: generous between groups, tight from heading to content.
 const section = (title: string, body: string) => `
-  <section class="border-t border-base-300 py-14 first:border-t-0">
-    <h2 class="mb-8 border-l-4 border-secondary pl-4 text-4xl sm:text-5xl"><span class="display inline-block">${title}</span></h2>
+  <section class="mt-16 first:mt-0 lg:mt-24 lg:first:mt-0">
+    <h2 class="mb-6 border-l-4 border-secondary pl-4 text-4xl sm:text-5xl"><span class="display inline-block">${title}</span></h2>
     ${body}
   </section>`
 
@@ -99,7 +99,7 @@ app.innerHTML = `
 
   <header>
     <!-- Poster colours come from the --poster-* variables in style.css -->
-    <div class="draw poster-sky relative overflow-hidden text-(--poster-ink) md:pb-64">
+    <div class="draw poster-sky relative overflow-hidden text-(--poster-ink) md:pb-[clamp(16rem,18.2vw,26rem)]">
       <pre id="sky" aria-hidden="true" class="sky-stars pointer-events-none absolute inset-0 overflow-hidden font-mono text-xs leading-5 text-(--poster-star)"></pre>
       <div id="sun" aria-hidden="true" class="pointer-events-none absolute hidden size-7 -translate-1/2">${sun}</div>
       <div aria-hidden="true" class="intro-fade pointer-events-none absolute inset-0 overflow-hidden">
@@ -117,8 +117,8 @@ app.innerHTML = `
         </div>
       </div>
       <!-- The scene spans the poster's full width. Phones: below the text. From 768px: along the bottom, on the strip.
-           Its height follows the screen width; narrow screens crop the sides, keeping the peak in view. -->
-      <div id="peak-art" aria-hidden="true" class="relative mt-8 h-[clamp(9rem,20vw,17rem)] w-full cursor-pointer text-(--poster-ground) md:absolute md:inset-x-0 md:bottom-0 md:mt-0"></div>
+           Its height follows the scene's own proportions (40 rows : 220 columns, about 18.2% of the width), so wide screens never crop the summit; phones crop the sides, keeping the peak in view. -->
+      <div id="peak-art" aria-hidden="true" class="relative mt-8 h-[clamp(9rem,18.2vw,26rem)] w-full cursor-pointer text-(--poster-ground) md:absolute md:inset-x-0 md:bottom-0 md:mt-0"></div>
     </div>
     <div class="draw flex items-center justify-between gap-6 bg-(--poster-strip) px-6 py-3 text-white md:px-12">
       <div class="intro-fade flex flex-wrap items-center gap-x-5 gap-y-1">
@@ -129,26 +129,14 @@ app.innerHTML = `
     </div>
   </header>
 
-  <main id="main" tabindex="-1" class="intro-fade max-w-4xl px-6 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-secondary md:px-12">
-
+  <!-- Below the poster, the station's desk: the log (who Matt is) on the left, the console (what's running)
+       in a rail on the right under the peak counter. One column on phones, in the same order. -->
+  <main id="main" tabindex="-1" class="intro-fade px-6 pt-16 pb-24 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-secondary md:px-12 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(22rem,26rem)] lg:gap-x-16 xl:gap-x-24">
+    <div>
     ${section('About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`)}
 
-    ${section('Projects', `
-      <ul>
-        ${projects.map(p => `
-          <li class="border-b border-base-300 py-5 first:pt-0 last:border-b-0 last:pb-0">
-            <div class="flex items-baseline justify-between gap-4">
-              <h3 class="font-mono text-lg font-medium">${p.name}</h3>
-              ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
-            </div>
-            <p class="mt-1 max-w-2xl opacity-80">${p.description}</p>
-            ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
-            ${p.note ? `<p class="readout mt-2">${p.note}</p>` : ''}
-          </li>`).join('')}
-      </ul>`)}
-
     ${section('Crafts', `
-      <ul class="grid max-w-2xl gap-8">
+      <ul class="grid max-w-2xl gap-y-10 2xl:max-w-none 2xl:grid-cols-2 2xl:gap-x-16">
         ${crafts.map(c => `
           <li class="grid grid-cols-[2.5rem_1fr] gap-x-5">
             <span aria-hidden="true" class="mt-1 size-10">${icon(c.icon)}</span>
@@ -164,11 +152,26 @@ app.innerHTML = `
             </div>
           </li>`).join('')}
       </ul>`)}
+    </div>
+    <div class="mt-16 border-t border-base-300 pt-16 lg:mt-0 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
+    ${section('Projects', `
+      <ul>
+        ${projects.map(p => `
+          <li class="border-b border-base-300 py-4 first:pt-0 last:border-b-0 last:pb-0">
+            <div class="flex items-baseline justify-between gap-4">
+              <h3 class="font-mono text-lg font-medium">${p.name}</h3>
+              ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
+            </div>
+            <p class="mt-1 max-w-2xl opacity-80">${p.description}</p>
+            ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
+            ${p.note ? `<p class="readout mt-2">${p.note}</p>` : ''}
+          </li>`).join('')}
+      </ul>`)}
 
     ${section('Status', `
       <div class="notch border border-base-300 bg-base-200">
         <div class="border-b border-base-300 px-5 py-3">${prompt('status --all')}</div>
-        <dl class="grid grid-cols-1 gap-px bg-base-300 sm:grid-cols-3">
+        <dl class="grid gap-px bg-base-300">
           ${[
             { label: 'System', value: '<span class="status status-success"></span> Nominal' },
             ...status,
@@ -176,13 +179,14 @@ app.innerHTML = `
             { label: 'Commit', value: __COMMIT__ },
             { label: 'Local time', value: '<span id="clock"></span>' },
           ].map(s => `
-            <div class="flex items-center justify-between gap-4 bg-base-200 px-5 py-3 sm:flex-col sm:justify-start sm:gap-2 sm:p-6 sm:text-center">
+            <div class="flex items-center justify-between gap-4 bg-base-200 px-5 py-3">
               <dt class="readout">${s.label}</dt>
-              <dd class="flex items-center gap-2 text-right font-mono sm:text-center">${s.value}</dd>
+              <dd class="flex items-center gap-2 text-right font-mono">${s.value}</dd>
             </div>`).join('')}
         </dl>
         <div class="border-t border-base-300 px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
       </div>`)}
+    </div>
   </main>
 
   <footer class="intro-fade flex flex-wrap items-center justify-between gap-4 border-t border-base-300 px-6 py-8 text-sm md:px-12">

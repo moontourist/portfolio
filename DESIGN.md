@@ -158,11 +158,9 @@ Two layers. The brand layer is the Swedish flag: yellow and blue for identity, n
 
 ## Layout
 
-A left-aligned single column with a maximum width of 56rem (896px), inset by a 24px gutter on phones and 48px from 768px up. On wide screens the right side of the page stays open on purpose. The poster header and the nav run full width; everything else sits in the column.
+Below the full-width poster sits the station's desk, in two tracks from 1024px: the **log** on the left (About, then Crafts) and the **console**, a 22–26rem rail on the right (Projects, then the Status panel), aligned under the strip's peak counter and separated by a single vertical rule. Phones get one column in the same order, with a horizontal rule before the console. Gutters match the poster (24px, 48px from 768px). Sections are separated by space, not rules: 64px between groups (96px from 1024px), 24px from heading to content. Text stays under about 42rem; from 1536px Crafts becomes two columns. The status panel is terminal-style rows (label left, value right) at every size.
 
-Sections are separated by a 1px top rule and 56px of padding above and below. Text blocks inside cap at 42rem. Crafts are a list with a 40px pixel icon beside each name and line. The status panel grid is two columns on phones and three from 640px, separated by single 1px lines. The mountain scene spans the poster's full width, 9–17rem tall depending on screen width, with the peak right of centre. On phones it follows the poster text and crops its sides to keep the peak in view, and the poster's bottom crosshairs are hidden; from 768px it runs along the poster's bottom, resting on the strip, with the poster padded 256px at the bottom so text never overlaps it. The starfield and clouds are generated to the poster's size.
-
-Breakpoints are Tailwind's defaults; the ones in use are 640px and 768px.
+The mountain scene spans the poster's full width at its own proportions (about 18.2% of the width, 9–26rem tall), so wide screens never crop the summit; phones crop the sides and keep the peak in view, with the bottom crosshairs hidden. The poster's bottom padding follows the scene height so text never overlaps it.
 
 ## Elevation & Depth
 
