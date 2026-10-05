@@ -10,9 +10,6 @@ import { cloudsAt, cloudField } from './weather'
 declare const __COMMIT__: string
 declare const __BUILT__: string
 
-// Name-font comparison: ?name=eva (current) | eva85 | survey | wpa | ranger | signage | mono | barlow | chakra. Temporary, until one is chosen.
-document.documentElement.dataset.name = new URLSearchParams(location.search).get('name') ?? 'eva'
-
 // A different Washington peak on every visit; "Next peak" moves through the rest.
 // ?peak=Mt.%20Rainier picks one (for sharing a link to a particular mountain).
 const peakParam = new URLSearchParams(location.search).get('peak')

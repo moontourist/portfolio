@@ -141,7 +141,7 @@ Two layers. The brand layer is the Swedish flag: yellow and blue for identity, n
 **Body Font:** JetBrains Mono (with ui-monospace, monospace)
 **Label/Mono Font:** JetBrains Mono, the same family as body
 
-**Character:** A tall, squashed bold italic serif in the style of Evangelion's title cards, shouting over a calm monospace that matches Matt's own terminal. The contrast between them is the whole type system.
+**Character:** A tall, squashed bold italic serif in the style of Evangelion's title cards, shouting over a calm monospace that matches Matt's own terminal. The contrast between them is the whole type system. The serif is the editorial, artsy voice; infra and PNW are carried by the monospace, the readouts and the live mountains. Alternatives were compared side by side (WPA poster, park-sign slab, condensed signage, Barlow Condensed, Chakra Petch, JetBrains Mono, upright and less-squashed Times) and Matt chose to keep this one.
 
 ### Hierarchy
 - **Display** (700 italic, 4.5rem rising to 8rem from 640px, line-height 0.85, uppercase): the name in the poster only. Squashed horizontally to 70% from the left edge so the letters read tall.
@@ -212,7 +212,7 @@ The page's one loud moment: a live window onto a real Washington peak. Layers, b
 - live cloud cover from Open-Meteo as drifting ASCII cloud banks (`-` high, `~` mid, `=` low), tinted by the light; heavy cover also greys the sky;
 - the mountain scene, generated from real elevation data (`tools/skyline.py`, `src/peaks.ts`): a view from a lookout with hillshading and three depth tones, drawn as text grids;
 - thin crosshairs, the coordinates, the light readout ("Real sky  Golden hour 18:05 PT  looking north"), the cloud readout ("Cloud 84%  live via Open-Meteo"), the display name and the introduction;
-- the strip with the peak's name, elevation, a "Next peak" button and a barcode generated from the name.
+- the strip with the peak's name, elevation, a "Next peak" button and a peak counter ("Peak 3 / 8") so visitors know there are more.
 
 Poster text carries a thin outline in the sky's own colour (`.halo`), invisible on open sky, so it stays legible when clouds pass behind. `?clouds=low,mid,high` previews any weather.
 
