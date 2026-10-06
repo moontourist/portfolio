@@ -23,7 +23,7 @@ export const profile = {
   role: 'Infrastructure Engineer',
   company: 'Halo',
   location: 'Washington state',
-  // Draft by Claude from what Matt has said; rewrite in your own words. Facts live in crafts below, so this is the why.
+  // Facts live in crafts below, so this is the why.
   bio: "I keep production running at Halo, and write software in C# on the side. I came up through audio engineering, and I'm building toward a game: the one project that needs all of it. Sound, systems, code and an eye for a frame.",
 }
 

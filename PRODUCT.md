@@ -27,7 +27,7 @@ A creative technologist: one person across several crafts. By day he runs infras
 
 ## Operating Context
 
-- Matt edits the site himself, collaboratively with Claude. He reads C# well, which is why the code is TypeScript. All copy lives in `src/data.ts` so he can change content without touching layout.
+- Matt edits the site himself. He reads C# well, which is why the code is TypeScript. All copy lives in `src/data.ts` so he can change content without touching layout.
 - Every push to `main` deploys to Cloudflare Pages.
 - Projects arrive slowly: Advent of Code, small tools for work, and eventually a game.
 
@@ -50,7 +50,7 @@ A creative technologist: one person across several crafts. By day he runs infras
 
 - Projects: `tascii` (public, github.com/moontourist/tascii) and `cardatro` (private terminal card game in C#). The Games craft shows an excerpt of cardatro's real console output (a dealt hand with chip values, then "Select Cards 0-7:"); keep it matching what the program actually prints.
 - Contact: matthewgaryerickson@gmail.com, linkedin.com/in/matthewg-erickson.
-- Absences, do not fabricate: no testimonials, metrics, employers beyond Halo, or photos yet. The craft lines in `src/data.ts` were written by Claude from Matt's own words and facts; Matt should reword them as he likes. `sharpmas` was built by a friend (Scotty / scadoshi) and must never be presented as Matt's work.
+- Absences, do not fabricate: no testimonials, metrics, employers beyond Halo, or photos yet. The craft lines in `src/data.ts` are drafts from Matt's own words and facts; reword them freely. `sharpmas` was built by a friend (Scotty / scadoshi) and must never be presented as Matt's work.
 
 ## Product Principles
 
