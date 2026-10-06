@@ -307,3 +307,42 @@
 /* Visibility haze (set from the live reading in main.ts): distant ranges fade into the sky on murky days */
 #peak-art [data-depth="far"] { opacity: var(--far-vis, 1); transition: opacity 1500ms ease; }
 #peak-art [data-depth="mid"] { opacity: var(--mid-vis, 1); transition: opacity 1500ms ease; }
+
+/* Hover answers, mouse only (phones have no hover). Each reuses a motion the site already has. */
+@keyframes underline-trace { from { background-size: 0 1px; } }
+@keyframes snow-redraw { from { opacity: 0; } }
+@media (hover: hover) {
+  /* The mountain is a button (next peak): hovering brings its traced skyline back, faintly */
+  .ridge { transition: opacity 300ms ease; }
+  #peak-art:hover .ridge { opacity: 0.5; }
+
+  /* Project rows: a terminal caret, like picking a line in a menu */
+  .project h3 { position: relative; transition: translate 120ms steps(2); }
+  .project h3::before {
+    content: '>' / '';
+    position: absolute;
+    left: -1.5ch;
+    color: var(--color-secondary);
+    opacity: 0;
+    transition: opacity 120ms steps(2);
+  }
+  .project:hover h3 { translate: 1.5ch 0; }
+  .project:hover h3::before { opacity: 1; }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  /* Links: the underline is drawn as a background so a hover can trace it in, left to right in hard steps,
+     like the mountain's skyline. Touch and reduced motion keep the plain underline. */
+  .link, .link:hover, #next-peak {
+    text-decoration-line: none;
+    background: linear-gradient(currentColor, currentColor) left 100% / 100% 1px no-repeat;
+  }
+  .link-hover { background-size: 0 1px; }
+  .link:hover, #next-peak:hover { background-size: 100% 1px; animation: underline-trace 240ms steps(6); }
+
+  /* Logo: the snowcaps redraw from the summits down */
+  .brand:hover .snow { animation: snow-redraw 150ms steps(1) backwards; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .project h3 { transition: none; }
+  .project:hover h3 { translate: none; }
+}

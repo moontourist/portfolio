@@ -185,6 +185,12 @@ Ghost buttons only, quiet and textual.
 - **Shape:** square (0px)
 - **Ghost:** transparent background, text in the page's text colour, 32px tall with 12px side padding. Used for the nav links and the theme toggle.
 - **Hover / Focus:** DaisyUI's ghost hover fill and its visible focus outline.
+
+Hover answers (mouse only; each reuses a motion the site already has, and reduced motion keeps them still):
+- **Links:** the underline is a 1px background, so a hover re-traces it left to right in six hard steps, like the mountain's skyline. Footer links draw theirs in the same way.
+- **Project rows:** a Flaggul `>` caret appears and the name steps one caret-width right, like picking a line in a terminal menu.
+- **The mountain** (it's the Next peak button): the intro's traced skyline returns at half opacity.
+- **Logo:** the snowcaps redraw from the summits down.
 - **Labels:** sentence case words ("Email", "Dark"), no brackets or arrows.
 
 ### Chips

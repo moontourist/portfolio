@@ -89,7 +89,7 @@ app.innerHTML = `
   <a href="#main" class="btn btn-secondary btn-sm sr-only fixed top-3 left-3 z-10 focus:not-sr-only">Skip to content</a>
 
   <nav class="intro-fade navbar gap-1 border-b border-base-300 px-6 md:px-12">
-    <a href="/" class="flex flex-1 items-center gap-3">
+    <a href="/" class="brand flex flex-1 items-center gap-3">
       <span aria-hidden="true" class="size-9">${logo()}</span>
       <span class="font-semibold">${profile.name}</span>
     </a>
@@ -165,7 +165,7 @@ app.innerHTML = `
     ${section('Projects', `
       <ul>
         ${projects.map(p => `
-          <li class="border-b border-base-300 py-4 first:pt-0 last:border-b-0 last:pb-0">
+          <li class="project border-b border-base-300 py-4 first:pt-0 last:border-b-0 last:pb-0">
             <div class="flex items-baseline justify-between gap-4">
               <h3 class="font-mono text-lg font-medium">${p.name}</h3>
               ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
@@ -242,7 +242,7 @@ function showPeak(p: (typeof peaks)[number], first = false) {
   const layers = depthLayers(p.grid)
   document.querySelector('#peak-art')!.innerHTML = (['far', 'mid', 'near'] as const)
     .map(depth => `<div class="depth absolute inset-0" data-depth="${depth}">${landscape(layers[depth])}</div>`)
-    .join('') + `<div class="absolute inset-0">${ridgeline(p.grid)}</div>`
+    .join('') + `<div class="ridge-layer absolute inset-0">${ridgeline(p.grid)}</div>`
   document.querySelector('#peak-name')!.textContent = `${p.name}  ${p.metres} m / ${p.feet} ft`
   document.querySelector('#peak-count')!.textContent = `Peak ${peaks.indexOf(p) + 1} / ${peaks.length}`
   showClouds(p)
@@ -467,7 +467,7 @@ if (!reduceMotion) {
     move('#clouds', DRIFT.clouds)
     move('#clouds-front', DRIFT.mid) // front cloud is near the peak, so it moves with the peak's range
     move('#peak-art [data-depth="far"]', DRIFT.far)
-    move('#peak-art [data-depth="mid"]', DRIFT.mid)
+    move('#peak-art [data-depth="mid"], #peak-art .ridge-layer', DRIFT.mid)
   }
   addEventListener('scroll', () => queued || (queued = requestAnimationFrame(drift) > 0), { passive: true })
 }

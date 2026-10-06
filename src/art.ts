@@ -52,7 +52,9 @@ export function logo(): string {
     for (let x = 0; x < row.length; ) {
       let n = 1
       while (row[x + n] === row[x]) n++
-      if (row[x] in LOGO_FILLS) out += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${LOGO_FILLS[row[x]]}"/>`
+      // Snow rows carry a delay so a hover can redraw the caps from the summits down
+      const snow = row[x] === '*' ? ` class="snow" style="animation-delay:${y * 50}ms"` : ''
+      if (row[x] in LOGO_FILLS) out += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${LOGO_FILLS[row[x]]}"${snow}/>`
       x += n
     }
     return out
