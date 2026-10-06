@@ -90,8 +90,8 @@ app.innerHTML = `
 
   <nav class="intro-fade navbar gap-1 border-b border-base-300 px-6 md:px-12">
     <a href="/" class="flex flex-1 items-center gap-3">
-      <span class="w-10">${logo()}</span>
-      <span class="sr-only font-semibold sm:not-sr-only">moontourist</span>
+      <span aria-hidden="true" class="size-9">${logo()}</span>
+      <span class="font-semibold">${profile.name}</span>
     </a>
     ${links.filter(l => l.nav).map(l => `<a class="btn btn-ghost btn-sm pointer-coarse:h-11 ${'phone' in l ? '' : 'hidden sm:inline-flex'}" href="${l.url}">${l.name}</a>`).join('')}
     <button id="theme-toggle" type="button" aria-pressed="false" class="btn btn-ghost btn-sm gap-2 pointer-coarse:h-11">

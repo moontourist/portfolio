@@ -30,6 +30,17 @@
   --noise: 0;
 }
 
+/* Logo tones (src/art.ts): flag yellow in sun, amber in shadow, snow on the summits. On the light theme the
+   snow takes the poster's blue-grey snow shade, since cream would vanish into the page. */
+:root {
+  --logo-lit: #fecc02;
+  --logo-shade: #c7900a;
+  --logo-snow: #b4c3d2;
+}
+[data-theme="sverige-dark"] {
+  --logo-snow: #fff4cc;
+}
+
 /* Same flags, night side */
 @plugin "daisyui/theme" {
   name: "sverige-dark";

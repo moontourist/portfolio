@@ -109,11 +109,11 @@ Confirmed rejections: gamer or RPG wording, Japanese text or subtitles, NES.css-
 Two layers. The brand layer is the Swedish flag: yellow and blue for identity, navy and frost for structure. The world layer (sky, mountains, snow, clouds) is a set of palettes in `src/daylight.ts`, blended by the sun's real altitude at the peak: night navy, indigo blue hour with lavender snow, purple ranges and pink alpenglow at sunset, warm golden hour, blue daylight over green-grey forest.
 
 ### Primary
-- **Flaggul** (flag yellow): your name in the poster, the yellow bar on section headings, the "In progress" badge, the logo's first stripe and the terminal cursor. It stays the same at every hour.
-- **Flaggblå** (flag blue): links, the shell prompt's `matt@baker`, the logo's second stripe. In dark mode it is replaced by **Isblå** (ice blue), a lighter blue that stays readable on night backgrounds.
+- **Flaggul** (flag yellow): your name in the poster, the yellow bar on section headings, the "In progress" badge, the logo's sunlit faces and the terminal cursor. It stays the same at every hour.
+- **Flaggblå** (flag blue): links and the shell prompt's `matt@baker`. In dark mode it is replaced by **Isblå** (ice blue), a lighter blue that stays readable on night backgrounds.
 
 ### Secondary
-- **Fjällnatt** (mountain night, a deep navy): the logo's third stripe, and the family the night sky palette is built from.
+- **Fjällnatt** (mountain night, a deep navy): the family the night sky palette is built from.
 
 ### Tertiary
 - **Granskog** (spruce forest): the status light beside "Nominal" only. Dark mode uses **Granskog ljus**, its lighter form.
@@ -200,7 +200,7 @@ There are no cards. Projects are a plain list separated by 1px rules. The only c
 - **Internal Padding:** 24px per cell, 12px by 20px for prompt rows
 
 ### Navigation
-A full-width bar with a bottom rule. On the left, the stripe logo (40px) and the "moontourist" wordmark; below 640px the wordmark is visually hidden but still read by screen readers. On the right, the Email, LinkedIn and GitHub ghost buttons and the theme toggle; below 640px only Email and the toggle stay (links marked `phone` in `src/data.ts`). The toggle is an on/off switch labelled "Dark" with a small square that fills when dark mode is on (`aria-pressed`). On touch screens every nav button and footer link is at least 44px tall. The footer repeats every link, Instagram included, as plain links. The barcode in the poster strip is hidden below 640px.
+A full-width bar with a bottom rule. On the left, the logo (36px) and "Matt Erickson". The logo is an M whose top edge is a ridgeline, higher summit first, drawn on a 28px pixel grid and lit like the poster's mountains (sun from the left): flag yellow on the sunlit faces, amber (`#c7900a`) in shadow, a ragged snowcap (cream in dark mode, the poster's blue-grey snow shade in light mode); colours are `--logo-*` in `style.css`. The favicon is a 16px cut of the same M in the two yellows, no snow. On the right, the Email, LinkedIn and GitHub ghost buttons and the theme toggle; below 640px only Email and the toggle stay (links marked `phone` in `src/data.ts`). The toggle is an on/off switch labelled "Dark" with a small square that fills when dark mode is on (`aria-pressed`). On touch screens every nav button and footer link is at least 44px tall. The footer repeats every link, Instagram included, as plain links. The barcode in the poster strip is hidden below 640px.
 
 ### Poster Header (signature component)
 The page's one loud moment: a live window onto a real Washington peak. Layers, back to front:

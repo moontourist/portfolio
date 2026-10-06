@@ -1,22 +1,38 @@
 // Pixel art drawn from text grids. Edit a grid to redraw it.
 // '#' and '*' are pixels, anything else is empty.
 
-const MOON = [
-  '...#####....',
-  '.######.....',
-  '.####.......',
-  '####........',
-  '###.........',
-  '###.........',
-  '###.........',
-  '###.........',
-  '####........',
-  '.####.......',
-  '.######.....',
-  '...#####....',
+// The logo: an M whose top edge is a ridgeline, higher summit first, lit like the poster's mountains
+// (sun from the left). 'L' sunlit flag yellow, 's' amber shadow, '*' snow. Colours are --logo-* in style.css.
+const LOGO = [
+  '......**....................',
+  '.....****...................',
+  '....***s**..........**......',
+  '..****ss**.........****.....',
+  '.LLLLLsssss......LLLLLss....',
+  'LLLLLLssssss....LLLLLLsss...',
+  'LLLLLLsssssss..LLLLLLLssss..',
+  'LLLLLLssssssssLLLLLLLLsssss.',
+  'LLLLLLssssssssLLLLLLLLssssss',
+  'LLLLLLssssssssLLLLLLLLssssss',
+  'LLLLLL.sssssssLLLLLLL.ssssss',
+  'LLLLLL..ssssssLLLLLL..ssssss',
+  'LLLLLL...sssssLLLLL...ssssss',
+  'LLLLLL....ssssLLLL....ssssss',
+  'LLLLLL.....sssLLL.....ssssss',
+  'LLLLLL......ssLL......ssssss',
+  'LLLLLL.......sL.......ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
+  'LLLLLL................ssssss',
 ]
-
-const STRIPES = ['#fecc02', '#006aa7', '#0a2f4f']
 
 // One <rect> per pixel character in the grid
 function pixels(grid: string[], char: string, size: number, x0 = 0, y0 = 0): string {
@@ -29,14 +45,19 @@ function pixels(grid: string[], char: string, size: number, x0 = 0, y0 = 0): str
     .join('')
 }
 
-// Three slanted stripes (after the TRD decal) with the pixel moon on top
+const LOGO_FILLS: Record<string, string> = { L: 'var(--logo-lit)', s: 'var(--logo-shade)', '*': 'var(--logo-snow)' }
 export function logo(): string {
-  const stripes = STRIPES.map((color, i) => {
-    const x = i * 46
-    return `<polygon points="${x},0 ${x + 40},0 ${x + 100},160 ${x + 60},160" fill="${color}"/>`
+  const rects = LOGO.map((row, y) => {
+    let out = ''
+    for (let x = 0; x < row.length; ) {
+      let n = 1
+      while (row[x + n] === row[x]) n++
+      if (row[x] in LOGO_FILLS) out += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${LOGO_FILLS[row[x]]}"/>`
+      x += n
+    }
+    return out
   }).join('')
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 160">${stripes}<g fill="#fff" shape-rendering="crispEdges">${pixels(MOON, '#', 8, 70, 32)}</g></svg>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${LOGO[0].length} ${LOGO.length}" shape-rendering="crispEdges" class="size-full">${rects}</svg>`
 }
 
 // A mountain scene. Runs of the same character become one wide rect, which keeps big scenes light.
