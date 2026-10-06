@@ -88,6 +88,12 @@ export const projects: Project[] = [
     description: 'A terminal card game in C#, inspired by Balatro.',
     note: 'Private for now',
   },
+  {
+    name: 'this site',
+    status: 'active',
+    description: 'TypeScript, Vite, Tailwind and DaisyUI. Real terrain, stars and live weather, all drawn in ASCII.',
+    url: 'https://github.com/moontourist/portfolio',
+  },
 ]
 
 // nav: true also shows the link in the top bar; phone: true keeps it there on narrow screens.
