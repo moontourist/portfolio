@@ -311,24 +311,6 @@
 /* Hover answers, mouse only (phones have no hover). Each reuses a motion the site already has. */
 @keyframes underline-trace { from { background-size: 0 1px; } }
 @keyframes snow-redraw { from { opacity: 0; } }
-@media (hover: hover) {
-  /* The mountain is a button (next peak): hovering brings its traced skyline back, faintly */
-  .ridge { transition: opacity 300ms ease; }
-  #peak-art:hover .ridge { opacity: 0.5; }
-
-  /* Project rows: a terminal caret, like picking a line in a menu */
-  .project h3 { position: relative; transition: translate 120ms steps(2); }
-  .project h3::before {
-    content: '>' / '';
-    position: absolute;
-    left: -1.5ch;
-    color: var(--color-secondary);
-    opacity: 0;
-    transition: opacity 120ms steps(2);
-  }
-  .project:hover h3 { translate: 1.5ch 0; }
-  .project:hover h3::before { opacity: 1; }
-}
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   /* Links: the underline is drawn as a background so a hover can trace it in, left to right in hard steps,
      like the mountain's skyline. Touch and reduced motion keep the plain underline. */
@@ -341,8 +323,4 @@
 
   /* Logo: the snowcaps redraw from the summits down */
   .brand:hover .snow { animation: snow-redraw 150ms steps(1) backwards; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .project h3 { transition: none; }
-  .project:hover h3 { translate: none; }
 }
