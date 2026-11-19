@@ -83,6 +83,19 @@ const prompt = (command: string, id = '') => `
 // Only tag projects "In progress" when some are finished, otherwise the tag says nothing
 const mixedStatus = new Set(projects.map(p => p.status)).size > 1
 
+// One project's name, tag, description and link. Featured cards (with an image) get a little space above the name.
+const projectText = (p: (typeof projects)[number], card = true) => `
+  <div class="${card ? 'mt-4 ' : ''}flex items-baseline justify-between gap-4">
+    <h3 class="font-mono text-lg font-extrabold">${p.name}</h3>
+    ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
+  </div>
+  <p class="mt-1 max-w-2xl opacity-80">${p.description}</p>
+  ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
+  ${p.note ? `<p class="readout mt-2">${p.note}</p>` : ''}`
+
+// The Games craft's terminal sample is shown under About, so Crafts stays one compact row
+const sample = crafts.find(c => c.sample)?.sample
+
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 app.innerHTML = `
@@ -110,19 +123,20 @@ app.innerHTML = `
         <pre id="clouds" class="font-mono text-xs leading-5 text-(--poster-cloud) opacity-40"></pre>
       </div>
       <div class="intro-fade">${corners}</div>
-      <!-- Name first in the code so screen readers hear it before the readouts. Phones show the readouts above
-           the name; from 768px they move to the top-right corner, so the name stands alone on the left. -->
-      <div class="intro-fade halo relative flex flex-col px-6 pt-16 md:px-12">
-        <h1 class="display mt-6 text-6xl text-(--poster-name) sm:text-8xl lg:text-9xl">${profile.name.replace(' ', ' <br>')}</h1>
-        <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
-        <div class="order-first md:absolute md:top-16 md:right-12 md:flex md:flex-col md:items-end md:text-right">
+      <!-- Name first in the code so screen readers hear it before the readouts. The poster is a banner, kept short so
+           the projects show on the first screen. Below 1280px the readouts sit above the name; from 1280px they move
+           to the top-right corner (any earlier and the longest weather line runs into the one-line name). -->
+      <div class="intro-fade halo relative flex flex-col px-6 pt-10 md:px-12 md:pt-12">
+        <h1 class="display mt-4 text-[2.5rem] text-(--poster-name) sm:text-6xl xl:text-7xl">${profile.name}</h1>
+        <p class="mt-3 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
+        <div class="order-first xl:absolute xl:top-12 xl:right-12 xl:flex xl:flex-col xl:items-end xl:text-right">
           <p id="sky-note" class="readout"></p>
           <p id="weather" class="readout mt-1"></p>
         </div>
       </div>
       <!-- The scene spans the poster's full width. Phones: below the text. From 768px: along the bottom, on the strip.
            Its height follows the scene's own proportions (40 rows : 220 columns, about 18.2% of the width), so wide screens never crop the summit; phones crop the sides, keeping the peak in view. -->
-      <div id="peak-art" aria-hidden="true" class="relative mt-8 h-[clamp(9rem,18.2vw,26rem)] w-full cursor-pointer text-(--poster-ground) md:absolute md:inset-x-0 md:bottom-0 md:mt-0"></div>
+      <div id="peak-art" aria-hidden="true" class="relative mt-6 h-[clamp(8rem,18.2vw,26rem)] w-full cursor-pointer text-(--poster-ground) md:absolute md:inset-x-0 md:bottom-0 md:mt-0"></div>
       <!-- Low cloud drifting in front of the lower slopes; the summit always stays clear above it -->
       <div aria-hidden="true" class="intro-fade pointer-events-none absolute inset-0 overflow-hidden">
         <pre id="clouds-front" class="font-mono text-xs leading-5 text-(--poster-cloud) opacity-60"></pre>
@@ -138,62 +152,62 @@ app.innerHTML = `
     </div>
   </header>
 
-  <!-- Below the poster, the station's desk: the log (who Matt is) on the left, the console (what's running)
-       in a rail on the right under the peak counter. On wide screens it's a 2x2 grid so the second headings
-       line up, and Status stays in view while Crafts scrolls past. One column on phones, in source order. -->
-  <main id="main" tabindex="-1" class="intro-fade px-6 pt-16 pb-24 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-secondary md:px-12 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(22rem,26rem)] lg:gap-x-16 xl:gap-x-24">
-    ${section('About', `<p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`, 'lg:col-start-1 lg:row-start-1')}
+  <!-- Below the poster: the work first, so it shows on the first screen. Then the crafts in one row, then the
+       log (About, with the cardatro sample) beside the console (Status). One column on phones, in source order. -->
+  <main id="main" tabindex="-1" class="intro-fade px-6 pt-12 pb-24 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-secondary md:px-12">
+    ${section('Projects', `
+      <ul class="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        ${projects.filter(p => p.image).map(p => `
+          <li>
+            <img src="${p.image}" alt="" width="960" height="260" class="block h-auto w-full border border-base-300" />
+            ${projectText(p)}
+          </li>`).join('')}
+      </ul>
+      <ul class="mt-10 grid gap-x-8 gap-y-8 border-t border-base-300 pt-8 sm:grid-cols-2 lg:grid-cols-3">
+        ${projects.filter(p => !p.image).map(p => `<li>${projectText(p, false)}</li>`).join('')}
+      </ul>`)}
 
     ${section('Crafts', `
-      <ul class="grid max-w-2xl gap-y-10 2xl:max-w-none 2xl:grid-cols-2 2xl:gap-x-16">
+      <ul class="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-5">
         ${crafts.map(c => `
-          <li class="craft grid grid-cols-[2.5rem_1fr] gap-x-5">
+          <li class="craft grid content-start grid-cols-[2.5rem_1fr] gap-x-5 lg:grid-cols-1 lg:gap-y-3">
             <span aria-hidden="true" class="craft-icon mt-1 size-10">${icon(c.icon)}</span>
             <div>
               <h3 class="font-extrabold">${c.name}</h3>
-              <p class="mt-1 opacity-80">${c.detail}</p>
+              <p class="mt-1 text-sm opacity-80">${c.detail}</p>
               ${c.link ? `<a class="link link-primary mt-2 inline-block text-sm" href="${c.link.url}">${c.link.label}</a>` : ''}
-              ${c.sample ? `
-                <figure class="mt-4 border border-base-300 bg-base-200">
-                  <pre class="overflow-x-auto px-5 py-4 font-mono text-sm leading-relaxed">${c.sample.join('\n')}<span aria-hidden="true" class="ml-2 inline-block h-[1.1em] w-[0.6em] bg-secondary align-text-bottom"></span></pre>
-                  <figcaption class="readout border-t border-base-300 px-5 py-2">Excerpt of real output</figcaption>
-                </figure>` : ''}
             </div>
           </li>`).join('')}
-      </ul>`, 'lg:col-start-1 lg:row-start-2')}
-    <div aria-hidden="true" class="hidden border-l border-base-300 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:block"></div>
-    ${section('Projects', `
-      <ul>
-        ${projects.map(p => `
-          <li class="border-b border-base-300 py-4 first:pt-0 last:border-b-0 last:pb-0">
-            <div class="flex items-baseline justify-between gap-4">
-              <h3 class="font-mono text-lg font-extrabold">${p.name}</h3>
-              ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
-            </div>
-            <p class="mt-1 max-w-2xl opacity-80">${p.description}</p>
-            ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
-            ${p.note ? `<p class="readout mt-2">${p.note}</p>` : ''}
-          </li>`).join('')}
-      </ul>`, 'border-t border-base-300 pt-16 lg:col-start-2 lg:row-start-1 lg:mt-0! lg:border-t-0 lg:pt-0 lg:pl-12')}
+      </ul>`)}
 
-    ${section('Status', `
-      <div class="notch border border-base-300 bg-base-200">
-        <div class="border-b border-base-300 px-5 py-3">${prompt('status --all', 'status-cmd')}</div>
-        <dl class="grid gap-px bg-base-300">
-          ${[
-            { label: 'System', value: '<span class="status status-success"></span> Nominal' },
-            ...status,
-            { label: 'Last deploy', value: __BUILT__ },
-            { label: 'Commit', value: __COMMIT__ },
-            { label: 'Local time', value: '<span id="clock"></span>' },
-          ].map(s => `
-            <div class="flex items-center justify-between gap-4 bg-base-200 px-5 py-3">
-              <dt class="readout">${s.label}</dt>
-              <dd class="flex items-center gap-2 text-right font-mono">${s.value}</dd>
-            </div>`).join('')}
-        </dl>
-        <div id="status-end" class="border-t border-base-300 px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
-      </div>`, 'lg:sticky lg:top-8 lg:col-start-2 lg:row-start-2 lg:self-start lg:pl-12')}
+    <div class="mt-16 lg:mt-24 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(22rem,26rem)] lg:gap-x-16 xl:gap-x-24">
+      ${section('About', `
+        <p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>
+        ${sample ? `
+          <figure class="mt-8 max-w-2xl border border-base-300 bg-base-200">
+            <pre class="overflow-x-auto px-5 py-4 font-mono text-sm leading-relaxed">${sample.join('\n')}<span aria-hidden="true" class="ml-2 inline-block h-[1.1em] w-[0.6em] bg-secondary align-text-bottom"></span></pre>
+            <figcaption class="readout border-t border-base-300 px-5 py-2">cardatro, excerpt of real output</figcaption>
+          </figure>` : ''}`)}
+
+      ${section('Status', `
+        <div class="notch border border-base-300 bg-base-200">
+          <div class="border-b border-base-300 px-5 py-3">${prompt('status --all', 'status-cmd')}</div>
+          <dl class="grid gap-px bg-base-300">
+            ${[
+              { label: 'System', value: '<span class="status status-success"></span> Nominal' },
+              ...status,
+              { label: 'Last deploy', value: __BUILT__ },
+              { label: 'Commit', value: __COMMIT__ },
+              { label: 'Local time', value: '<span id="clock"></span>' },
+            ].map(s => `
+              <div class="flex items-center justify-between gap-4 bg-base-200 px-5 py-3">
+                <dt class="readout">${s.label}</dt>
+                <dd class="flex items-center gap-2 text-right font-mono">${s.value}</dd>
+              </div>`).join('')}
+          </dl>
+          <div id="status-end" class="border-t border-base-300 px-5 py-3">${prompt('<span class="cursor"></span>')}</div>
+        </div>`, 'lg:mt-0!')}
+    </div>
   </main>
 
   <footer class="intro-fade flex flex-wrap items-center justify-between gap-4 border-t border-base-300 px-6 py-8 text-sm md:px-12">

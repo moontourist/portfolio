@@ -16,6 +16,7 @@ export type Project = {
   description: string
   url?: string
   note?: string // shown instead of a source link, e.g. for private repos
+  image?: string // banner in public/, shown as a card at the top of Projects (1920x520 logos, drawn at 960 wide)
 }
 
 export const profile = {
@@ -58,7 +59,7 @@ export const crafts: Craft[] = [
   {
     name: 'Games',
     icon: 'gamepad',
-    detail: 'cardatro is the first one. This is what it prints so far:',
+    detail: 'cardatro is the first one, a card game in the terminal. Its output so far is under About.',
     sample: [
       '---------------------',
       'Ace of Spades',
@@ -79,18 +80,21 @@ export const projects: Project[] = [
   {
     name: 'seethe',
     status: 'active',
+    image: '/projects/seethe.png',
     description: 'A synth plugin (VST3/CLAP) for old game sounds and dungeon synth, in Rust. Presets rebuilt from Super Mario 64 and Donkey Kong Country, plus crypt choirs and castle organs.',
     // url: 'https://github.com/moontourist/seethe', // add back when the repo goes public
   },
   {
     name: 'thunk',
     status: 'active',
+    image: '/projects/thunk.png',
     description: 'A drum bus plugin (VST3/CLAP) for any DAW, in Rust: drive, grit, snap and a low-end thump tuned to your kick.',
     // url: 'https://github.com/moontourist/thunk', // add back when the repo goes public
   },
   {
     name: 'wave',
     status: 'active',
+    image: '/projects/wave.png',
     description: 'A tiling window manager for macOS with smooth animations, in Rust. Built on rift.',
     url: 'https://github.com/moontourist/wave',
   },

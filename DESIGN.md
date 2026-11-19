@@ -140,7 +140,7 @@ Two layers. The brand layer is the Swedish flag (Matt is Swedish American), draw
 **Character:** The same type as Matt's apps: one monospace in two weights. ExtraBold, pulled tight (-0.04em), sets the name and titles the way the thunk, wave and seethe logos set theirs; Regular carries everything else. No italics, no serif, no squash. (The site used squashed italic Times until November 2026; it was dropped to match the apps.)
 
 ### Hierarchy
-- **Display** (800, 3.75rem rising to 6rem from 640px and 8rem from 1024px, line-height 1, -0.04em): the name in the poster only.
+- **Display** (800, 2.5rem rising to 3.75rem from 640px and 4.5rem from 1280px, line-height 1, -0.04em): the name in the poster only, on one line.
 - **Headline** (800, 2.25rem rising to 3rem, line-height 1, -0.04em): section titles, with a 4px Flaggul bar on the left.
 - **Title** (800, 1.125rem): project names, craft names and the name in the top bar.
 - **Body lead** (400, 1.125rem, line-height 1.625): the one-line introduction in the poster and the About paragraph. Keep to about 42rem wide.
@@ -154,9 +154,9 @@ Two layers. The brand layer is the Swedish flag (Matt is Swedish American), draw
 
 ## Layout
 
-Below the full-width poster sits the station's desk, in two tracks from 1024px: the **log** on the left (About, then Crafts) and the **console**, a 22–26rem rail on the right (Projects, then the Status panel), aligned under the strip's peak counter and separated by a single vertical rule. The four sections sit on a 2×2 grid so Crafts and Status headings line up, and Status stays in view (sticky) while the longer Crafts list scrolls past. Phones get one column in the same order, with a horizontal rule before the console. Gutters match the poster (24px, 48px from 768px). Sections are separated by space, not rules: 64px between groups (96px from 1024px), 24px from heading to content. Text stays under about 42rem; from 1536px Crafts becomes two columns. The status panel is terminal-style rows (label left, value right) at every size.
+The site's job is showing the projects, so the first screen must reach them (Nielsen Norman Group: 57% of viewing time stays on the first screen). The poster is a banner: the name on one line, the role line, and the mountain. Below it, in order: **Projects** first, with the featured projects as image cards (three across from 1024px, two from 640px, then the rest as a text grid under a rule); **Crafts** as one row of five from 1024px (two columns from 640px); then **About** (with the cardatro program still) beside the **Status** panel in a 22–26rem column from 1024px. Measured on a 1440×900 laptop and a 390×844 phone, the first project's image starts inside the first screen. Phones get one column in the same order. Gutters match the poster (24px, 48px from 768px). Sections are separated by space, not rules: 64px between groups (96px from 1024px), 24px from heading to content. Text stays under about 42rem. The status panel is terminal-style rows (label left, value right) at every size.
 
-The mountain scene spans the poster's full width at its own proportions (about 18.2% of the width, 9–26rem tall), so wide screens never crop the summit; phones crop the sides and keep the peak in view, with the bottom crosshairs hidden. The poster's bottom padding follows the scene height so text never overlaps it.
+The mountain scene spans the poster's full width at its own proportions (about 18.2% of the width, 8–26rem tall), so wide screens never crop the summit; phones crop the sides and keep the peak in view, with the bottom crosshairs hidden. The poster's bottom padding follows the scene height so text never overlaps it. Shrinking the scene below its own proportions would crop the summit, so the banner gets shorter by tightening the text above it, never by squashing the mountain. Below 1280px the readouts sit above the name; from 1280px they move to the top-right corner.
 
 ## Elevation & Depth
 
@@ -192,7 +192,7 @@ Hover answers (mouse only; each reuses a motion the site already has, and reduce
 - **State:** shown only when the project list mixes finished and unfinished work; if every project has the same status the badge is hidden, because it would carry no information.
 
 ### Cards / Containers
-There are no cards. Projects are a plain list separated by 1px rules. The only container is the status panel.
+There are no boxed cards. A featured project is its own logo banner (1px border, shown as-is in its app's colours) with the name and text unboxed beneath; the rest of the projects are a plain grid under a 1px rule. The only container is the status panel.
 - **Corner Style:** square, with the notch clip on the status panel
 - **Background:** Sand in light mode, Ash in dark mode
 - **Shadow Strategy:** none, see Elevation & Depth
@@ -224,10 +224,10 @@ First load is the one authored sequence: ASCII rain falls and lands as the starf
 The only place terminal styling appears. A notched panel opening with a prompt line (`matt@baker:~$ status --all`), then a grid of readouts with centred label-style field names and mono values (System, Operator, Region, Current build, Next deploy, a live Pacific-time clock), closing on an empty prompt with a blinking Flaggul block cursor. The prompt lines are hidden from screen readers. The readouts are System, Current build, Next deploy, Last deploy (build date) and Commit (both filled in at build time by `vite.config.ts`), and Local time. Readouts must report something the rest of the page doesn't. The first time the panel scrolls into view, `status --all` types out and the readouts print one per beat; the text is in the page throughout, only its appearance is staged. The clipped corners get a 1px diagonal line so the border stays continuous. The cursor blinks every 1.1s in hard steps and stops for visitors who prefer reduced motion. Outside the poster, it is the page's only ambient motion.
 
 ### Crafts List (signature component)
-One row per craft (Infrastructure, Code, Audio, Photography, Games): a 40px pixel icon drawn on a 12×12 grid in the text colour with Flaggul accents, the craft name in ExtraBold mono and one plain line in Matt's own words, plus an optional text link (Photography links to Instagram). It replaces a skills list on purpose: every craft gets equal standing. On hover or keyboard focus an icon lifts 2px and its yellow pixels blink twice.
+One compact cell per craft (Infrastructure, Code, Audio, Photography, Games), in a single row from 1024px: a 40px pixel icon drawn on a 12×12 grid in the text colour with Flaggul accents, the craft name in ExtraBold mono and one plain line in Matt's own words, plus an optional text link (Photography links to Instagram). It replaces a skills list on purpose: every craft gets equal standing. On hover or keyboard focus an icon lifts 2px and its yellow pixels blink twice.
 
 ### Program Still
-Real output from one of Matt's programs, shown as a bordered `pre` in Sand or Ash with a static Flaggul block cursor and a readout caption ("Excerpt of real output"). Used for cardatro under Games. It is the one allowed exception to keeping terminal styling inside the status panel, because it shows real work rather than decoration. The cursor here does not blink; the status panel keeps the page's only motion.
+Real output from one of Matt's programs, shown as a bordered `pre` in Sand or Ash with a static Flaggul block cursor and a readout caption ("Excerpt of real output"). Used for cardatro, under About (Crafts stays compact). It is the one allowed exception to keeping terminal styling inside the status panel, because it shows real work rather than decoration. The cursor here does not blink; the status panel keeps the page's only motion.
 
 ### Section Heading
 A JetBrains Mono ExtraBold title with a 4px Flaggul bar on its left and 16px padding. No numbers, no labels above it.
