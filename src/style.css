@@ -3,25 +3,25 @@
   themes: false;
 }
 
-/* Swedish blue and yellow on glacier white. Sharp corners, thin lines. */
+/* Gruvbox Material, the palette tascii and thunk use. Sharp corners, thin lines. */
 @plugin "daisyui/theme" {
-  name: "sverige";
+  name: "gruvbox";
   default: true;
   color-scheme: light;
-  --color-base-100: #eef2f5;
-  --color-base-200: #e1e8ee;
-  --color-base-300: #c5d0da;
-  --color-base-content: #0d1b2a;
-  --color-primary: #006aa7;
-  --color-primary-content: #ffffff;
-  --color-secondary: #fecc02;
-  --color-secondary-content: #12161c;
-  --color-accent: #0a2f4f;
-  --color-accent-content: #ffffff;
-  --color-neutral: #12161c;
-  --color-neutral-content: #eef2f5;
-  --color-success: #2e7d4f;
-  --color-success-content: #ffffff;
+  --color-base-100: #fbf1c7;
+  --color-base-200: #f2e5bc;
+  --color-base-300: #ddccab;
+  --color-base-content: #4f3829;
+  --color-primary: #45707a;
+  --color-primary-content: #fbf1c7;
+  --color-secondary: #d8a657;
+  --color-secondary-content: #282828;
+  --color-accent: #945e80;
+  --color-accent-content: #fbf1c7;
+  --color-neutral: #282828;
+  --color-neutral-content: #fbf1c7;
+  --color-success: #6c782e;
+  --color-success-content: #fbf1c7;
   --radius-selector: 0;
   --radius-field: 0;
   --radius-box: 0;
@@ -30,35 +30,35 @@
   --noise: 0;
 }
 
-/* Logo tones (src/art.ts): flag yellow in sun, amber in shadow, snow on the summits. On the light theme the
-   snow takes the poster's blue-grey snow shade, since cream would vanish into the page. */
+/* Logo tones (src/art.ts): amber in sun, deeper amber in shadow, snow on the summits. On the light theme the
+   snow goes grey, since the cream text colour would vanish into the page. */
 :root {
-  --logo-lit: #fecc02;
-  --logo-shade: #c7900a;
-  --logo-snow: #b4c3d2;
+  --logo-lit: #d8a657;
+  --logo-shade: #b47109;
+  --logo-snow: #a89984;
 }
-[data-theme="sverige-dark"] {
-  --logo-snow: #fff4cc;
+[data-theme="gruvbox-dark"] {
+  --logo-snow: #d4be98;
 }
 
-/* Same flags, night side */
+/* Same palette, dark side: the exact colours of tascii's panel and thunk's editor */
 @plugin "daisyui/theme" {
-  name: "sverige-dark";
+  name: "gruvbox-dark";
   color-scheme: dark;
-  --color-base-100: #0b1420;
-  --color-base-200: #111c2b;
-  --color-base-300: #24324a;
-  --color-base-content: #e8e4da;
-  --color-primary: #4aa3df;
-  --color-primary-content: #0b1420;
-  --color-secondary: #fecc02;
-  --color-secondary-content: #12161c;
-  --color-accent: #0a2f4f;
-  --color-accent-content: #ffffff;
-  --color-neutral: #e8e4da;
-  --color-neutral-content: #0b1420;
-  --color-success: #4caf7a;
-  --color-success-content: #0b1420;
+  --color-base-100: #282828;
+  --color-base-200: #32302f;
+  --color-base-300: #45403d;
+  --color-base-content: #d4be98;
+  --color-primary: #7daea3;
+  --color-primary-content: #282828;
+  --color-secondary: #d8a657;
+  --color-secondary-content: #282828;
+  --color-accent: #d3869b;
+  --color-accent-content: #282828;
+  --color-neutral: #d4be98;
+  --color-neutral-content: #282828;
+  --color-success: #a9b665;
+  --color-success-content: #282828;
   --radius-selector: 0;
   --radius-field: 0;
   --radius-box: 0;
@@ -157,7 +157,7 @@
 @property --poster-snow-shade { syntax: "<color>"; inherits: true; initial-value: #b4c3d2; }
 @property --poster-far-snow { syntax: "<color>"; inherits: true; initial-value: #a9bccd; }
 @property --poster-ink { syntax: "<color>"; inherits: true; initial-value: #e8e4da; }
-@property --poster-name { syntax: "<color>"; inherits: true; initial-value: #fecc02; }
+@property --poster-name { syntax: "<color>"; inherits: true; initial-value: #d8a657; }
 @property --poster-star { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
 @property --poster-cloud { syntax: "<color>"; inherits: true; initial-value: #c7d3df; }
 @property --poster-strip { syntax: "<color>"; inherits: true; initial-value: #061626; }

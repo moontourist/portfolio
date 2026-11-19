@@ -518,13 +518,13 @@ const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle')!
 const box = toggle.querySelector('span')!
 const html = document.documentElement
 const show = () => {
-  const dark = html.dataset.theme === 'sverige-dark'
+  const dark = html.dataset.theme === 'gruvbox-dark'
   toggle.setAttribute('aria-pressed', String(dark))
   box.classList.toggle('bg-current', dark)
 }
 show()
 toggle.addEventListener('click', () => {
-  html.dataset.theme = html.dataset.theme === 'sverige-dark' ? 'sverige' : 'sverige-dark'
+  html.dataset.theme = html.dataset.theme === 'gruvbox-dark' ? 'gruvbox' : 'gruvbox-dark'
   try { localStorage.setItem('theme', html.dataset.theme) } catch {}
   show()
 })

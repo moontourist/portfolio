@@ -5,10 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Matt Erickson · Infrastructure Engineer</title>
-    <meta name="description" content="Infrastructure engineer at Halo in Washington state. Writes software in C# and is building toward a game." />
+    <meta name="description" content="Infrastructure engineer at Halo in Washington state. Writes software in Rust and C#, and is building toward a game." />
     <!-- Link previews (Discord, Slack, iMessage). og.png is a screenshot of the poster. -->
     <meta property="og:title" content="Matt Erickson · Infrastructure Engineer" />
-    <meta property="og:description" content="Infrastructure engineer at Halo in Washington state. Writes software in C# and is building toward a game." />
+    <meta property="og:description" content="Infrastructure engineer at Halo in Washington state. Writes software in Rust and C#, and is building toward a game." />
     <meta property="og:url" content="https://matt-erickson.io/" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://matt-erickson.io/og.png" />
@@ -22,7 +22,9 @@
       // Set the theme before the page draws, so dark mode doesn't flash white
       let theme = null
       try { theme = localStorage.getItem('theme') } catch {}
-      theme ??= matchMedia('(prefers-color-scheme: dark)').matches ? 'sverige-dark' : 'sverige'
+      // Visitors from before the Gruvbox switch saved 'sverige' or 'sverige-dark'
+      if (theme?.startsWith('sverige')) theme = theme.replace('sverige', 'gruvbox')
+      theme ??= matchMedia('(prefers-color-scheme: dark)').matches ? 'gruvbox-dark' : 'gruvbox'
       document.documentElement.dataset.theme = theme
       // Hide everything but the sky and mountain until they've been built (main.ts fades it in).
       // Failsafe: show the page after 6s even if the script never runs.

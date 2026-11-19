@@ -24,7 +24,7 @@ export const profile = {
   company: 'Halo',
   location: 'Washington state',
   // Facts live in crafts below, so this is the why.
-  bio: "I keep production running at Halo, and write software in C# on the side. I came up through audio engineering, and I'm building toward a game: the one project that needs all of it. Sound, systems, code and an eye for a frame.",
+  bio: "I keep production running at Halo, and write software on the side, lately audio plugins and a window manager in Rust. I came up through audio engineering, and I'm building toward a game: the one project that needs all of it. Sound, systems, code and an eye for a frame.",
 }
 
 // Readouts for the status panel. The status light, last deploy date, commit and local time are added in main.ts.
@@ -42,12 +42,12 @@ export const crafts: Craft[] = [
   {
     name: 'Code',
     icon: 'terminal',
-    detail: 'C#, mostly Advent of Code and small tools that save me clicks at work. Written in Neovim, run in Ghostty.',
+    detail: 'Rust for audio plugins and a macOS window manager, C# for Advent of Code and small tools that save me clicks at work. Written in Neovim, run in Ghostty.',
   },
   {
     name: 'Audio',
     icon: 'wave',
-    detail: 'Pro Tools and Ableton are still where I spend studio time.',
+    detail: 'Pro Tools and Ableton are still where I spend studio time, and now I build plugins for them: thunk for drums, seethe for dungeon synth.',
   },
   {
     name: 'Photography',
@@ -77,9 +77,27 @@ export const crafts: Craft[] = [
 
 export const projects: Project[] = [
   {
+    name: 'seethe',
+    status: 'active',
+    description: 'A synth plugin (VST3/CLAP) for old game sounds and dungeon synth, in Rust. Presets rebuilt from Super Mario 64 and Donkey Kong Country, plus crypt choirs and castle organs.',
+    url: 'https://github.com/moontourist/seethe',
+  },
+  {
+    name: 'thunk',
+    status: 'active',
+    description: 'A drum bus plugin (VST3/CLAP) for any DAW, in Rust: drive, grit, snap and a low-end thump tuned to your kick.',
+    url: 'https://github.com/moontourist/thunk',
+  },
+  {
+    name: 'wave',
+    status: 'active',
+    description: 'A tiling window manager for macOS with smooth animations, in Rust. Built on rift.',
+    url: 'https://github.com/moontourist/wave',
+  },
+  {
     name: 'tascii',
     status: 'active',
-    description: 'A reminder script that speaks in ASCII art.',
+    description: "A minimalist ASCII to-do list for Chrome's side panel.",
     url: 'https://github.com/moontourist/tascii',
   },
   {

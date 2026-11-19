@@ -19,11 +19,11 @@ None of them arrive with a task to complete. They are getting a sense of who he 
 
 ## Product Purpose
 
-The personal site of Matt Erickson (matt-erickson.io): an infrastructure engineer at Halo, based in Washington state, who is learning C# and building toward making his own game. It is a long-term presence that grows with his projects, not a job-hunt landing page. He is not looking for work. Success is a visitor leaving with a clear, memorable sense of him and an easy way to reach him.
+The personal site of Matt Erickson (matt-erickson.io): an infrastructure engineer at Halo, based in Washington state, who builds audio plugins and a window manager in Rust on the side and is building toward making his own game. It is a long-term presence that grows with his projects, not a job-hunt landing page. He is not looking for work. Success is a visitor leaving with a clear, memorable sense of him and an easy way to reach him.
 
 ## Positioning
 
-A creative technologist: one person across several crafts. By day he runs infrastructure (AWS, Kubernetes, Datadog). On the side he writes software in C# and is heading toward game dev. He trained as an audio engineer (Pro Tools, Ableton) and shoots photography. The site should read as all of these at once, not as an infra résumé with hobbies attached.
+A creative technologist: one person across several crafts. By day he runs infrastructure (AWS, Kubernetes, Datadog). On the side he writes software in Rust (the thunk and seethe audio plugins, the wave window manager) and C#, and is heading toward game dev. He trained as an audio engineer (Pro Tools, Ableton) and shoots photography. The site should read as all of these at once, not as an infra résumé with hobbies attached.
 
 ## Operating Context
 
@@ -43,7 +43,7 @@ A creative technologist: one person across several crafts. By day he runs infras
 
 - Name and handle: Matt Erickson / moontourist (GitHub `moontourist`, Instagram `moon.tourist`).
 - Voice: plain, first-person, sentence case. Tasteful, not jokey.
-- Binding references Matt chose: Swedish blue and yellow (he is Swedish American), Marathon (Bungie) UI art style, a touch of ASCII and pixel art, terminal touches, Times New Roman italic display type, JetBrains Mono (his terminal font).
+- Binding references Matt chose: the Gruvbox Material palette his apps use (tascii, thunk, wave, seethe), Marathon (Bungie) UI art style, a touch of ASCII and pixel art, terminal touches, Times New Roman italic display type, JetBrains Mono (his terminal font).
 - Rejected, do not reintroduce: gamer or RPG wording (guild, quest, character, stats, equipment), Japanese text or subtitles, NES.css, a moon beside the mountain.
 
 ## Evidence on Hand

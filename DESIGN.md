@@ -2,22 +2,21 @@
 name: matt-erickson.io
 description: The personal site of Matt Erickson (moontourist), an infrastructure engineer and creative technologist in Washington state.
 colors:
-  flaggul: "#fecc02"
-  flaggbla: "#006aa7"
-  isbla: "#4aa3df"
+  amber: "#d8a657"
+  blue: "#45707a"
+  aqua: "#7daea3"
   fjallnatt: "#0a2f4f"
-  glaciarvit: "#eef2f5"
-  snodis: "#e1e8ee"
-  rimfrost: "#c5d0da"
-  tusch: "#0d1b2a"
-  kolsvart: "#12161c"
+  cream: "#fbf1c7"
+  sand: "#f2e5bc"
+  tan: "#ddccab"
+  bark: "#4f3829"
+  charcoal: "#282828"
   sno: "#ffffff"
-  polarnatt: "#0b1420"
-  midnatt: "#111c2b"
-  skiffer: "#24324a"
-  manljus: "#e8e4da"
-  granskog: "#2e7d4f"
-  granskog-ljus: "#4caf7a"
+  ash: "#32302f"
+  slate: "#45403d"
+  parchment: "#d4be98"
+  olive: "#6c782e"
+  green: "#a9b665"
 typography:
   display:
     fontFamily: "Times New Roman, Times, Liberation Serif, serif"
@@ -61,17 +60,17 @@ spacing:
 components:
   button-ghost:
     backgroundColor: "transparent"
-    textColor: "{colors.tusch}"
+    textColor: "{colors.bark}"
     rounded: "{rounded.none}"
     padding: "0 12px"
     height: "32px"
   badge-in-progress:
-    backgroundColor: "{colors.flaggul}"
-    textColor: "{colors.kolsvart}"
+    backgroundColor: "{colors.amber}"
+    textColor: "{colors.charcoal}"
     rounded: "{rounded.none}"
     padding: "0 8px"
   poster-header:
-    backgroundColor: "{colors.polarnatt}"
+    backgroundColor: "{colors.charcoal}"
     textColor: "{colors.manljus}"
     rounded: "{rounded.none}"
   poster-strip:
@@ -80,7 +79,7 @@ components:
     padding: "12px 24px"
   status-panel:
     backgroundColor: "{colors.snodis}"
-    textColor: "{colors.tusch}"
+    textColor: "{colors.bark}"
     rounded: "{rounded.none}"
     padding: "{spacing.panel}"
 ---
@@ -91,9 +90,9 @@ components:
 
 **Creative North Star: "The Cascade Field Station"**
 
-The site is a remote research post in the Washington mountains, run by one person who keeps the systems up and makes things on the side. Arriving, you see the station's window first: a full-width live view of a real Cascade or Olympic peak, drawn in pixels from elevation data, under the sky it has right now. The light follows the sun at that peak (daylight, golden hour, sunset glow, blue hour, night), the stars are the real ones behind it, and the clouds are the live cloud cover. Over that view sit the operator's name in tall italic flag-yellow serif, the peak's coordinates and readouts, and registration crosshairs in the corners. Below it the station goes quiet: a single left-aligned column of plain monospace text, thin frost-coloured rules, and one terminal readout reporting the operator's status.
+The site is a remote research post in the Washington mountains, run by one person who keeps the systems up and makes things on the side. Arriving, you see the station's window first: a full-width live view of a real Cascade or Olympic peak, drawn in pixels from elevation data, under the sky it has right now. The light follows the sun at that peak (daylight, golden hour, sunset glow, blue hour, night), the stars are the real ones behind it, and the clouds are the live cloud cover. Over that view sit the operator's name in tall italic amber serif, the peak's coordinates and readouts, and registration crosshairs in the corners. Below it the station goes quiet: a single left-aligned column of plain monospace text, thin frost-coloured rules, and one terminal readout reporting the operator's status.
 
-The mood is technical and precise, playful but grown-up, and unmistakably Pacific Northwest. Precision comes from instrument language: coordinates, elevations, mono readouts, crosshairs, a barcode. The play comes from pixel art and ASCII drawn with care, never from jokes. The palette works in two layers: a fixed brand layer in the Swedish flag's blue and yellow (Matt is Swedish American), and a living world layer that takes whatever light the mountain has. Marathon's graphic poster style is the reference for the header; terminal culture for the status panel.
+The mood is technical and precise, playful but grown-up, and unmistakably Pacific Northwest. Precision comes from instrument language: coordinates, elevations, mono readouts, crosshairs, a barcode. The play comes from pixel art and ASCII drawn with care, never from jokes. The palette works in two layers: a fixed brand layer in Gruvbox Material, the palette Matt's own apps use, and a living world layer that takes whatever light the mountain has. Marathon's graphic poster style is the reference for the header; terminal culture for the status panel.
 
 Confirmed rejections: gamer or RPG wording, Japanese text or subtitles, NES.css-style 8-bit chrome, a moon beside the mountain, and stripping the poster down for minimalism. An earlier pass that did that "lost its sparkle".
 
@@ -106,34 +105,33 @@ Confirmed rejections: gamer or RPG wording, Japanese text or subtitles, NES.css-
 
 ## Colors
 
-Two layers. The brand layer is the Swedish flag: yellow and blue for identity, navy and frost for structure. The world layer (sky, mountains, snow, clouds) is a set of palettes in `src/daylight.ts`, blended by the sun's real altitude at the peak: night navy, indigo blue hour with lavender snow, purple ranges and pink alpenglow at sunset, warm golden hour, blue daylight over green-grey forest.
+Two layers. The brand layer is Gruvbox Material, the same palette as Matt's apps (tascii's panel, thunk's editor): warm amber for identity, a muted blue for links, cream and charcoal for structure. The world layer (sky, mountains, snow, clouds) is a set of palettes in `src/daylight.ts`, blended by the sun's real altitude at the peak: night navy, indigo blue hour with lavender snow, purple ranges and pink alpenglow at sunset, warm golden hour, blue daylight over green-grey forest.
 
 ### Primary
-- **Flaggul** (flag yellow): your name in the poster, the yellow bar on section headings, the "In progress" badge, the logo's sunlit faces and the terminal cursor. It stays the same at every hour.
-- **Flaggblå** (flag blue): links and the shell prompt's `matt@baker`. In dark mode it is replaced by **Isblå** (ice blue), a lighter blue that stays readable on night backgrounds.
+- **Amber** (Gruvbox Material yellow): your name in the poster, the bar on section headings, the "In progress" badge, the logo's sunlit faces, craft icon accents and the terminal cursor. It stays the same at every hour and in both themes.
+- **Blue**: links and the shell prompt's `matt@baker` in light mode. In dark mode it is replaced by **Aqua**, the lighter blue thunk and tascii use, which stays readable on charcoal.
 
 ### Secondary
-- **Fjällnatt** (mountain night, a deep navy): the family the night sky palette is built from.
+- **Fjällnatt** (mountain night, a deep navy): the family the night sky palette is built from. World layer only.
 
 ### Tertiary
-- **Granskog** (spruce forest): the status light beside "Nominal" only. Dark mode uses **Granskog ljus**, its lighter form.
+- **Olive** (light) and **Green** (dark): the status light beside "Nominal" only.
 
 ### Neutral
-- **Glaciärvit** (glacier white): the light-mode page background. A cool white, deliberately not cream.
-- **Snödis** (snow haze): light-mode panel fill, used by the status panel.
-- **Rimfrost** (hoarfrost): every 1px rule and border in light mode.
-- **Tusch** (India ink): light-mode text.
-- **Kolsvart** (coal black): text on Flaggul, in the poster and on badges.
-- **Snö** (snow): the pixel mountains' snow, the logo's pixel moon, text on Fjällnatt.
-- **Polarnatt** (polar night): the dark-mode page background.
-- **Midnatt** (midnight): dark-mode panel fill.
-- **Skiffer** (slate): dark-mode rules and borders.
-- **Månljus** (moonlight): dark-mode text, a warm off-white.
+- **Cream**: the light-mode page background, Gruvbox Material's light bg.
+- **Sand**: light-mode panel fill, used by the status panel.
+- **Tan**: every 1px rule and border in light mode.
+- **Bark**: light-mode text, a dark warm brown.
+- **Charcoal**: the dark-mode page background, and text on Amber in the poster and on badges.
+- **Snö** (snow): the pixel mountains' snow and text on Fjällnatt.
+- **Ash**: dark-mode panel fill.
+- **Slate**: dark-mode rules and borders.
+- **Parchment**: dark-mode text, the warm off-white of Gruvbox Material.
 
 ### Named Rules
-**The Fixed Flag, Living Sky Rule.** Flag blue and yellow belong to the brand layer (logo, name, section bars, links, badges, cursor) and are never tinted by the time of day. Everything in the scene (sky, terrain, snow, clouds, the strip) follows the real light. Text over the sky must stay readable at every sun angle; check new palette stops against the contrast minimums.
+**The Fixed Brand, Living Sky Rule.** Amber and the link blues belong to the brand layer (logo, name, section bars, links, badges, cursor) and are never tinted by the time of day. Everything in the scene (sky, terrain, snow, clouds, the strip) follows the real light. Text over the sky must stay readable at every sun angle; check new palette stops against the contrast minimums. Amber over the bright daytime sky is the tightest case, about 3.2:1, fine only because the name is display-size.
 
-**The Two Themes Rule.** The site's light and dark themes share the flag colours unchanged except for the blue, which lightens to Isblå in dark mode. The poster ignores the site theme and shows the mountain's real light.
+**The Two Themes Rule.** The light and dark themes are Gruvbox Material light and dark. Amber stays the same in both; the link blue lightens to Aqua in dark mode. The poster ignores the site theme and shows the mountain's real light.
 
 ## Typography
 
@@ -145,7 +143,7 @@ Two layers. The brand layer is the Swedish flag: yellow and blue for identity, n
 
 ### Hierarchy
 - **Display** (700 italic, 4.5rem rising to 8rem from 640px, line-height 0.85, uppercase): the name in the poster only. Squashed horizontally to 70% from the left edge so the letters read tall.
-- **Headline** (700 italic, 2.25rem rising to 3rem, line-height 0.85, uppercase): section titles, with the same 70% squash and a 4px Flaggul bar on the left.
+- **Headline** (700 italic, 2.25rem rising to 3rem, line-height 0.85, uppercase): section titles, with the same 70% squash and a 4px Amber bar on the left.
 - **Title** (500, 1.125rem): project names, set in mono because they are repo names.
 - **Body lead** (400, 1.125rem, line-height 1.625): the one-line introduction in the poster and the About paragraph. Keep to about 42rem wide.
 - **Body** (400, 1rem, line-height 1.5): project descriptions, skill details, footer.
@@ -171,7 +169,7 @@ Flat. There are no shadows anywhere. On the page, depth comes from tonal layerin
 
 ## Shapes
 
-Square corners throughout, radius 0 on every component. The one exception is the notch: the status panel has its top-right and bottom-left corners clipped at 45° by 18px, after Marathon's UI frames. Pixel art is built from squares on a grid and drawn crisp. The logo is three parallelograms slanted like the Toyota TRD decal, in Flaggul, Flaggblå and Fjällnatt, with a white pixel crescent moon on top.
+Square corners throughout, radius 0 on every component. The one exception is the notch: the status panel has its top-right and bottom-left corners clipped at 45° by 18px, after Marathon's UI frames. Pixel art is built from squares on a grid and drawn crisp. The logo is three parallelograms slanted like the Toyota TRD decal, in Amber, Blue and Fjällnatt, with a white pixel crescent moon on top.
 
 ### Named Rules
 **The Text Sky, Pixel Earth Rule.** Everything in the sky is drawn in text characters (ASCII stars, rain and cloud lines); the land is pixel art generated from terrain data. Matt chose this split: pixel-art clouds were tried and rejected because they broke the programmer voice of the sky.
@@ -192,19 +190,19 @@ Hover answers (mouse only; each reuses a motion the site already has, and reduce
 - **Labels:** sentence case words ("Email", "Dark"), no brackets or arrows.
 
 ### Chips
-- **Style:** the "In progress" badge, Flaggul with Kolsvart text, square, small.
+- **Style:** the "In progress" badge, Amber with Charcoal text, square, small.
 - **State:** shown only when the project list mixes finished and unfinished work; if every project has the same status the badge is hidden, because it would carry no information.
 
 ### Cards / Containers
 There are no cards. Projects are a plain list separated by 1px rules. The only container is the status panel.
 - **Corner Style:** square, with the notch clip on the status panel
-- **Background:** Snödis in light mode, Midnatt in dark mode
+- **Background:** Sand in light mode, Ash in dark mode
 - **Shadow Strategy:** none, see Elevation & Depth
-- **Border:** 1px Rimfrost or Skiffer
+- **Border:** 1px Tan or Slate
 - **Internal Padding:** 24px per cell, 12px by 20px for prompt rows
 
 ### Navigation
-A full-width bar with a bottom rule. On the left, the logo (36px) and "Matt Erickson". The logo is an M whose top edge is a ridgeline, higher summit first, drawn on a 28px pixel grid and lit like the poster's mountains (sun from the left): flag yellow on the sunlit faces, amber (`#c7900a`) in shadow, a ragged snowcap (cream in dark mode, the poster's blue-grey snow shade in light mode); colours are `--logo-*` in `style.css`. The favicon is a 16px cut of the same M in the two yellows, no snow. On the right, the Email, LinkedIn and GitHub ghost buttons and the theme toggle; below 640px only Email and the toggle stay (links marked `phone` in `src/data.ts`). The toggle is an on/off switch labelled "Dark" with a small square that fills when dark mode is on (`aria-pressed`). On touch screens every nav button and footer link is at least 44px tall. The footer repeats every link, Instagram included, as plain links. The barcode in the poster strip is hidden below 640px.
+A full-width bar with a bottom rule. On the left, the logo (36px) and "Matt Erickson". The logo is an M whose top edge is a ridgeline, higher summit first, drawn on a 28px pixel grid and lit like the poster's mountains (sun from the left): amber on the sunlit faces, deeper amber (`#b47109`) in shadow, a ragged snowcap (cream in dark mode, the poster's blue-grey snow shade in light mode); colours are `--logo-*` in `style.css`. The favicon is a 16px cut of the same M in the two yellows, no snow. On the right, the Email, LinkedIn and GitHub ghost buttons and the theme toggle; below 640px only Email and the toggle stay (links marked `phone` in `src/data.ts`). The toggle is an on/off switch labelled "Dark" with a small square that fills when dark mode is on (`aria-pressed`). On touch screens every nav button and footer link is at least 44px tall. The footer repeats every link, Instagram included, as plain links. The barcode in the poster strip is hidden below 640px.
 
 ### Poster Header (signature component)
 The page's one loud moment: a live window onto a real Washington peak. Layers, back to front:
@@ -225,26 +223,26 @@ Scrolling adds depth parallax: the scene is drawn as three layers (far ranges; t
 First load is the one authored sequence: ASCII rain falls and lands as the starfield, a line traces the peak's real skyline left to right like a plotter and the terrain rises in under it by depth (far ranges, then the peak's range, then foothills) as the line fades, then the rest of the page fades in (about 4 seconds; skipped for reduced motion, with a 6-second failsafe). "Next peak" redraws the scene without the rain. `?peak=` picks a mountain and `?at=` previews any moment.
 
 ### Terminal Status Panel (signature component)
-The only place terminal styling appears. A notched panel opening with a prompt line (`matt@baker:~$ status --all`), then a grid of readouts with centred label-style field names and mono values (System, Operator, Region, Current build, Next deploy, a live Pacific-time clock), closing on an empty prompt with a blinking Flaggul block cursor. The prompt lines are hidden from screen readers. The readouts are System, Current build, Next deploy, Last deploy (build date) and Commit (both filled in at build time by `vite.config.ts`), and Local time. Readouts must report something the rest of the page doesn't. The first time the panel scrolls into view, `status --all` types out and the readouts print one per beat; the text is in the page throughout, only its appearance is staged. The clipped corners get a 1px diagonal line so the border stays continuous. The cursor blinks every 1.1s in hard steps and stops for visitors who prefer reduced motion. Outside the poster, it is the page's only ambient motion.
+The only place terminal styling appears. A notched panel opening with a prompt line (`matt@baker:~$ status --all`), then a grid of readouts with centred label-style field names and mono values (System, Operator, Region, Current build, Next deploy, a live Pacific-time clock), closing on an empty prompt with a blinking Amber block cursor. The prompt lines are hidden from screen readers. The readouts are System, Current build, Next deploy, Last deploy (build date) and Commit (both filled in at build time by `vite.config.ts`), and Local time. Readouts must report something the rest of the page doesn't. The first time the panel scrolls into view, `status --all` types out and the readouts print one per beat; the text is in the page throughout, only its appearance is staged. The clipped corners get a 1px diagonal line so the border stays continuous. The cursor blinks every 1.1s in hard steps and stops for visitors who prefer reduced motion. Outside the poster, it is the page's only ambient motion.
 
 ### Crafts List (signature component)
-One row per craft (Infrastructure, Code, Audio, Photography, Games): a 40px pixel icon drawn on a 12×12 grid in the text colour with Flaggul accents, the craft name in semibold mono and one plain line in Matt's own words, plus an optional text link (Photography links to Instagram). It replaces a skills list on purpose: every craft gets equal standing. On hover or keyboard focus an icon lifts 2px and its yellow pixels blink twice.
+One row per craft (Infrastructure, Code, Audio, Photography, Games): a 40px pixel icon drawn on a 12×12 grid in the text colour with Amber accents, the craft name in semibold mono and one plain line in Matt's own words, plus an optional text link (Photography links to Instagram). It replaces a skills list on purpose: every craft gets equal standing. On hover or keyboard focus an icon lifts 2px and its yellow pixels blink twice.
 
 ### Program Still
-Real output from one of Matt's programs, shown as a bordered `pre` in Snödis or Midnatt with a static Flaggul block cursor and a readout caption ("Excerpt of real output"). Used for cardatro under Games. It is the one allowed exception to keeping terminal styling inside the status panel, because it shows real work rather than decoration. The cursor here does not blink; the status panel keeps the page's only motion.
+Real output from one of Matt's programs, shown as a bordered `pre` in Sand or Ash with a static Amber block cursor and a readout caption ("Excerpt of real output"). Used for cardatro under Games. It is the one allowed exception to keeping terminal styling inside the status panel, because it shows real work rather than decoration. The cursor here does not blink; the status panel keeps the page's only motion.
 
 ### Section Heading
-A squashed italic serif title with a 4px Flaggul bar on its left and 16px padding. No numbers, no labels above it.
+A squashed italic serif title with a 4px Amber bar on its left and 16px padding. No numbers, no labels above it.
 
 ## Do's and Don'ts
 
 ### Do:
 - **Do** keep every corner square (0px); use the 18px notch only on terminal-style panels.
-- **Do** keep flag blue and yellow fixed (logo, name, heading bars, links, badges, cursor) and let only the scene follow the light.
+- **Do** keep amber and the link blues fixed (logo, name, heading bars, links, badges, cursor) and let only the scene follow the light.
 - **Do** set the name and section titles in bold italic Times, squashed to 70% width, and everything else in JetBrains Mono.
 - **Do** generate mountain scenes from real elevation data with `tools/skyline.py` rather than drawing them by hand, keep heights near true (at most 1.3×), and keep every scene the same number of rows.
 - **Do** use real data everywhere it appears real: true coordinates, elevations, terrain, stars, sun position, cloud cover and time.
-- **Do** draw craft icons as 12×12 text grids in `src/art.ts` (`#` in the text colour, `+` in Flaggul), matching the peaks.
+- **Do** draw craft icons as 12×12 text grids in `src/art.ts` (`#` in the text colour, `+` in Amber), matching the peaks.
 - **Do** keep terminal styling inside the status panel, and respect reduced motion for anything that moves.
 
 ### Don't:
@@ -253,7 +251,7 @@ A squashed italic serif title with a 4px Flaggul bar on its left and 16px paddin
 - **Don't** use rounded corners, drop shadows, decorative gradients (the sky is the only one) or 8-bit UI kits like NES.css.
 - **Don't** put a moon beside the mountain; the moon belongs only in the logo.
 - **Don't** add numbered section markers or uppercase labels above headings.
-- **Don't** use cream page backgrounds; light mode is cool Glaciärvit (#eef2f5).
+- **Don't** bring in colours from outside Gruvbox Material for the brand layer; it should match Matt's apps.
 - **Don't** strip the poster, stars or pixel art in the name of minimalism.
-- **Don't** tint the flag colours with the time of day, or fake the sky: no invented stars, weather or light.
+- **Don't** tint the brand colours with the time of day, or fake the sky: no invented stars, weather or light.
 - **Don't** draw sky elements as pixel art; the sky stays text (see The Text Sky, Pixel Earth Rule).

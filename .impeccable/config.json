@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "monospace\">",
+        "createdAt": "2026-11-19T18:59:59.307Z",
+        "reason": "Claude triage: pre-existing <noscript> fallback in index.html uses the generic monospace family on purpose; not part of the type system"
+      }
+    ]
+  }
+}
