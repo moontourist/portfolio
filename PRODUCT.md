@@ -19,7 +19,7 @@ None of them arrive with a task to complete. They are getting a sense of who he 
 
 ## Product Purpose
 
-The personal site of Matt Erickson (matt-erickson.io): an infrastructure engineer at Halo, based in Washington state, who builds audio plugins and a window manager in Rust on the side and is building toward making his own game. It is a long-term presence that grows with his projects, not a job-hunt landing page. He is not looking for work. Success is a visitor leaving with a clear, memorable sense of him and an easy way to reach him.
+The personal site of Matt Erickson (matt-erickson.io): an infrastructure engineer at Halo, based in Washington state, who builds audio plugins and a window manager in Rust on the side and is building toward making his own game. Its job is to show off his projects. It is a long-term presence that grows with them, not a job-hunt landing page; he is not looking for work. Success is a visitor seeing the work within seconds, without scrolling far, and leaving with a clear, memorable sense of him and an easy way to reach him.
 
 ## Positioning
 

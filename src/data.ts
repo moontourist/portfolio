@@ -80,13 +80,13 @@ export const projects: Project[] = [
     name: 'seethe',
     status: 'active',
     description: 'A synth plugin (VST3/CLAP) for old game sounds and dungeon synth, in Rust. Presets rebuilt from Super Mario 64 and Donkey Kong Country, plus crypt choirs and castle organs.',
-    url: 'https://github.com/moontourist/seethe',
+    // url: 'https://github.com/moontourist/seethe', // add back when the repo goes public
   },
   {
     name: 'thunk',
     status: 'active',
     description: 'A drum bus plugin (VST3/CLAP) for any DAW, in Rust: drive, grit, snap and a low-end thump tuned to your kick.',
-    url: 'https://github.com/moontourist/thunk',
+    // url: 'https://github.com/moontourist/thunk', // add back when the repo goes public
   },
   {
     name: 'wave',
