@@ -3,9 +3,9 @@
   themes: false;
 }
 
-/* Gruvbox Material, the palette tascii and thunk use. Sharp corners, thin lines. */
+/* Swedish blue and yellow, taken from Gruvbox Material (the palette tascii and thunk use). Sharp corners, thin lines. */
 @plugin "daisyui/theme" {
-  name: "gruvbox";
+  name: "sverige";
   default: true;
   color-scheme: light;
   --color-base-100: #fbf1c7;
@@ -30,20 +30,20 @@
   --noise: 0;
 }
 
-/* Logo tones (src/art.ts): amber in sun, deeper amber in shadow, snow on the summits. On the light theme the
+/* Logo tones (src/art.ts): flag yellow in sun, deeper yellow in shadow, snow on the summits. On the light theme the
    snow goes grey, since the cream text colour would vanish into the page. */
 :root {
   --logo-lit: #d8a657;
   --logo-shade: #b47109;
   --logo-snow: #a89984;
 }
-[data-theme="gruvbox-dark"] {
+[data-theme="sverige-dark"] {
   --logo-snow: #d4be98;
 }
 
 /* Same palette, dark side: the exact colours of tascii's panel and thunk's editor */
 @plugin "daisyui/theme" {
-  name: "gruvbox-dark";
+  name: "sverige-dark";
   color-scheme: dark;
   --color-base-100: #282828;
   --color-base-200: #32302f;
@@ -68,24 +68,19 @@
 }
 
 @theme {
-  --font-sans: "JetBrains Mono", ui-monospace, monospace;
-  --font-serif: "Times New Roman", Times, "Liberation Serif", serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* One typeface, as in tascii, thunk and wave: the installed Nerd Font build first, then the web copy */
+  --font-sans: "JetBrainsMono NFM", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-mono: "JetBrainsMono NFM", "JetBrains Mono", ui-monospace, Menlo, monospace;
 }
 
 /* Custom pieces live in the components layer so Tailwind utilities (opacity-100, etc.) can still override them */
 @layer components {
-  /* Bold italic Times, after the Evangelion title cards */
+  /* Titles the way the app logos set them: JetBrains Mono ExtraBold, pulled tight */
   .display {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 0.85;
-    text-transform: uppercase;
-    /* Squash sideways so the letters read tall. Lower = taller and thinner. */
-    transform: scaleX(0.7);
-    transform-origin: left;
+    font-family: var(--font-mono);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
   }
 
   /* Small mono readouts for real data: coordinates, the peak strip, status field names.

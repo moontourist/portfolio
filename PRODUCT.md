@@ -43,7 +43,7 @@ A creative technologist: one person across several crafts. By day he runs infras
 
 - Name and handle: Matt Erickson / moontourist (GitHub `moontourist`, Instagram `moon.tourist`).
 - Voice: plain, first-person, sentence case. Tasteful, not jokey.
-- Binding references Matt chose: the Gruvbox Material palette his apps use (tascii, thunk, wave, seethe), Marathon (Bungie) UI art style, a touch of ASCII and pixel art, terminal touches, Times New Roman italic display type, JetBrains Mono (his terminal font).
+- Binding references Matt chose: Swedish blue and yellow (he is Swedish American), taken from the Gruvbox Material palette his apps use (tascii, thunk, wave, seethe), Marathon (Bungie) UI art style, a touch of ASCII and pixel art, terminal touches, JetBrains Mono everywhere (his terminal font and the one his apps use).
 - Rejected, do not reintroduce: gamer or RPG wording (guild, quest, character, stats, equipment), Japanese text or subtitles, NES.css, a moon beside the mountain.
 
 ## Evidence on Hand

@@ -66,7 +66,7 @@ const corners = ['top-3 left-3', 'top-3 right-3', 'hidden md:block bottom-3 left
   .map(pos => `<span aria-hidden="true" class="absolute ${pos}">${crosshair}</span>`)
   .join('')
 
-// Section heading: squashed serif with a yellow bar. Kept smaller than the hero name.
+// Section heading: JetBrains Mono ExtraBold with a yellow bar. Kept smaller than the hero name.
 // Sections are separated by space, not rules: generous between groups, tight from heading to content.
 const section = (title: string, body: string, place = '') => `
   <section class="mt-16 first:mt-0 lg:mt-24 lg:first:mt-0 ${place}">
@@ -91,7 +91,7 @@ app.innerHTML = `
   <nav class="intro-fade navbar gap-1 border-b border-base-300 px-6 md:px-12">
     <a href="/" class="brand flex flex-1 items-center gap-3">
       <span aria-hidden="true" class="size-9">${logo()}</span>
-      <span class="font-semibold">${profile.name}</span>
+      <span class="font-extrabold">${profile.name}</span>
     </a>
     ${links.filter(l => l.nav).map(l => `<a class="btn btn-ghost btn-sm pointer-coarse:h-11 ${'phone' in l ? '' : 'hidden sm:inline-flex'}" href="${l.url}">${l.name}</a>`).join('')}
     <button id="theme-toggle" type="button" aria-pressed="false" class="btn btn-ghost btn-sm gap-2 pointer-coarse:h-11">
@@ -113,7 +113,7 @@ app.innerHTML = `
       <!-- Name first in the code so screen readers hear it before the readouts. Phones show the readouts above
            the name; from 768px they move to the top-right corner, so the name stands alone on the left. -->
       <div class="intro-fade halo relative flex flex-col px-6 pt-16 md:px-12">
-        <h1 class="display mt-6 text-7xl text-(--poster-name) sm:text-9xl">${profile.name.replace(' ', ' <br>')}</h1>
+        <h1 class="display mt-6 text-6xl text-(--poster-name) sm:text-8xl lg:text-9xl">${profile.name.replace(' ', ' <br>')}</h1>
         <p class="mt-8 max-w-md text-lg">${profile.role} at ${profile.company}, based in ${profile.location}.</p>
         <div class="order-first md:absolute md:top-16 md:right-12 md:flex md:flex-col md:items-end md:text-right">
           <p id="sky-note" class="readout"></p>
@@ -150,7 +150,7 @@ app.innerHTML = `
           <li class="craft grid grid-cols-[2.5rem_1fr] gap-x-5">
             <span aria-hidden="true" class="craft-icon mt-1 size-10">${icon(c.icon)}</span>
             <div>
-              <h3 class="font-semibold">${c.name}</h3>
+              <h3 class="font-extrabold">${c.name}</h3>
               <p class="mt-1 opacity-80">${c.detail}</p>
               ${c.link ? `<a class="link link-primary mt-2 inline-block text-sm" href="${c.link.url}">${c.link.label}</a>` : ''}
               ${c.sample ? `
@@ -167,7 +167,7 @@ app.innerHTML = `
         ${projects.map(p => `
           <li class="border-b border-base-300 py-4 first:pt-0 last:border-b-0 last:pb-0">
             <div class="flex items-baseline justify-between gap-4">
-              <h3 class="font-mono text-lg font-medium">${p.name}</h3>
+              <h3 class="font-mono text-lg font-extrabold">${p.name}</h3>
               ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
             </div>
             <p class="mt-1 max-w-2xl opacity-80">${p.description}</p>
@@ -518,13 +518,13 @@ const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle')!
 const box = toggle.querySelector('span')!
 const html = document.documentElement
 const show = () => {
-  const dark = html.dataset.theme === 'gruvbox-dark'
+  const dark = html.dataset.theme === 'sverige-dark'
   toggle.setAttribute('aria-pressed', String(dark))
   box.classList.toggle('bg-current', dark)
 }
 show()
 toggle.addEventListener('click', () => {
-  html.dataset.theme = html.dataset.theme === 'gruvbox-dark' ? 'gruvbox' : 'gruvbox-dark'
+  html.dataset.theme = html.dataset.theme === 'sverige-dark' ? 'sverige' : 'sverige-dark'
   try { localStorage.setItem('theme', html.dataset.theme) } catch {}
   show()
 })

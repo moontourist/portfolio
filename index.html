@@ -17,14 +17,12 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet" />
     <script>
       // Set the theme before the page draws, so dark mode doesn't flash white
       let theme = null
       try { theme = localStorage.getItem('theme') } catch {}
-      // Visitors from before the Gruvbox switch saved 'sverige' or 'sverige-dark'
-      if (theme?.startsWith('sverige')) theme = theme.replace('sverige', 'gruvbox')
-      theme ??= matchMedia('(prefers-color-scheme: dark)').matches ? 'gruvbox-dark' : 'gruvbox'
+      theme ??= matchMedia('(prefers-color-scheme: dark)').matches ? 'sverige-dark' : 'sverige'
       document.documentElement.dataset.theme = theme
       // Hide everything but the sky and mountain until they've been built (main.ts fades it in).
       // Failsafe: show the page after 6s even if the script never runs.

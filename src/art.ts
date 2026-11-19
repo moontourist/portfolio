@@ -2,7 +2,7 @@
 // '#' and '*' are pixels, anything else is empty.
 
 // The logo: an M whose top edge is a ridgeline, higher summit first, lit like the poster's mountains
-// (sun from the left). 'L' sunlit amber, 's' deeper amber shadow, '*' snow. Colours are --logo-* in style.css.
+// (sun from the left). 'L' sunlit flag yellow, 's' deeper yellow shadow, '*' snow. Colours are --logo-* in style.css.
 const LOGO = [
   '......**....................',
   '.....****...................',
@@ -118,7 +118,7 @@ export function depthLayers(grid: string[]): { far: string[]; mid: string[]; nea
 // A thin registration crosshair, as printed in a poster's corners
 export const crosshair = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="size-4" stroke="currentColor" stroke-width="1"><path d="M8 0v16M0 8h16"/></svg>`
 
-// Craft icons, 12x12, drawn like the peaks: '#' in the text colour, '+' in the amber accent.
+// Craft icons, 12x12, drawn like the peaks: '#' in the text colour, '+' in flag yellow.
 const ICONS = {
   rack: [
     '############',
