@@ -106,7 +106,7 @@ export const projects: Project[] = [
     url: 'https://github.com/moontourist/tascii',
     links: [
       { label: 'Try it at tascii-list.com', url: 'https://tascii-list.com' },
-      // { label: 'Get it on the Chrome Web Store', url: '' }, // add once the listing is approved
+      { label: 'Get it on the Chrome Web Store', url: 'https://chromewebstore.google.com/detail/tascii/lgchdnjcaalaoifhceeeoggfmohoagol' },
     ],
   },
   {
