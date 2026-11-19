@@ -90,7 +90,10 @@ const projectText = (p: (typeof projects)[number], card = true) => `
     ${mixedStatus && p.status === 'active' ? '<span class="badge badge-secondary badge-sm">In progress</span>' : ''}
   </div>
   <p class="mt-1 max-w-2xl opacity-80">${p.description}</p>
-  ${p.url ? `<a class="link link-primary mt-2 inline-block text-sm" href="${p.url}">View source on GitHub</a>` : ''}
+  ${p.url || p.links ? `<p class="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+    ${[...(p.url ? [{ label: 'View source on GitHub', url: p.url }] : []), ...(p.links ?? [])]
+      .map(l => `<a class="link link-primary" href="${l.url}">${l.label}</a>`).join('')}
+  </p>` : ''}
   ${p.note ? `<p class="readout mt-2">${p.note}</p>` : ''}`
 
 // The Games craft's terminal sample is shown under About, so Crafts stays one compact row

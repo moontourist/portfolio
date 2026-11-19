@@ -16,6 +16,7 @@ export type Project = {
   description: string
   url?: string
   note?: string // shown instead of a source link, e.g. for private repos
+  links?: { label: string; url: string }[] // extra links shown after the source link, e.g. a live site
   image?: string // banner in public/, shown as a card at the top of Projects (1920x520 logos, drawn at 960 wide)
 }
 
@@ -103,6 +104,10 @@ export const projects: Project[] = [
     status: 'active',
     description: "A minimalist ASCII to-do list for Chrome's side panel.",
     url: 'https://github.com/moontourist/tascii',
+    links: [
+      { label: 'Try it at tascii-list.com', url: 'https://tascii-list.com' },
+      // { label: 'Get it on the Chrome Web Store', url: '' }, // add once the listing is approved
+    ],
   },
   {
     name: 'cardatro',
