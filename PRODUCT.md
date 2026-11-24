@@ -19,11 +19,11 @@ None of them arrive with a task to complete. They are getting a sense of who he 
 
 ## Product Purpose
 
-The personal site of Matt Erickson (matt-erickson.io): an infrastructure engineer at Halo, based in Washington state, who builds audio plugins and a window manager in Rust on the side and is building toward making his own game. Its job is to show off his projects. It is a long-term presence that grows with them, not a job-hunt landing page; he is not looking for work. Success is a visitor seeing the work within seconds, without scrolling far, and leaving with a clear, memorable sense of him and an easy way to reach him.
+The personal site of Matt Erickson (matt-erickson.io): an infrastructure engineer at Halo, based in Washington state, who builds controller firmware for competitive Melee, audio plugins and a window manager on the side and is building toward making his own game. Its job is to show off his projects. It is a long-term presence that grows with them, not a job-hunt landing page; he is not looking for work. Success is a visitor seeing the work within seconds, without scrolling far, and leaving with a clear, memorable sense of him and an easy way to reach him.
 
 ## Positioning
 
-A creative technologist: one person across several crafts. By day he runs infrastructure (AWS, Kubernetes, Datadog). On the side he writes software in Rust (the thunk and seethe audio plugins, the wave window manager) and C#, and is heading toward game dev. He trained as an audio engineer (Pro Tools, Ableton) and shoots photography. The site should read as all of these at once, not as an infra résumé with hobbies attached.
+A creative technologist: one person across several crafts. By day he runs infrastructure (AWS, Kubernetes, Datadog). On the side he writes software in Rust (techchase, a GameCube controller app; the thunk and seethe audio plugins; the wave window manager), C (techchase's controller firmware) and C#, and is heading toward game dev. He trained as an audio engineer (Pro Tools, Ableton) and shoots photography. The site should read as all of these at once, not as an infra résumé with hobbies attached.
 
 ## Operating Context
 
@@ -48,7 +48,7 @@ A creative technologist: one person across several crafts. By day he runs infras
 
 ## Evidence on Hand
 
-- Projects: `tascii` (public, github.com/moontourist/tascii) and `cardatro` (private terminal card game in C#). The Games craft shows an excerpt of cardatro's real console output (a dealt hand with chip values, then "Select Cards 0-7:"); keep it matching what the program actually prints.
+- Projects: `techchase` (public, github.com/moontourist/techchase, the lead project and the one Matt is proudest of; its Windows release is still a draft, so no download link yet), `tascii` (public, github.com/moontourist/tascii) and `cardatro` (private terminal card game in C#). The Games craft shows an excerpt of cardatro's real console output (a dealt hand with chip values, then "Select Cards 0-7:"); keep it matching what the program actually prints.
 - Contact: matthewgaryerickson@gmail.com, linkedin.com/in/matthewg-erickson.
 - Absences, do not fabricate: no testimonials, metrics, employers beyond Halo, or photos yet. The craft lines in `src/data.ts` are drafts from Matt's own words and facts; reword them freely. `sharpmas` was built by a friend (Scotty / scadoshi) and must never be presented as Matt's work.
 

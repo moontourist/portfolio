@@ -159,11 +159,11 @@ app.innerHTML = `
        log (About, with the cardatro sample) beside the console (Status). One column on phones, in source order. -->
   <main id="main" tabindex="-1" class="intro-fade px-6 pt-12 pb-24 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-secondary md:px-12">
     ${section('Projects', `
-      <ul class="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-        ${projects.filter(p => p.image).map(p => `
-          <li>
+      <ul class="grid gap-x-8 gap-y-10 sm:grid-cols-2">
+        ${projects.filter(p => p.image).map((p, i) => `
+          <li class="${i === 0 ? 'sm:col-span-2 lg:grid lg:grid-cols-2 lg:items-center lg:gap-x-8' : ''}">
             <img src="${p.image}" alt="" width="960" height="260" class="block h-auto w-full border border-base-300" />
-            ${projectText(p)}
+            <div class="lg:[&>div:first-child]:mt-0">${projectText(p)}</div>
           </li>`).join('')}
       </ul>
       <ul class="mt-10 grid gap-x-8 gap-y-8 border-t border-base-300 pt-8 sm:grid-cols-2 lg:grid-cols-3">
