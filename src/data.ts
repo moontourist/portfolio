@@ -7,7 +7,6 @@ export type Craft = {
   icon: IconName // pixel icon drawn in src/art.ts
   detail: string
   link?: { label: string; url: string }
-  sample?: string[] // real program output, shown as a terminal still
 }
 export type ProjectStatus = 'complete' | 'active'
 export type Project = {
@@ -18,7 +17,6 @@ export type Project = {
   note?: string // shown instead of a source link, e.g. for private repos
   links?: { label: string; url: string }[] // extra links shown after the source link, e.g. a live site
   image?: string // banner in public/, shown as a card at the top of Projects (1920x520 logos, drawn at 960 wide)
-  // The first project with an image is the lead: it gets its own row, with the text beside the banner.
 }
 
 export const profile = {
@@ -61,20 +59,7 @@ export const crafts: Craft[] = [
   {
     name: 'Games',
     icon: 'gamepad',
-    detail: 'cardatro is the first one, a card game in the terminal. Its output so far is under About.',
-    sample: [
-      '---------------------',
-      'Ace of Spades',
-      'chips: 11',
-      'Queen of Hearts',
-      'chips: 10',
-      'Seven of Clubs',
-      'chips: 7',
-      'Two of Diamonds',
-      'chips: 2',
-      '---------------------',
-      'Select Cards 0-7:',
-    ],
+    detail: 'techchase, tournament tools for Melee and Smash controllers, is the closest so far. Next is a game of my own.',
   },
 ]
 
@@ -117,12 +102,6 @@ export const projects: Project[] = [
       { label: 'Try it at tascii-list.com', url: 'https://tascii-list.com' },
       { label: 'Get it on the Chrome Web Store', url: 'https://chromewebstore.google.com/detail/tascii/lgchdnjcaalaoifhceeeoggfmohoagol' },
     ],
-  },
-  {
-    name: 'cardatro',
-    status: 'active',
-    description: 'A terminal card game in C#, inspired by Balatro.',
-    note: 'Private for now',
   },
   {
     name: 'elixir',

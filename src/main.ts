@@ -96,9 +96,6 @@ const projectText = (p: (typeof projects)[number], card = true) => `
   </p>` : ''}
   ${p.note ? `<p class="readout mt-2">${p.note}</p>` : ''}`
 
-// The Games craft's terminal sample is shown under About, so Crafts stays one compact row
-const sample = crafts.find(c => c.sample)?.sample
-
 const app = document.querySelector<HTMLDivElement>('#app')!
 
 app.innerHTML = `
@@ -156,14 +153,14 @@ app.innerHTML = `
   </header>
 
   <!-- Below the poster: the work first, so it shows on the first screen. Then the crafts in one row, then the
-       log (About, with the cardatro sample) beside the console (Status). One column on phones, in source order. -->
+       log (About) beside the console (Status). One column on phones, in source order. -->
   <main id="main" tabindex="-1" class="intro-fade px-6 pt-12 pb-24 outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-secondary md:px-12">
     ${section('Projects', `
-      <ul class="grid gap-x-8 gap-y-10 sm:grid-cols-2">
-        ${projects.filter(p => p.image).map((p, i) => `
-          <li class="${i === 0 ? 'sm:col-span-2 lg:grid lg:grid-cols-2 lg:items-center lg:gap-x-8' : ''}">
+      <ul class="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        ${projects.filter(p => p.image).map(p => `
+          <li>
             <img src="${p.image}" alt="" width="960" height="260" class="block h-auto w-full border border-base-300" />
-            <div class="lg:[&>div:first-child]:mt-0">${projectText(p)}</div>
+            ${projectText(p)}
           </li>`).join('')}
       </ul>
       <ul class="mt-10 grid gap-x-8 gap-y-8 border-t border-base-300 pt-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -185,12 +182,7 @@ app.innerHTML = `
 
     <div class="mt-16 lg:mt-24 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(22rem,26rem)] lg:gap-x-16 xl:gap-x-24">
       ${section('About', `
-        <p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>
-        ${sample ? `
-          <figure class="mt-8 max-w-2xl border border-base-300 bg-base-200">
-            <pre class="overflow-x-auto px-5 py-4 font-mono text-sm leading-relaxed">${sample.join('\n')}<span aria-hidden="true" class="ml-2 inline-block h-[1.1em] w-[0.6em] bg-secondary align-text-bottom"></span></pre>
-            <figcaption class="readout border-t border-base-300 px-5 py-2">cardatro, excerpt of real output</figcaption>
-          </figure>` : ''}`)}
+        <p class="max-w-2xl text-lg leading-relaxed">${profile.bio}</p>`)}
 
       ${section('Status', `
         <div class="notch border border-base-300 bg-base-200">

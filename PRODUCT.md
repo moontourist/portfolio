@@ -48,7 +48,7 @@ A creative technologist: one person across several crafts. By day he runs infras
 
 ## Evidence on Hand
 
-- Projects: `techchase` (public, github.com/moontourist/techchase, the lead project and the one Matt is proudest of; its Windows release is still a draft, so no download link yet), `tascii` (public, github.com/moontourist/tascii) and `cardatro` (private terminal card game in C#). The Games craft shows an excerpt of cardatro's real console output (a dealt hand with chip values, then "Select Cards 0-7:"); keep it matching what the program actually prints.
+- Projects: `techchase` (public, github.com/moontourist/techchase, the one Matt is proudest of, listed first and named in the Games craft; its Windows release is still a draft, so no download link yet), `tascii` (public, github.com/moontourist/tascii) and `elixir` (private, shelved). cardatro was taken off the site.
 - Contact: matthewgaryerickson@gmail.com, linkedin.com/in/matthewg-erickson.
 - Absences, do not fabricate: no testimonials, metrics, employers beyond Halo, or photos yet. The craft lines in `src/data.ts` are drafts from Matt's own words and facts; reword them freely. `sharpmas` was built by a friend (Scotty / scadoshi) and must never be presented as Matt's work.
 
